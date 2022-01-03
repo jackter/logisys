@@ -1,0 +1,534 @@
+<div ngNativeValidate fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" style="max-width: 1000px;">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary ma-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Print Preview
+            </span>
+
+            <div>
+                <mat-checkbox
+                    [(ngModel)]="Eng"
+                    [checked]="Eng"
+                >
+                    Eng
+                </mat-checkbox>
+
+                <button 
+                    mat-button 
+                    type="button"
+                    class="mat-icon-button ml-24"
+                    mat-dialog-close
+                    aria-label="Close dialog"
+                    tabindex="-1"
+                    *ngIf="!Busy"
+                >
+                    <mat-icon class="white-fg">close</mat-icon>
+                </button>
+            </div>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="row" fxLayoutGap="10px" class="p-24 m-0 pt-0">
+        <!-- PRINT AREA -->
+        <div class="print-area-sales" fxLayout="column" fxFlex="0 1 auto">
+            <table class="table table-input table-input-noborder">
+                <tr>
+                    <td>
+                        <!-- <img width="100" src="/assets/logo/{{ form.company_abbr }}.png"> -->
+                    </td>
+                </tr>
+                <tr>
+                    <td *ngIf="!Eng" colspan="6" class="h2 text-center text-bold">
+                        <u>KONTRAK PENJUALAN</u><br/>
+                        {{form.kode}} 
+                    </td>
+                    <td *ngIf="Eng" colspan="6" class="h2 text-center text-bold">
+                        <u>SALES CONTRACT</u><br/>
+                        {{form.kode}} 
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Pembeli
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Buyer
+                        </ng-container>
+                    </td>
+                    <td width="20px">
+                        :
+                    </td>
+                    <td colspan="3" class="text-bold">
+                        {{ form.cust_nama }}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Alamat
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Address
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3" style="text-align: justify;">
+                        <div [innerHtml]="form.cust_alamat"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Penjual
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Seller
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3" class="text-bold">
+                        {{ form.company_nama | uppercase }}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Alamat
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Address
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3" style="text-align: justify;">
+                        <div [innerHtml]="form.company_alamat"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Jenis Barang
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Product Name
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3" style="text-align: justify;">
+                        {{form.produk_nama}}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Kuantitas
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Quantity
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3">
+                        {{form.kuantitas | number: '.2'}} Kg
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Toleransi
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Tolerance
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3">
+                        +/- {{form.toleransi | number: '.1'}}%
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Dasar Timbangan
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Basic Scales
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3">
+                        {{form.dasar_timbangan}}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Harga Satuan
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Unit Price
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3">
+                        <ng-container *ngIf="!Eng">
+                            {{ form.currency }} {{ rupiah(form.sold_price) }}/kg (harga {{ form.ppn ? 'sudah termasuk' : 'tanpa' }} PPN)
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            {{ form.currency }} {{ rupiah(form.sold_price) }}/kg ({{ form.ppn ? 'Include' : 'Exclude' }} VAT)
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Jumlah
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Amount
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3">
+                        {{ form.currency }} {{ rupiah(form.grand_total) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Terbilang
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            In Words
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td *ngIf="!Eng" colspan="3" style="text-align: justify;">
+                        {{form.terbilang | titlecase }}
+                    </td>
+                    <td *ngIf="Eng" colspan="3" style="text-align: justify;">
+                        {{form.terbilangEng | titlecase }}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Syarat Penyerahan
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Delivery Condition
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3" style="text-align: justify;">
+                        {{form.syarat_penyerahan}} {{ form.syarat_penyerahan_addr ? ' - ' + form.syarat_penyerahan_addr : '' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            No. Rekening Bank
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Bank Account Number
+                        </ng-container>
+                    </td>
+                    <td width="20px">
+                        :
+                    </td>
+                    <td width="125">
+                        <ng-container *ngIf="!Eng">
+                            Nama Akun
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Account Name
+                        </ng-container>
+                    </td>
+                    <td width="20px">
+                        :
+                    </td>
+                    <td>
+                        {{form.company_bank}}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        &nbsp;
+                    </td>
+                    <td width="125">
+                        <ng-container *ngIf="!Eng">
+                            Nama Bank
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Bank Name
+                        </ng-container>
+                    </td>
+                    <td width="20px">
+                        :
+                    </td>
+                    <td>
+                        {{form.company_bank_nama}}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    </td>
+                    <td width="125">
+                        <ng-container *ngIf="!Eng">
+                            No. Akun
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Account Number
+                        </ng-container>
+                    </td>
+                    <td width="20px">
+                        :
+                    </td>
+                    <td>
+                        {{form.company_rek}}
+                    </td>
+                </tr>
+                <tr *ngIf="form.company_swift_code">
+                    <td colspan="2">
+                    </td>
+                    <td width="125">
+                        <ng-container *ngIf="!Eng">
+                            Swift Code
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Swift Code
+                        </ng-container>
+                    </td>
+                    <td width="20px">
+                        :
+                    </td>
+                    <td>
+                        {{form.company_swift_code}}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Pembayaran
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Payment Note
+                        </ng-container>
+                    </td>
+                    <td width="20px">
+                        :
+                    </td>
+                    <td colspan="3" style="text-align: justify;">
+                        {{form.pembayaran}}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Penyerahan
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Delivery
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3" style="text-align: justify;">
+                        {{form.penyerahan}}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Mutu
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Quality
+                        </ng-container>
+                    </td>
+                    <td>
+                        :
+                    </td>
+                    <td colspan="3" style="text-align: justify;">
+                        <table class="table table-input table-input-noborder">
+                            <tr *ngFor="let item of List">
+                                <td width="250">
+                                    {{ item.kode }}
+                                </td>
+                                <td width="20">
+                                    :
+                                </td>
+                                <td>
+                                    {{ item.value }}
+                                </td>
+                            </tr>
+                        </table>
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+            </table>
+            
+            <table class="table table-input table-input-noborder">
+                <tr *ngIf="Notes?.length > 0">
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Catatan
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Notes
+                        </ng-container>
+                    </td>
+                    <td width="20">:</td>
+                    <td>
+                        <ng-container *ngFor="let item of Notes;">
+                            - {{ item.notes }} <br/>
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr *ngIf="Others?.length > 0">
+                    <td width="150">
+                        <ng-container *ngIf="!Eng">
+                            Lain - lain
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Others
+                        </ng-container>
+                    </td>
+                    <td width="20">:</td>
+                    <td>
+                        <ng-container *ngFor="let item of Others;">
+                           <span *ngIf="Others?.length > 1">-</span> {{ item.others }} <br/>
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+            </table>
+
+            <table class="table table-input table-input-noborder">
+                <tr>
+                    <td style="width: 50%;">
+                        <ng-container *ngIf="!Eng">
+                            Pangkalan Bun, {{ date_indo(form.tanggal) }}
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Pangkalan Bun, {{ date_eng(form.tanggal) }}
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">
+                        <ng-container *ngIf="!Eng">
+                            Penjual,
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Seller,
+                        </ng-container>
+                        <div class="text-bold">
+                            {{ form.company_nama }}
+                        </div>
+                    </td>
+                    <td style="width: 50%;">
+                        <ng-container *ngIf="!Eng">
+                            Pembeli,
+                        </ng-container>
+                        <ng-container *ngIf="Eng">
+                            Buyer,
+                        </ng-container>
+                        <div class="text-bold">
+                            {{ form.cust_nama }}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="height: 125px;"></td>
+                </tr>
+                <tr class="text-bold">
+                    <td>
+                        {{ form.company_ttd }}
+                    </td>
+                    <td>
+                        {{ form.cust_ttd }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </mat-dialog-content>
+    <!-- END : CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto">
+            <button 
+                type="button" 
+                mat-button 
+                color="primary" 
+                [disabled]="
+                    WaitPrint
+                " 
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                {{ WaitPrint ? 'Please Wait...' : 'Print'}}
+            </button> 
+        </div>
+
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- END : ACTIONS -->
+    
+</div>

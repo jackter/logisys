@@ -1,0 +1,287 @@
+<form ngNativeValidate fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary ma-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Return Goods Receipt Detail
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- RIGHT -->
+    <mat-dialog-content fxLayout="column" class="m-0">
+
+        <!-- PRINT AREA -->
+        <div class="print-area" fxLayout="column" fxFlex="0 1 auto">
+
+            <table class="table table-bordered table-input table-input-border print-rgr">
+                <thead class="no-bg" padding5>
+                    <tr>
+                        <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important;">
+                            <div>
+                                <img src="/assets/logo/{{ form.company_abbr }}.png">
+                            </div>
+                        </td>
+                        <td class="text-center" colspan="4">
+                            <div class="h3">
+                                {{ form.business_unit | uppercase }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3" class="text-center" style="vertical-align: middle!important;">
+                            <div class="h4">
+                                RETURN GOODS RECEIPT
+                            </div>
+                        </td>
+                        <td width="30">
+                            NO
+                        </td>
+                        <td width="125">
+                            FIP-SCM/WHS-03-01
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            REVISION
+                        </td>
+                        <td>
+                            00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            EFFECTIVE
+                        </td>
+                        <td>
+                            01-06-2018
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="h5 text-center text-bold" style="margin-bottom: 10px;">
+                NO. {{ form.kode }}<br>
+                {{ form.tanggal }}
+            </div>
+
+            <div fxLayout="row" fxFlex="0 1 auto">
+
+                <div fxFlex="1 1 auto">
+                    <table class="table table-input table-input-noborder">
+                        <tr padding5>
+                            <td width="150">
+                                SUPPLIER
+                            </td>
+                            <td width="1">:</td>
+                            <td>
+                                {{ form.supplier_nama | uppercase }}
+                            </td>
+                        </tr>
+                        <tr padding5>
+                            <td>
+                                PO. CODE
+                            </td>
+                            <td>:</td>
+                            <td>
+                                {{ form.po_kode | uppercase }}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div fxFlex="1 1 auto" class="mb-4">
+                    <table class="table table-input table-input-noborder">
+                        <tr padding5>
+                            <td width="150">
+                                GR. CODE
+                            </td>
+                            <td>:</td>
+                            <td>
+                                {{ form.gr_kode | uppercase }}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+
+            <table class="table table-list table-responsive table-input table-border-top table-small">
+                <thead>
+                    <tr>
+                        <th width="10">
+                            No.
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th width="50">
+                            Unit
+                        </th>
+                        <th width="100">
+                            Qty. Receipt
+                        </th>
+                        <th width="100">
+                            Qty. Return
+                        </th>
+                        <th>
+                            Remarks
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr padding5 *ngFor="let item of form.detail; let i = index;">
+                        <td align="center">
+                            {{ i+1 }}
+                        </td>
+                        <td>
+                            {{ item.nama }}
+                        </td>
+                        <td class="text-center">
+                            {{ item.satuan }}
+                        </td>
+                        <td nopadding>
+                            <input 
+                                type="text" 
+                                autocomplete="off"
+                                name="item-qty_receipt-{{i}}"
+                                [(ngModel)]="item.act_qty_receipt"
+                                maxlength="20"
+                                readonly
+                                tabindex="-1"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? 
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }
+                                "
+                            >
+                        </td>
+                        <td nopadding>
+                            <input 
+                                type="text" 
+                                autocomplete="off"
+                                name="item-qty_return-{{i}}"
+                                [(ngModel)]="item.qty_return"
+                                maxlength="20"
+                                readonly
+                                tabindex="-1"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? 
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }
+                                "
+                            >
+                        </td>
+                        <td>
+                            {{ item.remarks }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- SIGNATURE -->
+            <div class="mt-48">
+                <table class="table table-noborder">
+                    <tr>
+                        <td width="50%" style="padding-left: 75px;">
+                            <div style="width: 200px;" class="text-center">
+                                <div class="text-bold">
+                                    SUPPLIER,
+                                </div>
+                                <div style="height: 80px;"></div>
+                                <hr>
+                                <div>
+                                    {{ form.supplier_nama | uppercase }}
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding-right: 75px;">
+                            <div style="width: 200px; float: right;" class="text-center">
+                                <div class="text-bold">
+                                    CREATED BY,
+                                </div>
+                                <div style="height: 80px;"></div>
+                                <hr>
+                                <div>
+                                    {{ form.create_by | uppercase}}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- SIGNATURE -->
+
+        </div>
+        <!-- END : PRINT AREA -->
+
+    </mat-dialog-content>
+    <!-- END : CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto">
+            <button 
+                type="button" 
+                mat-button 
+                color="primary" 
+                [disabled]="
+                    WaitPrint
+                " 
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                Print RGR
+            </button> 
+        </div>
+
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- END : ACTIONS -->
+    
+</form>

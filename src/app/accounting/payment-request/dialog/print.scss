@@ -1,0 +1,349 @@
+
+.print-area {
+    min-width: 834px;
+    // margin-top: 10px; 
+    // margin-bottom: 10px;
+    font-size: 13px;
+    position: relative;
+    display: block;
+    font-weight: normal!important;
+
+    // background-image: url('/assets/images/bg-daun-2.png');
+    // background-repeat: no-repeat;
+    // background-position: top center;
+    background-size: contain;
+
+    .td-kredit {
+        padding-left: 25px!important;
+    }
+
+    .company {
+
+        .nama {
+            font-weight: bold!important;
+        }
+
+    }
+
+    .sp3 {
+
+        min-width: 834px;
+        // background: url('/assets/images/bg-daun-2.png') no-repeat center;
+        background-size: contain;
+
+        .box-container {
+            float: left;
+            margin-right: 10px;
+
+            .box {
+                float: left;
+                padding: 6px 10px;
+                border: 1px solid #666;
+                margin-right: 10px;
+            }
+        }
+
+        .header {
+
+            text-align: center;
+
+            .logo {
+
+                text-align: left!important;
+                width: 150px;
+                height: 125px;
+
+                img {
+                    max-height: 125px;
+                }
+
+            }
+
+            h1 {
+                margin: 0px;
+                font-size: 16px!important;
+                font-weight: normal;
+            }
+
+            .header-table {
+
+                margin-top: 20px;
+                background: none!important;
+
+                td {
+                    text-align: left;
+                    padding:2px!important;
+                    border: none;
+                    font-size: 12px!important;
+                }
+            }
+
+        }
+
+        .content {
+
+            .title {
+                font-weight: bold;
+                font-size: 12px!important;
+            }
+
+            .table-content {
+
+                border: 1px solid #666;
+                margin-left: 16px;
+                margin-top: 5px;
+                font-size: 12px!important;
+                font-weight: normal;
+                padding: 5px 20px!important;
+
+                table {
+
+                    width: 100%;
+                    border: none;
+                    margin: 0px!important;
+
+                    .subtitle {
+                        font-size: 12px!important;
+                    }
+
+                    tr {
+
+                        td {
+                            border: none;
+                            padding: 2px!important;
+        
+                            sub {
+                                font-style: italic;
+                                color: #666;
+                            }
+        
+                        }
+
+                    }
+
+                    tr.border-line td,
+                    tr td.border-line {
+                        border-bottom: 1px dotted #666;
+                    }
+
+                }
+
+                .uraian {
+                    font-size: 11px!important;
+                }
+
+            }
+
+            .table-persetujuan {
+
+                margin-left: 16px!important;
+                margin-right: 0px!important;
+                margin-top: 5px;
+                margin-bottom: 5px!important;
+                font-size: 12px!important;
+                font-weight: normal;
+                
+                table {
+
+                    width: 100%;
+                    border: 1px solid #666!important;
+
+                    .header {
+                        td {
+                            padding: 8px!important;
+                        }
+                    }
+                    
+                    td {
+                        text-align: center;
+                        border: 1px solid #666;
+                        width: 16.5%;
+
+                        .signature {
+                            margin-top: 65px;
+                            margin-bottom: 5px;
+                            font-size: 10px;
+                        }
+                    }
+
+                }
+
+            }
+
+            .table-catatan {
+
+                margin-left: 16px;
+                margin-top: 5px;
+                font-size: 12px!important;
+                font-weight: normal;
+                
+                table {
+
+                    width: 100%;
+
+                    td {
+                        padding: 0px;
+                        font-size: 10px;
+                        vertical-align: top;
+                    }
+
+                }
+                
+            }
+
+            .table-akunting {
+
+                margin-left: 16px;
+                margin-top: 5px;
+                font-size: 12px!important;
+                font-weight: normal;
+                
+                table {
+
+                    width: 100%;
+
+                    .header {
+                        td {
+                            padding: 8px;
+                            text-align: center;
+                        }
+                    }
+                    
+                    td {
+                        padding-left: 2px;
+                        text-align: left;
+                        border: 1px solid #666;
+                        height: 15px;
+
+                        .signature {
+                            margin-top: 65px;
+                            margin-bottom: 5px;
+                            font-size: 10px;
+                        }
+                    }
+
+                }
+
+            }
+
+            .table-pajak {
+
+                font-size: 12px!important;
+
+                ul {
+                    list-style: square;
+                    margin: 0px!important;
+                    margin-top: 10px;
+                    padding: 0px;
+                    vertical-align: top;
+
+                    li {
+                        margin-left: 14px;
+                        vertical-align: top;
+                    }
+                }
+
+            }
+
+            .table-signature {
+
+                width: 100%;
+
+                td {
+                    text-align: center;
+                    padding-top: 100px;
+                    
+                    span {
+                        font-size: 12px!important;
+                        padding-left: 10px;
+                        padding-right: 10px;
+                        padding-top: 5px;
+                        border-top: 1px solid #666;
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    .doc-number {
+        margin: 0px;
+        margin-bottom: 10px;
+        border: 1px solid #0d9a44;
+        padding: 5px;
+        font-size: 15px;
+        display: inline;
+        background: #FFF;
+        position: relative;
+        z-index: 2;
+        font-weight: normal;
+    }
+
+    .table {
+        background: none!important;
+    }
+
+    .table.table-input input,
+    .table.table-input select,
+    .table.table-input textarea {
+        border: none!important;
+        font-size: 11px!important;
+    }
+
+    .table.table-input-border {
+        input, 
+        select,
+        textarea {
+            border-bottom: 1px solid #CCC!important;
+        }
+
+        input:focus, 
+        select:focus,
+        textarea:focus {
+            border-bottom: 1px dashed #CCC!important;
+        }
+    }
+
+    .table.table-small td {
+        font-size: 11px!important;
+    }
+
+    .table.table-border-top {
+        border-top: 1px solid #CCC;
+    }
+    .table thead tr th {
+        /*background: #616161!important;
+        color: #FFF!important;*/
+        background-color: #F7F7F7 !important;
+        color: #000 !important;
+        padding: 8px 6px!important;
+    }
+    .table>thead>tr>th {
+        vertical-align: middle!important;
+    }
+    .table thead.no-bg tr {
+        /*clear: both;*/
+        background: none!important;
+        color: #000!important;
+    }
+    .table.table-input thead td,
+    .table.table-input thead th {
+        font-size: 11px!important;
+        font-weight: normal!important;
+    }
+    .table.table-input [padding5] td {
+        font-size: 11px!important;
+    }
+    .table.table-padding-small td {
+        padding: 4px 2px;
+    }
+
+    .table.table-input.table-big td {
+        font-size: 12px!important;
+    }
+    .table.table-input.table-bold td {
+        font-weight: bold;
+    }
+
+}

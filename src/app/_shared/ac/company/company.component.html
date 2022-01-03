@@ -1,0 +1,43 @@
+<mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+    <mat-label>Company</mat-label>
+    <input
+        matInput
+        type="text"
+        placeholder="Company"
+        name="company_nama"
+        [(ngModel)]="Data.company_nama"
+        [matAutocomplete]="acCompany"
+        (ngModelChange)="CompanyFilter()"
+        [readonly]="
+            CompanyLen == 1 ||
+            Data.company ||
+            form.is_detail ||
+            form.id != 'add'
+        "
+        required
+    />
+    <button
+        mat-button
+        type="button"
+        *ngIf="Data.company && !form.is_detail"
+        matSuffix
+        mat-icon-button
+        aria-label="Clear"
+        (click)="CompanyReset()"
+    >
+        <mat-icon>close</mat-icon>
+    </button>
+    <mat-autocomplete
+        autoActiveFirstOption
+        #acCompany="matAutocomplete"
+        class="force-wrap ac-small"
+    >
+        <mat-option
+            *ngFor="let item of Company"
+            [value]="item.nama"
+            (onSelectionChange)="CompanySelect($event, item)"
+        >
+            {{ item.nama }}
+        </mat-option>
+    </mat-autocomplete>
+</mat-form-field>

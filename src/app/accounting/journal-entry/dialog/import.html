@@ -1,0 +1,209 @@
+<form ngNativeValidate (ngSubmit)="Submit()" class="dialog-content-wrapper" autocomplete="off" aria-autocomplete="none" style="min-width: 500px;">
+
+    <mat-toolbar matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Import Data Journal Voucher
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content class="p-24 m-0" fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="10px">
+        
+        <div fxLayout="column" fxFlex="0 1 auto">
+            <mat-form-field
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Company</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Company"
+                    name="company_nama"
+                    [(ngModel)]="form.company_nama"
+                    required
+                    [matAutocomplete]="acCompany"
+                    (ngModelChange)="CompanyFilter()"
+                    [readonly]="CompanyLen == 1 || form.company"
+                />
+                <button
+                    type="button"
+                    mat-button
+                    *ngIf="form.company && !form.is_detail && CompanyLen > 1"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="CompanyRemove()"
+                    tabindex="-1"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acCompany="matAutocomplete"
+                    class="force-wrap ac-small"
+                    panelWidth="auto"
+                >
+                    <mat-option
+                        *ngFor="let item of Company"
+                        [value]="item.nama"
+                        (onSelectionChange)="CompanySelect($event, item)"
+                    >
+                        {{ item.nama | uppercase }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <!-- / Company -->
+        </div>
+
+        <div class="upload-box" *ngIf="Data?.length <= 0">
+            <div class="upload-box-content" fxLayoutAlign="center center" fxFlexFill>
+        
+                <div class="text-center red-fg mt-24" *ngIf="!form.company">
+                    <em>
+                        Silahkan Pilih <strong>Company</strong> untuk melakukan Proses <strong>Import Journal Voucher</strong>
+                    </em>
+                </div>
+                <div *ngIf="form.company">
+                    <input type="file" [disabled]="!form.company" (change)="onFileChange($event)" multiple="false" id="upload" />
+                    <label for="upload">
+                        <i class="fa fa-upload"></i>
+                        Upload File Template Journal Voucher
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="Data?.length > 0 && form.company" fxFlex="1 0 auto">
+
+            <table class="table table-input table-small table-hover table-border-top">
+                <thead>
+                    <tr>
+                        <th width="150">
+                            COA Code
+                        </th>
+                        <th width="400">
+                            COA Name
+                        </th>
+                        <th width="150">
+                            Debit
+                        </th>
+                        <th width="150">
+                            Credit
+                        </th>
+                        <th>
+                            Note
+                        </th>
+                    </tr>
+                </thead>
+                <tbody *ngFor="let item of Data">
+                    <ng-container *ngIf="item">
+                        <tr>
+                            <td padding5 colspan="5" class="text-bold">
+                                {{ date_indo(item.tanggal) }}
+                            </td>
+                        </tr>
+                        <tr *ngFor="let detail of item.detail">
+                            <ng-container *ngIf="detail.coa">
+                                <td padding5 style="padding-left: 30px!important;">
+                                    {{ detail.coa_kode }}
+                                </td>
+                                <td padding5>
+                                    {{ detail.coa_nama }}
+                                </td>
+                            </ng-container>
+                            <ng-container *ngIf="!detail.coa">
+                                <td padding5 colspan="2" class="text-center">
+                                    <div class="red-fg">
+                                        COA Not Found, Please Check COA Code
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <td padding5 class="text-right">
+                                {{ rupiah(detail.debit) }}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ rupiah(detail.credit) }}
+                            </td>
+                            <td padding5>
+                                {{ detail.keterangan }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" style="background: #F7F7F7;">
+                                <div style="height: 5px;"></div>
+                            </td>
+                        </tr>
+                        <tr class="text-bold">
+                            <td padding5 colspan="2" class="text-center">
+                                TOTAL
+                            </td>
+                            <td padding5 class="text-right">
+                                <div [ngClass]="item.selisih == 1 ? 'red-fg' : ''">
+                                    {{ rupiah(item.total_debit) }}
+                                </div>
+                            </td>
+                            <td padding5 class="text-right">
+                                <div [ngClass]="item.selisih == 1 ? 'red-fg' : ''">
+                                    {{ rupiah(item.total_credit) }}
+                                </div>
+                            </td>
+                            <td padding5>
+                                <div [ngClass]="item.selisih == 1 ? 'red-fg' : ''">
+                                    {{ item.selisih == 1 ? 'Debit/Credit Not Balance' : '' }}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr style="background: #F7F7F7;">
+                            <td colspan="5" padding5>&nbsp;</td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+        </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+        <div fxLayout="row" fxFlex="1 1 auto" fxLayoutGap="10px">
+            <button
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    Busy || 
+                    Data?.length <= 0 ||
+                    !ReadySave
+                "
+            >
+                {{ Busy ? 'Tunggu Sebentar...' : 'Save' }} 
+                <mat-icon>save</mat-icon>
+            </button>
+
+        </div>
+
+        <div>
+            <button
+                mat-button
+                type="button"
+                mat-dialog-close
+                *ngIf="!Busy"
+            >
+                <mat-icon>close</mat-icon>
+                Batal
+            </button>
+        </div>
+
+    </mat-dialog-actions>
+</form>

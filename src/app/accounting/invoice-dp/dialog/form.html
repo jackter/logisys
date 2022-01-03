@@ -1,0 +1,621 @@
+<form
+    ngNativeValidate
+    fxLayout="column"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    style="min-width: 500px;"
+    (ngSubmit)="Submit()"
+>
+    <!-- TOOLBAR -->
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.name }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+    <!-- END : TOOLBAR -->
+
+    <!-- CONTENT -->
+    <mat-dialog-content
+        fxLayout="row"
+        fxLayout.lt-sm="column"
+        fxLayoutGap="10px"
+        class="p-24 m-0 mb-0 pb-0"
+    >
+        <mat-dialog-content fxFlex="1 1 auto" fxLayout="column">
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Company</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Company"
+                    name="company_nama"
+                    [(ngModel)]="form.company_nama"
+                    required
+                    [matAutocomplete]="acCompany"
+                    (ngModelChange)="CompanyFilter()"
+                    [readonly]="CompanyLen == 1 || form.is_detail || form.company"
+                />
+                <button
+                    type="button"
+                    mat-button
+                    *ngIf="form.company && CompanyLen > 1 && form.id == 'add'"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="CompanyRemove(); CompanyFilter()"
+                    tabindex="-1"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acCompany="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of Company"
+                        [value]="item.nama"
+                        (onSelectionChange)="CompanySelect($event, item)"
+                    >
+                        {{ item.nama | uppercase }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <ng-container *ngIf="form.company">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Supplier</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Please Select Supplier"
+                        name="supplier_nama"
+                        id="supplier_nama"
+                        [(ngModel)]="form.supplier_nama"
+                        (ngModelChange)="SupplierFilter(form.supplier_nama)"
+                        [matAutocomplete]="acSupplier"
+                        (focus)="SupplierFilter(form.supplier_nama)"
+                        (click)="SupplierFilter(form.supplier_nama)"
+                        [readonly]="form.is_detail || form.supplier"
+                    />
+                    <button
+                        type="button"
+                        mat-button
+                        *ngIf="form.supplier && form.id == 'add'"
+                        matSuffix
+                        mat-icon-button
+                        aria-label="Clear"
+                        (click)="SupplierRemove();"
+                        tabindex="-1"
+                    >
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete
+                        autoActiveFirstOption
+                        #acSupplier="matAutocomplete"
+                        class="force-wrap ac-small"
+                    >
+                        <mat-option
+                            *ngFor="let item of Supplier"
+                            [value]="item.supplier_nama"
+                            (onSelectionChange)="SupplierSelect($event, item)"
+                        >
+                            {{ item.supplier_nama | uppercase }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field
+                    appearance="outline"
+                    class="small"
+                    *ngIf="form.supplier"
+                >
+                    <mat-label>PO Code</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Please Define PO Code to Continue"
+                        name="po_kode"
+                        id="po_kode"
+                        [(ngModel)]="form.po_kode"
+                        required
+                        [matAutocomplete]="acPOCode"
+                        (ngModelChange)="POCodeFilter(form.po_kode)"
+                        (focus)="POCodeFilter(form.po_kode)"
+                        (click)="POCodeFilter(form.po_kode)"
+                        [readonly]="form.is_detail || form.po"
+                        [tabindex]="form.id != 'add' ? '-1' : ''"
+                    />
+                    <button
+                        type="button"
+                        mat-button
+                        *ngIf="form.po && form.id == 'add'"
+                        matSuffix
+                        mat-icon-button
+                        aria-label="Clear"
+                        (click)="POCodeRemove();"
+                        tabindex="-1"
+                    >
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete
+                        autoActiveFirstOption
+                        #acPOCode="matAutocomplete"
+                        class="force-wrap ac-small"
+                    >
+                        <mat-option
+                            *ngFor="let item of POCode"
+                            [value]="item.kode"
+                            (onSelectionChange)="POCodeSelect($event, item)"
+                        >
+                            {{ item.kode }} ( {{ item.supplier_nama }} )
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </ng-container>
+
+            <ng-container *ngIf="form.company && form.supplier && form.po">
+                <mat-form-field
+                    fxFlex="30%"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Inv Date</mat-label>
+                    <input
+                        matInput
+                        name="inv_tgl"
+                        placeholder="Please Select Inv Date"
+                        [(ngModel)]="form.inv_tgl"
+                        [min]="minDate"
+                        [max]="maxDate"
+                        required
+                        [matDatepicker]="inv_tgl"
+                        (focus)="inv_tgl.open()"
+                        (click)="inv_tgl.open()"
+                        [disabled]="form.is_detail"
+                        readonly
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                        "
+                    />
+                    <mat-datepicker #inv_tgl></mat-datepicker>
+                </mat-form-field>
+                <div fxLayout="row" fxFlex="1 1 auto" fxLayoutGap="10px">
+                    <mat-form-field
+                        fxFlex="30%"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Ref Date</mat-label>
+                        <input
+                            matInput
+                            name="ref_tgl"
+                            placeholder="Please Select Ref Date"
+                            [(ngModel)]="form.ref_tgl"
+                            [max]="maxDate"
+                            [matDatepicker]="ref_tgl"
+                            (focus)="ref_tgl.open()"
+                            (click)="ref_tgl.open()"
+                            [disabled]="form.is_detail"
+                            readonly
+                            style="
+                                font-size: 14px !important;
+                                color: #000 !important;
+                                padding: 0px !important;
+                            "
+                        />
+                        <mat-datepicker #ref_tgl></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Ref Code</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Ref Code"
+                            name="ref_kode"
+                            [(ngModel)]="form.ref_kode"
+                            required
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row" fxFlex="1 1 auto" fxLayoutGap="10px">
+                    <mat-form-field
+                        fxFlex="30%"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Tax Invoice Date</mat-label>
+                        <input
+                            matInput
+                            name="pajak_tgl"
+                            placeholder="Please Select Invoice Tax Date"
+                            [(ngModel)]="form.pajak_tgl"
+                            [max]="maxDate"
+                            required
+                            [matDatepicker]="pajak_tgl"
+                            (focus)="pajak_tgl.open()"
+                            (click)="pajak_tgl.open()"
+                            [disabled]="form.is_detail"
+                            readonly
+                            style="
+                                font-size: 14px !important;
+                                color: #000 !important;
+                                padding: 0px !important;
+                            "
+                        />
+                        <mat-datepicker #pajak_tgl></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Tax Invoice</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Invoice Tax"
+                            name="pajak_no"
+                            [(ngModel)]="form.pajak_no"
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+                </div>
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Due Date</mat-label>
+                    <input
+                        matInput
+                        name="tgl_jatuh_tempo"
+                        placeholder="Please Select Due Date"
+                        [(ngModel)]="form.tgl_jatuh_tempo"
+                        [matDatepicker]="tgl_jatuh_tempo"
+                        (click)="tgl_jatuh_tempo.open()"
+                        [disabled]="form.is_detail"
+                        required
+                        readonly
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                        "
+                    />
+                    <mat-datepicker #tgl_jatuh_tempo></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Notes</mat-label>
+                    <textarea
+                        matInput
+                        type="text"
+                        placeholder="Notes"
+                        name="note"
+                        [(ngModel)]="form.note"
+                        matTextareaAutosize
+                        [matAutosizeMinRows]="4"
+                        [readonly]="form.is_detail"
+                    ></textarea>
+                </mat-form-field>
+            </ng-container>
+        </mat-dialog-content>
+
+        <!-- LIST ITEM DP & SUPP BASED -->
+        <mat-dialog-content
+            class="p-0 m-0 mt-8"
+            fxLayout="column"
+            *ngIf="form.company && form.po"
+        >
+            <table
+                class="table table-border-top table-list table-responsive table-input table-small"
+            >
+                <thead>
+                    <tr>
+                        <th>
+                            No.
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th width="100">
+                            Qty
+                        </th>
+                        <th width="50">
+                            Unit
+                        </th>
+                        <th>
+                            Unit Price
+                        </th>
+                        <th>
+                            Total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of form.list; let i = index;">
+                        <td padding5 align="center">
+                            {{ i + 1 }}
+                        </td>
+                        <td padding5>
+                            {{ item.nama }}
+                        </td>
+                        <td nopadding class="text-right">
+                            <input
+                                placeholder="Qty"
+                                type="text"
+                                autocomplete="off"
+                                name="item-qty-{{i}}"
+                                id="item-qty-{{i}}"
+                                [(ngModel)]="item.qty"
+                                [readonly]="!form.is_detail"
+                                (ngModelChange)="Calculate(item)"
+                                maxlength="20"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                            />
+                        </td>
+                        <td padding5 class="text-center">
+                            {{ item.satuan }}
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(item.price) }}
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(round(item.qty * item.price)) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="background: #f7f7f7;">
+                            <div style="height: 5px;"></div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td padding5 colspan="5" class="text-right">
+                            Subtotal
+                        </td>
+                        <td
+                            padding5
+                            class="text-right"
+                            *ngIf="form.inclusive_ppn == 1"
+                        >
+                            {{ rupiah(round(form.subtotal)) }}
+                        </td>
+                        <td
+                            padding5
+                            class="text-right"
+                            *ngIf="form.inclusive_ppn == 0"
+                        >
+                            {{ rupiah(form.subtotal) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td padding5 colspan="5" class="text-right">
+                            Discount
+                            <span *ngIf="form.disc > 0">
+                                {{ rupiah(form.disc) }}%
+                            </span>
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(form.disc_amount) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td padding5 colspan="5" class="text-right">
+                            Tax Base
+                        </td>
+                        <td
+                            padding5
+                            class="text-right"
+                            *ngIf="form.inclusive_ppn == 1"
+                        >
+                            {{ rupiah(round(form.tax_base)) }}
+                        </td>
+                        <td
+                            padding5
+                            class="text-right"
+                            *ngIf="form.inclusive_ppn == 0"
+                        >
+                            {{ rupiah(form.tax_base) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td padding5 colspan="5" class="text-right">
+                            PPN
+                            <span *ngIf="form.ppn > 0">
+                                {{ rupiah(form.ppn) }}%
+                            </span>
+
+                            <span *ngIf="form.inclusive_ppn == 1">
+                                Inclusive Tax
+                            </span>
+                        </td>
+                        <td
+                            padding5
+                            class="text-right"
+                            *ngIf="form.inclusive_ppn == 1"
+                        >
+                            {{ rupiah(round(form.ppn_amount)) }}
+                        </td>
+                        <td
+                            padding5
+                            class="text-right"
+                            *ngIf="form.inclusive_ppn == 0"
+                        >
+                            {{ rupiah(form.ppn_amount) }}
+                        </td>
+                    </tr>
+                    <tr
+                        *ngIf="
+                        form.pph_code && 
+                        form.pph
+                    "
+                    >
+                        <td padding5 colspan="5" class="text-right">
+                            {{ form.pph_code }}
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(form.pph_amount) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td padding5 colspan="5" class="text-right">
+                            Other Cost
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(form.other_cost_amount) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td padding5 colspan="5" class="text-right text-bold">
+                            GRAND TOTAL
+                        </td>
+                        <td padding5 class="text-right text-bold">
+                            {{ rupiah(form.grand_total) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="background: #f7f7f7;">
+                            <div style="height: 5px;"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td padding5 colspan="4" class="text-right text-bold">
+                            Down Payment Total
+                        </td>
+                        <td>
+                            <input
+                                placeholder="Down Payment in %"
+                                type="text"
+                                name="dp"
+                                autocomplete="off"
+                                [(ngModel)]="form.dp"
+                                [readonly]="form.is_detail"
+                                maxlength="8"
+                                (ngModelChange)="CalculateDP()"
+                                currencyMask
+                                required
+                                [options]="
+                                    {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2,
+                                        suffix: ' %'
+                                    }
+                                "
+                            />
+                        </td>
+                        <td padding5 class="text-right text-bold">
+                            {{ rupiah(form.dp_amount) }}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </mat-dialog-content>
+        <!-- END : LIST ITEM DP & SUPP BASED -->
+    </mat-dialog-content>
+    <!-- END : CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="end"
+        fxLayoutGap="10px"
+    >
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button
+                type="submit"
+                *ngIf="!form.is_detail"
+                mat-button
+                color="primary"
+                [disabled]="
+                    !form.po_kode ||
+                    !form.grand_total ||
+                    !form.note ||
+                    !form.ref_kode ||
+                    !form.inv_tgl ||
+                    !form.tgl_jatuh_tempo ||
+                    Busy
+                "
+                (click)="Submit()"
+            >
+                <mat-icon>save</mat-icon>
+                Save
+            </button>
+            <button
+                *ngIf="
+                    form.is_detail
+                "
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                Edit
+            </button>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- END : ACTIONS -->
+</form>

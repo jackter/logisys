@@ -1,0 +1,588 @@
+<form
+    ngNativeValidate
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    aria-autocomplete="none"
+    style="min-width: 500px;"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{Com.name}}
+            </span>
+            <span
+                class="title dialog-title"
+                *ngIf="!form.is_detail && form.id != 'add'"
+            >
+                Edit {{Com.name}}
+            </span>
+            <span
+                class="title dialog-title"
+                *ngIf="form.id != 'add' && form.is_detail"
+            >
+                <div style="font-size: 12px;" class="accent-fg">
+                    Detail {{ Com.name }}
+                </div>
+                <div style="margin-top: -12px !important;">
+                    <small> Code : {{ form.kode }} </small>
+                </div>
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content
+        fxLayout="row"
+        fxLayout.lt-sm="column"
+        fxLayoutGap="10px"
+        class="p-24 m-0"
+    >
+        <div fxLayout="column" fxFlex="1 1 auto">
+            <mat-form-field
+                fxFlex="1 1 auto"
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Date</mat-label>
+                <input
+                    matInput
+                    name="tanggal"
+                    placeholder="Please Select Date"
+                    [(ngModel)]="form.tanggal"
+                    (ngModelChange)="AutoFocus('*[name=company_nama]')"
+                    [matDatepicker]="tanggal"
+                    (focus)="tanggal.open()"
+                    (click)="tanggal.open()"
+                    [disabled]="form.is_detail"
+                    style="
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        padding: 0px !important;
+                        text-align: center;
+                        font-weight: bold;
+                    "
+                    required
+                    readonly
+                />
+                <mat-datepicker #tanggal></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Company</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    name="company_nama"
+                    placeholder="Company"
+                    [(ngModel)]="form.company_nama"
+                    [matAutocomplete]="acCompany"
+                    (ngModelChange)="CompanyFilter()"
+                    [readonly]="CompanyLen == 1 || form.company"
+                    class="uppercase"
+                />
+                <button
+                    mat-button
+                    *ngIf="form.company && !form.is_detail"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="CompanyRemove();"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acCompany="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of Company"
+                        [value]="item.nama"
+                        (onSelectionChange)="CompanySelect($event, item)"
+                    >
+                        {{ item.nama | uppercase }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Contractor</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    name="kontraktor_nama"
+                    placeholder="Contractor"
+                    [(ngModel)]="form.kontraktor_nama"
+                    [matAutocomplete]="acKontraktor"
+                    (ngModelChange)="KontraktorFilter(form.kontraktor_nama)"
+                    (focus)="KontraktorFilter(form.kontraktor_nama)"
+                    (click)="KontraktorFilter(form.kontraktor_nama)"
+                    [readonly]="form.is_detail || form.kontraktor"
+                    class="uppercase"
+                />
+                <button
+                    mat-button
+                    *ngIf="form.kontraktor && !form.is_detail"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="KontraktorRemove();"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acKontraktor="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of Kontraktor"
+                        [value]="item.nama"
+                        (onSelectionChange)="KontraktorSelect($event, item)"
+                    >
+                        {{ item.nama | uppercase }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Contract Agreement</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    name="agreement_kode"
+                    placeholder="Contract Agreement"
+                    [(ngModel)]="form.agreement_kode"
+                    [matAutocomplete]="acAgree"
+                    (ngModelChange)="AgreementFilter(form.agreement_kode)"
+                    (focus)="AgreementFilter(form.agreement_kode)"
+                    (click)="AgreementFilter(form.agreement_kode)"
+                    [readonly]="form.is_detail || form.agreement"
+                />
+                <button
+                    mat-button
+                    *ngIf="form.agreement && !form.is_detail"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="AgreementRemove();"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acAgree="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of Agreement"
+                        [value]="item.kode"
+                        (onSelectionChange)="AgreementSelect($event, item)"
+                    >
+                        {{ item.kode | uppercase }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <div fxLayout="row" fxLayoutGap="10px">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Start Date</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Start Date Request"
+                        name="start_date"
+                        [(ngModel)]="form.start_date"
+                        (ngModelChange)="AutoFocus('*[name=end_date]')"
+                        readonly
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                            text-align: center;
+                        "
+                    />
+                </mat-form-field>
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>End Date</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="End Date Request"
+                        name="end_date"
+                        [(ngModel)]="form.end_date"
+                        (ngModelChange)="AutoFocus('*[name=remarks]')"
+                        readonly
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                            text-align: center;
+                        "
+                    />
+                </mat-form-field>
+            </div>
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Remarks</mat-label>
+                <textarea
+                    matInput
+                    type="text"
+                    placeholder="Remarks"
+                    name="remarks"
+                    [(ngModel)]="form.remarks"
+                    matTextareaAutosize
+                    [matAutosizeMinRows]="2"
+                    [readonly]="form.is_detail"
+                ></textarea>
+            </mat-form-field>
+        </div>
+
+        <mat-dialog-content
+            fxLayout="column"
+            class="m-4 pl-0"
+            *ngIf="form.agreement"
+        >
+            <mat-dialog-content fxLayout="row">
+                <table
+                    class="table table-responsive table-input table-small table-striped table-hover table-border-top"
+                >
+                    <thead>
+                        <tr>
+                            <th
+                                style="min-width: 50px; vertical-align: middle;"
+                                rowspan="2"
+                            >
+                                No.
+                            </th>
+                            <th colspan="2">Activity</th>
+                            <th
+                                style="
+                                    min-width: 200px;
+                                    vertical-align: middle;
+                                "
+                                rowspan="2"
+                            >
+                                Job Description
+                            </th>
+                            <th
+                                style="
+                                    min-width: 100px;
+                                    vertical-align: middle;
+                                "
+                                rowspan="2"
+                            >
+                                Contract Volume
+                            </th>
+                            <th
+                                style="min-width: 75px; vertical-align: middle;"
+                                rowspan="2"
+                            >
+                                UOM
+                            </th>
+                            <th
+                                style="
+                                    min-width: 100px;
+                                    vertical-align: middle;
+                                "
+                                rowspan="2"
+                            >
+                                Rate
+                            </th>
+                            <th
+                                style="
+                                    min-width: 200px;
+                                    vertical-align: middle;
+                                "
+                                rowspan="2"
+                            >
+                                Remarks
+                            </th>
+                            <th
+                                style="
+                                    min-width: 100px;
+                                    vertical-align: middle;
+                                "
+                                rowspan="2"
+                            >
+                                Current Progress
+                            </th>
+                            <th
+                                style="
+                                    min-width: 100px;
+                                    vertical-align: middle;
+                                "
+                                rowspan="2"
+                            >
+                                In Progress (%)
+                            </th>
+                            <th
+                                style="
+                                    min-width: 150px;
+                                    vertical-align: middle;
+                                "
+                                rowspan="2"
+                            >
+                                Amount
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="min-width: 100px;">Code</th>
+                            <th style="min-width: 200px;">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let item of List; let i = index">
+                            <tr *ngIf="item">
+                                <td padding5 class="text-center">
+                                    {{ i + 1 }}
+                                </td>
+                                <td padding5>
+                                    {{ item.coa_kode }}
+                                </td>
+                                <td padding5>
+                                    {{ item.coa_nama }}
+                                </td>
+                                <td padding5>
+                                    {{ item.remarks }}
+                                </td>
+                                <td padding5 class="text-right">
+                                    {{ rupiah(item.volume) }}
+                                </td>
+                                <td padding5 class="text-center">
+                                    {{ item.uom }}
+                                </td>
+                                <td padding5 class="text-right">
+                                    {{ rupiah(item.rate) }}
+                                </td>
+                                <td>
+                                    <textarea
+                                        type="text"
+                                        id="keterangan-{{i}}"
+                                        name="keterangan-{{i}}"
+                                        [(ngModel)]="item.keterangan"
+                                        [readonly]="form.is_detail"
+                                        [disabled]="!item.coa"
+                                        [tabindex]="item.id ? '-1' : null"
+                                    ></textarea>
+                                </td>
+                                <td padding5 class="text-right">
+                                    {{ rupiah(item.current_progress) }} %
+                                </td>
+
+                                <td nopadding>
+                                    <input
+                                        type="text"
+                                        autocomplete="off"
+                                        maxlength="23"
+                                        [placeholder]="item.current_progress == 100 ? 'DONE' : 'Insert Progress'"
+                                        currencyMask
+                                        required
+                                        name="progress-{{i}}"
+                                        id="progress-{{i}}"
+                                        [(ngModel)]="item.progress"
+                                        (ngModelChange)="Calculate(item)"
+                                        [options]="{
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        }"
+                                        [readonly]="form.is_detail"
+                                        [disabled]="item.current_progress == 100"
+                                    />
+                                </td>
+                                <td padding5 class="text-right">
+                                    {{ rupiah(item.amount) }}
+                                </td>
+                            </tr>
+                        </ng-container>
+                        <tr>
+                            <td
+                                padding5
+                                class="text-right text-bold"
+                                colspan="10"
+                            >
+                                Total Amount
+                            </td>
+                            <td padding5 class="text-right text-bold">
+                                {{ rupiah(form.total_amount) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                padding5
+                                class="text-right text-bold"
+                                colspan="10"
+                            >
+                                PPN
+                            </td>
+                            <td padding5 class="text-right text-bold">
+                                {{ rupiah(form.total_ppn) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                padding5
+                                class="text-right text-bold"
+                                colspan="10"
+                            >
+                                PPH
+                            </td>
+                            <td padding5 class="text-right text-bold">
+                                {{ rupiah(form.total_pph) }}
+                            </td>
+                        </tr>
+                        <tr class="text-bold">
+                            <td padding5 class="text-right" colspan="10">
+                                Grand Total
+                            </td>
+                            <td padding5 class="text-right text-bold">
+                                {{ rupiah(form.grand_total) }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </mat-dialog-content>
+        </mat-dialog-content>
+    </mat-dialog-content>
+    <!-- END : CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="end"
+        fxLayoutGap="10px"
+    >
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-button
+                color="primary"
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail &&
+                    form.verified != 1 &&
+                    perm.edit
+                "
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                Edit
+            </button>
+
+            <button
+                *ngIf="form.is_detail && perm.verify && form.verified != 1"
+                type="button"
+                mat-raised-button
+                color="accent"
+                [disabled]="
+                    Busy
+                "
+                (click)="Verify()"
+            >
+                {{ Busy ? 'Please Wait...' : 'Verify' }}
+            </button>
+
+            <button
+                *ngIf="form.is_detail"
+                type="button"
+                mat-button
+                color="primary"
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                Print Preview
+            </button>
+
+            <div
+                *ngIf="form.is_detail && perm.approve && form.verified == 1 && form.approved != 1"
+            >
+                <button
+                    type="button"
+                    mat-button
+                    color="primary"
+                    *ngIf="form.approved != 1 && form.verified == 1"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Approve()"
+                >
+                    <mat-icon>check</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Approve' }}
+                </button>
+
+                <button
+                    type="button"
+                    mat-button
+                    color="warn"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Reject()"
+                >
+                    <mat-icon>close</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Reject' }}
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+</form>

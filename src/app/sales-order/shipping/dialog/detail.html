@@ -1,0 +1,337 @@
+<div fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Detail Packing List
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+     <!-- CONTENT -->
+     <mat-dialog-content fxLayout="column" class="m-0 p-24">
+
+        <div class="print-area" fxLayout="column" fxFlex="0 1 auto">
+
+            <table class="table table-bordered table-input table-input-border">
+                <thead class="no-bg" padding5>
+                    <tr>
+                        <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important;">
+                            <div>
+                                <img src="/assets/logo/CBI.png">
+                            </div>
+                        </td>
+                        <td class="text-center" colspan="4">
+                            <div class="h3 text-bold">
+                                CITRA BORNEO INDAH GROUP - DOWNSTREAM BUSINESS UNIT
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3" class="text-center" style="vertical-align: middle!important; min-width: 250px;">
+                            <div class="h4 text-bold">
+                                GOODS ISSUED PRODUCT
+                            </div>
+                        </td>
+                        <td width="30">
+                            NO
+                        </td>
+                        <td style="min-width: 75px;">
+                            FIP-PPIC-01-06
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            REVISION
+                        </td>
+                        <td>
+                            00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            EFFECTIVE
+                        </td>
+                        <td>
+                            01-06-2018
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="h5 text-center text-bold" style="margin-bottom: 10px;">
+                NO. {{ form.kode }}<br>
+                {{ form.tanggal_show }}
+            </div>
+
+            <div fxLayout="row" fxFlex="0 1 auto">
+
+                <div fxFlex="1 1 auto">
+                    <table class="table table-input table-input-noborder">
+                        <tr padding5>
+                            <td>
+                                CONTRACT CODE
+                            </td>
+                            <td>:</td>
+                            <td>
+                                {{ form.kontrak_kode | uppercase }}
+                            </td>
+                        </tr>
+                        <tr padding5>
+                            <td>
+                                SALES ORDER CODE
+                            </td>
+                            <td>:</td>
+                            <td>
+                                {{ form.so_kode | uppercase }}
+                            </td>
+                        </tr>
+                        <tr padding5>
+                            <td width="180">
+                                COMPANY
+                            </td>
+                            <td width="1">:</td>
+                            <td>
+                                {{ form.company_nama | uppercase }}
+                            </td>
+                        </tr>
+                        <tr padding5>
+                            <td width="180">
+                                CUSTOMER
+                            </td>
+                            <td width="1">:</td>
+                            <td>
+                                {{ form.cust_nama | uppercase }}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="mt-0">
+                <table class="table table-responsive table-input table-small table-striped table-hover table-border-top">
+                    <thead>
+                        <tr>
+                            <th width="75">
+                                CODE
+                            </th>
+                            <th>
+                                DESCRIPTION
+                            </th>
+                            <th width="50">
+                                UoM
+                            </th>
+                            <th width="100">
+                                QTY. SALES ORDER
+                            </th>
+                            <th width="100">
+                                QTY. DELIVER
+                            </th>
+                            <th>
+                                REMARKS
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr padding5>
+                            <td>
+                                {{ form.item_kode }}
+                            </td>
+                            <td>
+                                {{ form.item_nama }}
+                            </td>
+                            <td class="text-center">
+                                {{ form.item_satuan }}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ rupiah(form.qty_so) }}
+                            </td>
+                            <!-- <td nopadding style="min-width: 75px;">
+                                <input 
+                                    [disabled]="!form.id"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_so"
+                                    id="qty_so"
+                                    tabindex="-1"
+                                    [ngModel]="form.qty_so"
+                                    [required]="form.id"
+                                    [options]="
+                                    form.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                    tabindex="-1"
+                                >
+                            </td> -->
+                            <td padding5 class="text-right">
+                                {{ rupiah(form.qty_delivery) }}
+                            </td>
+                            <!-- <td nopadding style="min-width: 75px;">
+                                <input 
+                                    [disabled]="!form.id"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_delivery"
+                                    id="qty_delivery"
+                                    tabindex="-1"
+                                    [ngModel]="form.qty_delivery"
+                                    [required]="form.id"
+                                    [options]="
+                                    form.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                    tabindex="-1"
+                                >
+                            </td> -->
+                            <td>
+                                {{ form.remarks }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="10">&nbsp;</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="table-input-noborder">
+                        <tr>
+                            <td colspan="5">
+
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- SIGNATURES -->
+            <div fxFlex="0 1 auto" class="mt-0" style="margin-top: -5px!important;">
+                <table class="table table-input table-small table-noborder-top">
+                    <tbody>
+                        <tr padding5 class="text-center">
+                            <td width="20%">
+                                CREATED BY
+                            </td>
+                            <td width="20%">
+                                VERIFIED BY
+                            </td>
+                        </tr>
+                        <!-- <tr padding5>
+                            <td class="text-center" style="vertical-align: middle;">
+                            </td>
+                            <td>
+                                <div style="height: 40px;">
+                                    &nbsp;
+                                </div>
+                            </td>
+                        </tr> -->
+                        <tr padding5>
+                            <td class="text-center" style="vertical-align: middle!important;">
+                                <div>
+                                    {{ form.create_by }}
+                                </div>
+                                <div>
+                                    <small>
+                                        {{ form.create_date }}
+                                    </small>
+                                </div>
+                            </td>
+                            <td class="text-center" style="vertical-align: middle!important;">
+                                <div>
+                                    {{ form.verified_by }}
+                                </div>
+                                <div>
+                                    <small>
+                                        {{ form.verified_date }}
+                                    </small>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr padding5 class="text-center">
+                            <td>
+                                USER
+                            </td>
+                            <td>
+                                MANAGER
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- / SIGNATURES -->
+
+        </div>
+    </mat-dialog-content>
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button 
+                type="button" 
+                mat-button 
+                color="primary" 
+                [disabled]="
+                    WaitPrint || 
+                    Busy
+                " 
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                Print
+            </button> 
+        </div>
+
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+
+</div>

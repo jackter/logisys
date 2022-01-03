@@ -1,0 +1,455 @@
+<form
+    ngNativeValidate
+    fxLayout="column"
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary ma-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Goods Receive Form
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content
+        class="m-0 pl-24 pr-24 pb-24"
+        fxLayout="row"
+        fxLayout.sm="column"
+        fxLayoutGap="10px"
+    >
+        <!-- LEFT HISTORY -->
+        <mat-dialog-content
+            fxLayout="column"
+            *ngIf="form.is_detail && History?.length > 0"
+        >
+            <div class="form-section-header">
+                GRN HISTORY
+            </div>
+
+            <table
+                class="table table-list table-responsive table-input table-border-top table-small table-hover"
+            >
+                <thead>
+                    <tr>
+                        <th width="10">
+                            No.
+                        </th>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            Code
+                        </th>
+                        <th colspan="2">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody padding5>
+                    <tr *ngFor="let item of History">
+                        <td class="text-center">
+                            {{ item.no }}
+                        </td>
+                        <td>
+                            {{ item.tanggal }}
+                        </td>
+                        <td>
+                            {{ item.kode }}
+                        </td>
+                        <td class="text-center">
+                            <a
+                                href="javascript:void(0)"
+                                (click)="ShowDetail(item)"
+                                class="primary-fg"
+                            >
+                                View
+                            </a>
+                        </td>
+                        <!-- <td class="text-center">
+                            <a href="javascript:void(0)" (click)="CreateRGR(item)" class="red-fg">
+                                Return
+                            </a>
+                        </td> -->
+                    </tr>
+                </tbody>
+            </table>
+        </mat-dialog-content>
+        <!-- / END : LEFT HISTORY -->
+
+        <!-- LEFT -->
+        <mat-dialog-content fxLayout="column" *ngIf="!form.is_detail">
+            <mat-form-field
+                floatLabel="always"
+                fxFlex="0 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Date Receive</mat-label>
+                <input
+                    matInput
+                    placeholder="Date Receive"
+                    type="text"
+                    name="tanggal"
+                    [(ngModel)]="form.tanggal"
+                    [min]="minDate"
+                    [max]="maxDate"
+                    required
+                    [matDatepicker]="tanggal"
+                    (focus)="tanggal.open()"
+                    (click)="tanggal.open()"
+                    readonly
+                    [disabled]="ReadyVerify"
+                />
+                <mat-datepicker #tanggal></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field
+                floatLabel="always"
+                fxFlex="0 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Receive Reference (Doc. No.)</mat-label>
+                <input
+                    matInput
+                    placeholder="Receive Reference (Doc. No.)"
+                    type="text"
+                    name="supplier_no_doc"
+                    [(ngModel)]="form.supplier_no_doc"
+                    [readonly]="ReadyVerify"
+                />
+            </mat-form-field>
+
+            <mat-form-field
+                floatLabel="always"
+                fxFlex="0 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Remarks</mat-label>
+                <textarea
+                    matInput
+                    type="text"
+                    placeholder="Remarks"
+                    name="remarks"
+                    [(ngModel)]="form.remarks"
+                    matTextareaAutosize
+                    [matAutosizeMinRows]="2"
+                    [readonly]="ReadyVerify"
+                ></textarea>
+            </mat-form-field>
+        </mat-dialog-content>
+        <!-- / LEFT -->
+
+        <!-- RIGHT -->
+        <mat-dialog-content fxLayout="column">
+            <div
+                fxLayout="row"
+                fxFlex="0 1 auto"
+                fxLayoutGap="10px"
+                class="mb-24"
+            >
+                <div fxLayout="column" fxFlex="1 1 auto">
+                    <div class="h3">
+                        SUPPLIER: {{ form.supplier_nama | uppercase }}
+                    </div>
+                    <div class="h4">
+                        No. {{ form.kode }}
+                    </div>
+                </div>
+                <div fxLayout="column" fxFlex="1 1 auto">
+                    <div class="h3">
+                        {{ form.company_nama | uppercase }}
+                    </div>
+                    <div class="h4">
+                        {{ form.dept_nama | uppercase }}
+                    </div>
+                </div>
+            </div>
+
+            <table
+                class="table table-list table-responsive table-input table-border-top table-small"
+            >
+                <thead>
+                    <tr>
+                        <th width="10">
+                            No.
+                        </th>
+                        <!--<th width="50">
+                            Code
+                        </th>-->
+                        <th>
+                            Name
+                        </th>
+                        <th width="50">
+                            Unit
+                        </th>
+                        <th style="min-width: 50px;">
+                            Qty. Purchase
+                        </th>
+                        <th style="min-width: 50px;">
+                            Qty. Canceled
+                        </th>
+                        <th style="min-width: 50px;">
+                            Outstanding
+                        </th>
+                        <th style="min-width: 50px;" *ngIf="!form.is_detail">
+                            Qty. Receive
+                        </th>
+                        <th *ngIf="!form.is_detail">
+                            Location
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr
+                        padding5
+                        *ngFor="let item of form.detail; let i = index;"
+                    >
+                        <td align="center">
+                            {{ i+1 }}
+                        </td>
+                        <td>
+                            {{ item.nama }}
+                        </td>
+                        <td class="text-center">
+                            {{ item.satuan }}
+                        </td>
+                        <td nopadding>
+                            <input
+                                type="text"
+                                autocomplete="off"
+                                name="item-qty-{{i}}"
+                                id="item-qty-{{i}}"
+                                [(ngModel)]="item.qty_po"
+                                maxlength="20"
+                                readonly
+                                tabindex="-1"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? 
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }
+                                "
+                            />
+                        </td>
+                        <td nopadding>
+                            <input
+                                type="text"
+                                autocomplete="off"
+                                name="item-qtyc-{{i}}"
+                                id="item-qtyc-{{i}}"
+                                [(ngModel)]="item.qty_canceled"
+                                maxlength="20"
+                                readonly
+                                tabindex="-1"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? 
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }
+                                "
+                            />
+                        </td>
+                        <td nopadding>
+                            <input
+                                type="text"
+                                autocomplete="off"
+                                name="item-outstanding-{{i}}"
+                                id="item-outstanding-{{i}}"
+                                [ngModel]="item.outstanding"
+                                maxlength="20"
+                                readonly
+                                tabindex="-1"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? 
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }
+                                "
+                                [class]="item.outstanding > 0 ? 
+                                'mat-red-bg' : 'primary-bg'"
+                            />
+                        </td>
+                        <td nopadding *ngIf="!form.is_detail">
+                            <input
+                                type="text"
+                                autocomplete="off"
+                                name="item-receipt-{{i}}"
+                                id="item-receipt-{{i}}"
+                                [(ngModel)]="item.qty_receipt"
+                                (ngModelChange)="Calculate(item)"
+                                maxlength="20"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? 
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }
+                                "
+                                [readonly]="ReadyVerify"
+                                [required]="item.storeloc"
+                            />
+                        </td>
+                        <td nopadding *ngIf="!form.is_detail">
+                            <input
+                                type="text"
+                                autocomplete="off"
+                                name="item-storeloc-{{i}}"
+                                id="item-storeloc-{{i}}"
+                                [(ngModel)]="item.storeloc_kode"
+                                [required]="item.qty_receipt > 0"
+                                [matAutocomplete]="acStoreloc"
+                                (ngModelChange)="StorelocFilter(item.storeloc_kode)"
+                                [readonly]="ReadyVerify"
+                            />
+                            <mat-autocomplete
+                                autoActiveFirstOption
+                                #acStoreloc="matAutocomplete"
+                                class="force-wrap ac-small"
+                            >
+                                <mat-option
+                                    *ngFor="let store of Storeloc"
+                                    [value]="store.kode"
+                                    (onSelectionChange)="StorelocSelect($event, store, i)"
+                                >
+                                    {{ store.kode }} : {{ store.nama }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </mat-dialog-content>
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="end"
+        fxLayoutGap="10px"
+    >
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button
+                *ngIf="!form.is_detail && !ReadyVerify"
+                type="submit"
+                mat-button
+                color="primary"
+                [disabled]="
+                    Busy || 
+                    !form.tanggal || 
+                    ReadySave <= 0
+                "
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="form.is_detail && form.finish != 1"
+                type="buton"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    Busy
+                "
+                (click)="Receipt()"
+            >
+                <mat-icon>call_received</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Receive' }}
+            </button>
+
+            <button
+                *ngIf="ReadyVerify"
+                type="button"
+                mat-button
+                class="green-fg"
+                [disabled]="
+                    Busy
+                "
+                (click)="Edit()"
+            >
+                <mat-icon>edit</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Edit' }}
+            </button>
+
+            <button
+                *ngIf="ReadyVerify"
+                type="button"
+                mat-button
+                color="primary"
+                [disabled]="
+                    Busy
+                "
+                (click)="Verify()"
+            >
+                <mat-icon>check</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Verify & Submit' }}
+            </button>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+</form>

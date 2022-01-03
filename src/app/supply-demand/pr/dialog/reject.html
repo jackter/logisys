@@ -1,0 +1,73 @@
+<form fxLayout="column" style="min-width: 500px" (ngSubmit)="Simpan()" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                 Reject {{ form.pr_kode }}
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" class="m-0 p-24">
+        
+        <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+            <mat-label>Reject Remarks</mat-label>
+            <textarea matInput
+                type="text"
+                placeholder="Close Remarks"
+                name="close_remarks"
+                [(ngModel)]="form.reject_remarks"
+                matTextareaAutosize 
+                [matAutosizeMinRows]="2"
+                required
+            ></textarea>
+        </mat-form-field>
+
+    </mat-dialog-content>
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+
+            <button
+                *ngIf="form.is_detail"
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    Busy
+                "
+            >
+                {{ Busy ? 'Please Wait...' : 'Save Reject' }}
+            </button>
+
+        </div>
+    
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+
+</form>

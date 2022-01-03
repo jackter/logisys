@@ -1,0 +1,473 @@
+<form
+    ngNativeValidate
+    fxLayout="column"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    style="min-width: 500px;"
+    autocomplete="off"
+    (ngSubmit)="Simpan()"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Material Transfer Form
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" class="m-0 p-24">
+        <!-- LEFT -->
+        <mat-dialog-content fxFlex="1 1 auto" fxLayout="column">
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>JO Code</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="JO Code"
+                    name="jo_kode"
+                    [(ngModel)]="form.jo_kode"
+                    required
+                    [matAutocomplete]="acJO"
+                    (ngModelChange)="JOFilter()"
+                    [readonly]="form.is_detail || from_ap == 1 || form.jo"
+                    [tabindex]="from_ap == 1 ? '-1' : ''"
+                />
+                <button
+                    mat-button
+                    type="button"
+                    *ngIf="form.jo && !form.is_detail"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="JORemove()"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acJO="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of JO"
+                        [value]="item.jo_kode"
+                        (onSelectionChange)="JOSelect($event, item)"
+                    >
+                        {{ item.jo_kode }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field
+                *ngIf="form.jo"
+                fxFlex="1 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Notes</mat-label>
+                <textarea
+                    matInput
+                    type="text"
+                    placeholder="Notes"
+                    name="note"
+                    [(ngModel)]="form.note"
+                    matTextareaAutosize
+                    [matAutosizeMinRows]="2"
+                    [readonly]="form.is_detail"
+                ></textarea>
+            </mat-form-field>
+        </mat-dialog-content>
+        <!-- END LEFT -->
+
+        <!-- RIGHT -->
+        <mat-dialog-content
+            *ngIf="form.jo && form.note"
+            class="p-0 m-0 ml-24 mt-8"
+            fxLayoit="column"
+        >
+            <!-- MATERIALS -->
+            <div>
+                <table
+                    class="table table-responsive table-input table-small table-striped table-hover table-border-top"
+                >
+                    <thead>
+                        <tr>
+                            <th colspan="20" class="bold">
+                                MATERIALS
+                            </th>
+                        </tr>
+                        <tr>
+                            <th width="10">
+                                No.
+                            </th>
+                            <th width="75">
+                                Code
+                            </th>
+                            <th width="300">
+                                Item Name
+                            </th>
+                            <th width="150">
+                                Qty
+                            </th>
+                            <th width="50">
+                                UOM
+                            </th>
+                            <th>
+                                Remarks
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container
+                            *ngFor="let item of Material; let i = index;"
+                        >
+                            <tr
+                                *ngIf="
+                            item.id                               
+                            "
+                            >
+                                <td padding5 align="center">
+                                    {{ i+1 }}
+                                </td>
+                                <td
+                                    padding5
+                                    style="white-space: nowrap !important;"
+                                >
+                                    {{ item.kode }}
+                                </td>
+                                <td padding5 style="position: relative;">
+                                    {{ item.nama }}
+                                </td>
+                                <td>
+                                    <input
+                                        [disabled]="!item.id"
+                                        type="text"
+                                        autocomplete="off"
+                                        maxlength="23"
+                                        currencyMask
+                                        name="material-qty-{{i}}"
+                                        id="material-qty-{{i}}"
+                                        [(ngModel)]="item.qty"
+                                        (ngModelChange)="Calculate(item)"
+                                        [options]="
+                                        item.in_decimal == 1 ? {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        } : {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 0
+                                        }
+                                    "
+                                        [readonly]="form.is_detail"
+                                    />
+                                </td>
+                                <td padding5 class="text-center">
+                                    {{ item.satuan }}
+                                </td>
+                                <td *ngIf="!form.is_detail">
+                                    <textarea
+                                        type="text"
+                                        placeholder="Remarks"
+                                        id="remarks-{{i}}"
+                                        name="remarks-{{i}}"
+                                        [(ngModel)]="item.remarks"
+                                        [readonly]="form.is_detail"
+                                        [tabindex]="item.id ? '-1' : null"
+                                        [required]="item.qty"
+                                    ></textarea>
+                                </td>
+                                <td *ngIf="form.is_detail" padding5>
+                                    {{item.remarks}}
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+            <!-- MATERIALS -->
+
+            <!-- OTHERS -->
+            <div class="mt-32">
+                <table
+                    class="table table-responsive table-input table-small table-striped table-hover table-border-top"
+                >
+                    <thead>
+                        <tr>
+                            <th colspan="20" class="bold">
+                                OTHERS
+                            </th>
+                        </tr>
+                        <tr>
+                            <th width="10">
+                                <div *ngIf="!form.is_detail">
+                                    <mat-icon color="warn">delete</mat-icon>
+                                </div>
+                                <div *ngIf="form.is_detail">
+                                    No.
+                                </div>
+                            </th>
+                            <th width="75">
+                                Code
+                            </th>
+                            <th width="300">
+                                Item Name
+                            </th>
+                            <th width="150">
+                                Qty
+                            </th>
+                            <th width="50">
+                                UOM
+                            </th>
+                            <th>
+                                Remarks
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of List; let i = index;">
+                            <td class="text-center">
+                                <div *ngIf="!form.is_detail">
+                                    <button
+                                        type="button"
+                                        mat-icon-button
+                                        (click)="DeleteList(i)"
+                                        *ngIf="
+                                                List?.length > 1 && 
+                                                item.id
+                                            "
+                                        tabindex="-1"
+                                    >
+                                        <mat-icon class="red-fg"
+                                            >close</mat-icon
+                                        >
+                                    </button>
+                                </div>
+                                <div *ngIf="form.is_detail" padding5>
+                                    {{ i+1 }}
+                                </div>
+                            </td>
+                            <td
+                                padding5
+                                style="white-space: nowrap !important;"
+                            >
+                                {{ item.kode }}
+                            </td>
+                            <!-- Input Name -->
+                            <td
+                                style="position: relative;"
+                                *ngIf="!form.is_detail"
+                            >
+                                <textarea
+                                    type="text"
+                                    placeholder="Item Name"
+                                    id="nama-{{i}}"
+                                    name="nama-{{i}}"
+                                    [(ngModel)]="item.nama"
+                                    [matAutocomplete]="acItem"
+                                    (ngModelChange)="ItemFilter(item.nama, i)"
+                                    [readonly]="form.is_detail || item.id"
+                                    [tabindex]="item.id ? '-1' : null"
+                                ></textarea>
+                                <mat-autocomplete
+                                    autoActiveFirstOption
+                                    #acItem="matAutocomplete"
+                                    class="force-wrap ac-small"
+                                >
+                                    <mat-option
+                                        *ngFor="let item of Item"
+                                        (onSelectionChange)="ItemSelect($event, item, i)"
+                                        [value]="item.nama"
+                                    >
+                                        <sup
+                                            ><strong class="primary-fg"
+                                                >{{ item.kode }}</strong
+                                            ></sup
+                                        >
+                                        {{ item.nama }}
+                                    </mat-option>
+                                </mat-autocomplete>
+                                <div
+                                    *ngIf="WaitItem[i]"
+                                    style="
+                                        position: absolute;
+                                        right: 0px;
+                                        top: 0px;
+                                    "
+                                >
+                                    <mat-spinner
+                                        diameter="20"
+                                        strokeWidth="2"
+                                        color="error"
+                                        style="margin-top: 5px;"
+                                    ></mat-spinner>
+                                </div>
+                            </td>
+                            <!-- / END : Input name  -->
+                            <!-- View Name -->
+                            <!-- / END : View Name -->
+                            <td *ngIf="form.is_detail" padding5>
+                                {{ item.nama }}
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty-{{i}}"
+                                    id="qty-{{i}}"
+                                    [(ngModel)]="item.qty"
+                                    (ngModelChange)="Calculate(item)"
+                                    [required]="item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    [readonly]="form.is_detail"
+                                />
+                            </td>
+
+                            <td padding5 class="text-center">
+                                {{ item.satuan }}
+                            </td>
+                            <td *ngIf="!form.is_detail">
+                                <textarea
+                                    type="text"
+                                    placeholder="Remarks"
+                                    id="other-remarks-{{i}}"
+                                    name="other-remarks-{{i}}"
+                                    [(ngModel)]="item.remarks"
+                                    [readonly]="form.is_detail"
+                                    [tabindex]="item.id ? '-1' : null"
+                                    [required]="item.id"
+                                ></textarea>
+                            </td>
+                            <td *ngIf="form.is_detail" padding5>
+                                {{item.remarks}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- END OTHERS -->
+        </mat-dialog-content>
+        <!-- END RIGHT -->
+    </mat-dialog-content>
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="end"
+        fxLayoutGap="10px"
+    >
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-button
+                color="primary"
+                [disabled]="!ReadytoSave"
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <!-- <button
+                *ngIf="
+                    form.is_detail && 
+                    form.verified != 1
+                "
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                Edit
+            </button> -->
+
+            <button
+                *ngIf="
+                    perm.verify &&
+                    form.is_detail && 
+                    form.verified != 1
+                "
+                type="button"
+                mat-button
+                color="primary"
+                (click)="Verify();"
+            >
+                <mat-icon>check</mat-icon>
+                Verify
+            </button>
+
+            <div
+                *ngIf="form.is_detail && perm.approve && form.verified == 1 && form.approved == 0"
+            >
+                <button
+                    type="button"
+                    mat-button
+                    color="primary"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Approve()"
+                >
+                    <mat-icon>check</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Approve' }}
+                </button>
+
+                <button
+                    type="button"
+                    mat-button
+                    color="warn"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Reject()"
+                >
+                    <mat-icon>close</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Reject' }}
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+</form>

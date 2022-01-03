@@ -1,0 +1,526 @@
+<div class="page-layout simple" fusePerfectScrollbar>
+    <!-- CONTENT HEADER -->
+    <div
+        class="header dx-header primary-bg primary p-12"
+        fxLayout="row"
+        fxLayoutAlign="end center"
+        fxLayoutGap="10px"
+        *fuseIfOnDom
+    >
+        <div fxFlex="1 1 auto" fxLayout="row" fxLayoutGap="10px">
+            <div
+                class="logo"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                style="position: relative;"
+            >
+                <mat-icon
+                    *ngIf="Com.icon_type != 'fa'"
+                    class="logo-icon mr-16"
+                    [@animate]="{
+                        value: '*',
+                        params: { delay: '50ms', scale: '0.2' }
+                    }"
+                >
+                    {{ Com.icon }}
+                </mat-icon>
+                <span
+                    *ngIf="Com.icon_type == 'fa'"
+                    class="mr-16"
+                    [@animate]="{
+                        value: '*',
+                        params: { delay: '50ms', scale: '0.2' }
+                    }"
+                >
+                    <i [class]="Com.icon"></i>
+                </span>
+                <span
+                    class="logo-text h3"
+                    *fuseIfOnDom
+                    [@animate]="{
+                        value: '*',
+                        params: { delay: '100ms', x: '-25px' }
+                    }"
+                >
+                    {{ Com.title }}
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- CONTENT HEADER -->
+
+    <!-- FILTER -->
+    <div class="mat-grey-100-bg pl-12 pr-12 pt-8 pb-8" fxLayout="row">
+        <!-- PERODE -->
+        <div fxLayout="column" class="m-0">
+            <div class="text-bold">
+                Select Period
+            </div>
+
+            <div fxLayoutGap="5px">
+                <mat-form-field
+                    floatPlaceholder="always"
+                    fxFlex="0 1 100px"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Date From</mat-label>
+                    <input
+                        matInput
+                        name="dari"
+                        placeholder="Date From"
+                        [(ngModel)]="filter.fdari"
+                        (ngModelChange)="FillHingga()"
+                        [max]="maxDate"
+                        required
+                        [matDatepicker]="date_target"
+                        (focus)="date_target.open()"
+                        (click)="date_target.open()"
+                        [disabled]="form.is_detail"
+                        readonly
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                        "
+                    />
+                    <mat-datepicker #date_target></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field
+                    *ngIf="filter.fdari"
+                    floatPlaceholder="always"
+                    fxFlex="0 1 75px"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Time From</mat-label>
+                    <input
+                        matInput
+                        name="Tdari"
+                        type="text"
+                        placeholder="00:00"
+                        mask="00:00"
+                        [(ngModel)]="filter.Tdari"
+                        (ngModelChange)="FillTime()"
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                        "
+                    />
+                </mat-form-field>
+
+                <mat-form-field
+                    *ngIf="filter.fdari"
+                    floatPlaceholder="always"
+                    fxFlex="0 1 100px"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Date To</mat-label>
+                    <input
+                        matInput
+                        name="hingga"
+                        placeholder="Date To"
+                        [(ngModel)]="filter.fhingga"
+                        (ngModelChange)="FillHingga()"
+                        [max]="maxDate"
+                        required
+                        [matDatepicker]="date_target"
+                        (focus)="date_target.open()"
+                        (click)="date_target.open()"
+                        [disabled]="form.is_detail"
+                        readonly
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                        "
+                    />
+                    <mat-datepicker #date_target></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field
+                    *ngIf="filter.fdari"
+                    floatPlaceholder="always"
+                    fxFlex="0 1 75px"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Time To</mat-label>
+                    <input
+                        matInput
+                        name="Thingga"
+                        type="text"
+                        placeholder="00:00"
+                        mask="00:00"
+                        [(ngModel)]="filter.Thingga"
+                        (ngModelChange)="FillTime()"
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                        "
+                    />
+                </mat-form-field>
+            </div>
+        </div>
+        <!-- / PERIODE -->
+
+        <ng-container *ngIf="filter.fdari && filter.fhingga">
+            <!-- DEFINED -->
+            <div fxLayout="column" class="m-0 pl-20" fxFlex="1 1 auto">
+                <div fxLayout="row" class="text-bold">
+                    Select Data
+                </div>
+
+                <div fxLayout="row" fxLayoutGap="10px" fxFlex="1 1 auto">
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        floatLabel="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Listing Type</mat-label>
+                        <mat-select
+                            name="listing_type"
+                            [(ngModel)]="filter.flisting_type"
+                            placeholder="Select Listing Type"
+                            (ngModelChange)="FillHingga()"
+                        >
+                            <mat-option [value]="0">All Data</mat-option>
+                            <mat-option [value]="1"
+                                >Not Empty Quality</mat-option
+                            >
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <!-- / END : DEFINED -->
+
+            <!-- PKS -->
+            <div fxLayout="column" class="m-0 pl-20" fxFlex="1 1 auto">
+                <div fxLayout="row" class="text-bold">
+                    Select PKS
+                </div>
+
+                <div fxLayout="row" fxLayoutGap="10px" fxFlex="1 1 auto">
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        floatLabel="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <input
+                            matInput
+                            type="text"
+                            name="pks"
+                            placeholder="Select PKS"
+                            [(ngModel)]="filter.pks"
+                            [matAutocomplete]="acPKS"
+                            (ngModelChange)="PKSFilter()"
+                            [readonly]="filter.sup_cust"
+                        />
+                        <button
+                            mat-button
+                            *ngIf="filter.sup_cust"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="
+                                filter.sup_cust = '';
+                                filter.pks = '';
+                                PKSFilter()
+                            "
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+
+                        <mat-autocomplete
+                            autoActiveFirstOption
+                            #acPKS="matAutocomplete"
+                            class="force-wrap ac-small"
+                        >
+                            <mat-option
+                                *ngFor="let item of PKS"
+                                [value]="item.pks"
+                                (onSelectionChange)="PKSSelect($event, item)"
+                            >
+                                <small>{{ item.pks }}</small>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+            </div>
+            <!-- END PKS -->
+        </ng-container>
+    </div>
+    <!-- / FILTER -->
+
+    <!-- CONTENT -->
+    <div class="content" *ngIf="filter.fhingga">
+        <div fxFlex="1 1 auto" style="height: 100%;">
+            <ag-grid-angular
+                style="width: 100%; height: 100%;"
+                class="ag-theme-balham"
+                [defaultColDef]="gridOptions.defaultColDef"
+                [columnDefs]="TableCol"
+                [context]="gridOptions.context"
+                [enableFilter]="gridOptions.enableFilter"
+                [floatingFilter]="gridOptions.floatingFilter"
+                [animateRows]="gridOptions.animateRows"
+                [enableColResize]="gridOptions.enableColResize"
+                [allowContextMenuWithControlKey]="
+                    gridOptions.allowContextMenuWithControlKey
+                "
+                [getContextMenuItems]="getContextMenuItems"
+                [rowModelType]="gridOptions.rowModelType"
+                [rowBuffer]="gridOptions.rowBuffer"
+                [debug]="gridOptions.debug"
+                [rowSelection]="gridOptions.rowSelection"
+                [rowDeselection]="gridOptions.rowDeselection"
+                [cacheOverflowSize]="gridOptions.cacheOverflowSize"
+                [maxConcurrentDatasourceRequests]="
+                    gridOptions.maxConcurrentDatasourceRequests
+                "
+                [infiniteInitialRowCount]="gridOptions.infiniteInitialRowCount"
+                [cacheBlockSize]="gridOptions.cacheBlockSize"
+                [maxBlocksInCache]="gridOptions.maxBlocksInCache"
+                (gridReady)="onGridReady($event)"
+                (filterChanged)="FilterChanged($event)"
+                (cellDoubleClicked)="onDoubleClick($event)"
+                [overlayLoadingTemplate]="overlayLoadingTemplate"
+                [overlayNoRowsTemplate]="overlayNoRowsTemplate"
+                [excelStyles]="ExcelStyles"
+                [defaultExportParams]="defaultExportParams"
+            ></ag-grid-angular>
+        </div>
+
+        <!-- RIGHT -->
+        <div
+            fxLayout="column"
+            fxFlex="0 1 auto"
+            style="background: #fff; min-width: 300px !important;"
+        >
+            <div class="form-section-header text-bold primary-900 mb-0">
+                SUMMARIES
+            </div>
+
+            <table
+                class="table table-border-top table-hover table-list table-responsive table-input mb-0"
+            >
+                <thead>
+                    <tr>
+                        <th>
+                            Info
+                        </th>
+                        <th>
+                            FFA
+                        </th>
+                        <th>
+                            M&I
+                        </th>
+                        <th>
+                            Dobi
+                        </th>
+                    </tr>
+                </thead>
+                <tbody padding5>
+                    <tr>
+                        <td width="150" class="text-bold h3">
+                            Calculated Netto
+                        </td>
+                        <td class="text-right text-bold h2" colspan="3">
+                            {{ rupiah(Panel.avg_netto) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Quality
+                        </td>
+                        <td class="text-right" width="75">
+                            {{ rupiah(Panel.avg_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right" width="75">
+                            {{ rupiah(Panel.avg_mai, 2, true) }}
+                        </td>
+                        <td class="text-right" width="75">
+                            {{ rupiah(Panel.avg_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr class="orange">
+                        <td>
+                            Target
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.target_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.target_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.target_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            ST Dev
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.stdev_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.stdev_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.stdev_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            &Sigma;3
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.sigma3_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.sigma3_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.sigma3_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            &Sigma;6
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.sigma6_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.sigma6_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.sigma6_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            UCL
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.ucl_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.ucl_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.ucl_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            LCL
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.lcl_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.lcl_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.lcl_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr class="blue">
+                        <td>
+                            USL
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.usl_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.usl_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.usl_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr class="blue">
+                        <td>
+                            LSL
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.lsl_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.lsl_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.lsl_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Cp
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cp_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cp_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cp_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Cpl
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cpl_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cpl_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cpl_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Cpu
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cpu_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cpu_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cpu_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Cpk
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cpk_ffa, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cpk_mai, 2, true) }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(Panel.cpk_dobi, 2, true) }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- / END : RIGHT -->
+    </div>
+    <!-- / CONTENT -->
+</div>

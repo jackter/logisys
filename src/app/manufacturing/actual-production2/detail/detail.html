@@ -1,0 +1,380 @@
+<div class="page-layout simple" fusePerfectScrollbar>
+
+    <!-- CONTENT HEADER -->
+    <div class="header dx-header primary-bg primary p-12" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *fuseIfOnDom>
+
+        <div fxFlex="1 1 auto" fxLayout="row" fxLayoutGap="10px">
+            <div fxFlex="0 0 auto">
+                <button 
+                    mat-flat-button
+                    class="orange-bg" 
+                    (click)="Back()" 
+                    [@animate]="{value:'*',params:{delay:'50ms',x:'35px'}}"
+    
+                >
+                    <mat-icon class="orange-bg">arrow_back</mat-icon>
+                    Back
+                </button>
+            </div>
+
+            <div class="logo" fxLayout="row" fxLayoutAlign="start center" style="position: relative;">
+                <mat-icon *ngIf="Com.icon_type != 'fa'" class="logo-icon mr-16" [@animate]="{value:'*',params:{delay:'250ms',scale:'0.2'}}">
+                    {{ Com.icon }}
+                </mat-icon>
+                <span *ngIf="Com.icon_type == 'fa'" class="mr-16" [@animate]="{value:'*',params:{delay:'250ms',scale:'0.2'}}">
+                    <i [class]="Com.icon"></i>
+                </span>
+                <span class="logo-text h3" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'300ms',x:'-25px'}}">
+                    {{ Com.title }}
+                </span>
+            </div>
+
+            <!-- SEARCH -->
+            <button
+                mat-button
+                color="accent"
+                (click)="Reload()"
+                [@animate]="{value:'*', params:{delay:'350ms',x:'35px'}}"
+            >
+                <mat-icon>refresh</mat-icon>
+                Refresh Data
+            </button>
+        </div>
+        
+        <!-- BUTTON ADD -->
+        <div fxFlex="0 0 auto">
+            <button 
+                mat-raised-button
+                class="accent-bg" 
+                (click)="OpenForm('add')" 
+                [@animate]="{value:'*',params:{delay:'150ms',y:'35px'}}"
+                *ngIf="Ready && perm.add && Default.JO.finish != 1"
+            >
+                <mat-icon class="accent-bg">add</mat-icon>
+                Add Actual Production
+            </button>
+        </div>
+        <!-- / BUTTON ADD -->
+
+    </div>
+    <!-- CONTENT HEADER -->
+
+     <!-- CONTENT -->
+     <div class="content" fxFlex="1 1 auto" fxLayout="row" *ngIf="Ready">
+
+        <div fxFlex="1 1 auto" style="height: 100%;">
+            <ag-grid-angular
+                *ngIf="Ready"
+                style="width: 100%; height: 100%"
+                class="ag-theme-balham"
+                
+                [defaultColDef]="gridOptions.defaultColDef"
+                [columnDefs]="TableCol"
+                [context]="gridOptions.context"
+                [enableFilter]="gridOptions.enableFilter"
+                [floatingFilter]="gridOptions.floatingFilter"
+                [animateRows]="gridOptions.animateRows"
+                [enableColResize]="gridOptions.enableColResize"
+                [allowContextMenuWithControlKey]="gridOptions.allowContextMenuWithControlKey"
+                [getContextMenuItems]="getContextMenuItems"
+    
+                [rowModelType]="gridOptions.rowModelType"
+                [rowBuffer]="gridOptions.rowBuffer"
+                [debug]="gridOptions.debug"
+                [rowSelection]="gridOptions.rowSelection"
+                [rowDeselection]="gridOptions.rowDeselection"
+                [cacheOverflowSize]="gridOptions.cacheOverflowSize"
+                [maxConcurrentDatasourceRequests]="gridOptions.maxConcurrentDatasourceRequests"
+                [infiniteInitialRowCount]="gridOptions.infiniteInitialRowCount"
+                [cacheBlockSize]="gridOptions.cacheBlockSize"
+                [maxBlocksInCache]="gridOptions.maxBlocksInCache"
+    
+                (gridReady)="onGridReady($event)"
+                (filterChanged)="FilterChanged($event)"
+                (cellDoubleClicked)="onDoubleClick($event)"
+            ></ag-grid-angular>
+        </div>
+
+        <!-- RIGHT -->
+        <div fxLayout="column" fxFlex="0 1 auto" style="background: #FFF;">
+
+            <div class="form-section-header text-bold primary-900 mb-0">
+                INFORMATION
+            </div>
+
+            <div class="m-32" *ngIf="!Ready">
+                <mat-spinner color="primary" diameter="250" strokeWidth="15"></mat-spinner>
+                <div class="mt-32 text-center">
+                    Getting Informations...
+                </div>
+            </div>
+
+            <ng-container *ngIf="Ready">
+
+                <div class="form-section-header text-bold primary mb-0">
+                    GENERAL
+                </div>
+                <table *ngIf="Default && Default.JO" class="table table-border-top table-hover table-list table-responsive table-input mb-0">
+                    <tbody padding5>
+
+                        <tr>
+                            <td>
+                                BOM Code
+                            </td>
+                            <td class="text-right">
+                                {{Default.JO.bom_kode}}
+                            </td>
+                        </tr>
+        
+                        <tr>
+                            <td>
+                                Store Location
+                            </td>
+                            <td class="text-right">
+                                {{Default.JO.storeloc_nama}}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                Running Hours
+                            </td>
+                            <td class="text-right">
+                                {{Default.JO.running_hours}} Hours
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                Target
+                            </td>
+                            <td nopadding>
+                                <input 
+                                    type="text" 
+                                    placeholder="-" 
+                                    name="stock" 
+                                    [(ngModel)]="Default.JO.qty"
+                                    readonly
+                                    currencyMask
+                                    [options]="{
+                                        prefix: '',
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }"
+                                    style="font-size: 18px;"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Current
+                            </td>
+                            <td nopadding>
+                                <input 
+                                    type="text" 
+                                    placeholder="-" 
+                                    name="stock" 
+                                    [(ngModel)]="Default.JO.current"
+                                    readonly
+                                    currencyMask
+                                    [options]="{
+                                        prefix: '',
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }"
+                                    style="font-weight: bold; font-size: 18px;"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Percentage
+                            </td>
+                            <td nopadding>
+                                <input 
+                                    type="text" 
+                                    placeholder="-" 
+                                    name="stock" 
+                                    [(ngModel)]="Default.JO.percent"
+                                    readonly
+                                    currencyMask
+                                    [options]="{
+                                        prefix: '',
+                                        suffix: '%',
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }"
+                                    style="
+                                        font-size: 25px;
+                                    "
+                                >
+                                <div *ngIf="Default.JO.percent < 100">
+                                    <input 
+                                        type="text" 
+                                        placeholder="-" 
+                                        name="stock" 
+                                        [(ngModel)]="100 - Default.JO.percent"
+                                        readonly
+                                        currencyMask
+                                        [options]="{
+                                            prefix: '',
+                                            suffix: '% to go',
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        }"
+                                        style="font-size: 16px; color: #3f51b5; margin-top: -10px;"
+                                    >
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div fxFlex="0 1 auto">
+                    <button 
+                        *ngIf="perm.show_summary"
+                        mat-button
+                        class="lime-bg" 
+                        (click)="ShowDialogSummary()" 
+                        style="width: 100%;"
+                    >
+                        SUMMARY
+                        <mat-icon class="lime-bg">shuffle</mat-icon>
+                    </button>
+                </div>
+
+                <div class="form-section-header text-bold primary mb-0">
+                    PRODUCTIONS
+                </div>
+                <table class="table table-border-top table-hover table-list table-responsive table-input mb-0">
+                    <thead>
+                        <tr>
+                            <th rowspan="3" style="vertical-align: middle!important; min-width: 100px;">
+                                Items
+                            </th>
+                            <th colspan="32">
+                                Qty
+                            </th>
+                        </tr>   
+                    </thead>
+                    <tbody nopadding *ngIf="Default && Default.bom">
+                        <ng-container *ngFor="let item of Default.bom">
+                            <tr *ngIf="item.tipe == 2">
+                                <td padding5 style="min-width: 200px; max-width: 200px;">
+                                    {{ item.nama }}
+                                </td>
+                                <td>
+                                    <input 
+                                        type="text" 
+                                        placeholder="-" 
+                                        name="total" 
+                                        [(ngModel)]="item.total"
+                                        readonly
+                                        currencyMask
+                                        [options]="
+                                        item.in_decimal == 1 ? {
+                                            prefix: '',
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        } : {
+                                            prefix: '',
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 0
+                                        }
+                                        "
+                                    >
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+
+                <!-- <div fxFlex="0 1 auto">
+                    <button 
+                        mat-button
+                        class="accent-bg" 
+                        (click)="ShowDialogFinishGoods()" 
+                        style="width: 100%;"
+                        *ngIf="Default.JO.finish != 1"
+                    >
+                        Transfer Finish Goods
+                        <mat-icon class="accent-bg">local_shipping</mat-icon>
+                    </button>
+                </div> -->
+
+                <div class="form-section-header text-bold primary mb-0">
+                    CONSUMPTIONS
+                </div>
+                <table class="table table-border-top table-hover table-list table-responsive table-input mb-0">
+                    <thead>
+                        <tr>
+                            <th rowspan="3" style="vertical-align: middle!important; min-width: 100px;">
+                                Items
+                            </th>
+                            <th colspan="32">
+                                Qty
+                            </th>
+                        </tr>   
+                    </thead>
+                    <tbody nopadding *ngIf="Default && Default.bom">
+                        <ng-container *ngFor="let item of Default.bom">
+                            <tr *ngIf="item.tipe != 2 && item.total > 0">
+                                <td padding5 style="min-width: 100px; max-width: 200px;">
+                                    {{ item.nama }}
+                                </td>
+                                <td>
+                                    <input 
+                                        type="text" 
+                                        placeholder="-" 
+                                        name="total" 
+                                        [(ngModel)]="item.total"
+                                        readonly
+                                        currencyMask
+                                        [options]="
+                                        item.in_decimal == 1 ? {
+                                            prefix: '',
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        } : {
+                                            prefix: '',
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 0
+                                        }
+                                        "
+                                    >
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+
+                <!-- <div fxFlex="0 1 auto">
+                    <button 
+                        mat-button
+                        class="accent-bg" 
+                        (click)="ShowDialogTransfer()" 
+                        style="width: 100%;"
+                        *ngIf="Default.JO.finish != 1"
+                    >
+                        Request Material Transfer
+                        <mat-icon class="accent-bg">shuffle</mat-icon>
+                    </button>
+                </div> -->
+
+            </ng-container>
+
+        </div>
+        <!-- / END : RIGHT -->
+
+    </div>
+    <!-- / CONTENT -->
+
+</div>

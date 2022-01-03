@@ -1,0 +1,590 @@
+<div fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Purchase Order
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" class="m-0">
+
+        <!-- PRINT AREA -->
+        <div class="print-area" *ngIf="PO">
+
+            <table class="table table-noborder print-po">
+                <thead class="no-bg">
+                    <tr>
+                        <td nopadding width="100" class="text-center">
+                            <div>
+                                <img src="/assets/logo/{{ PO.company_abbr }}.png">
+                            </div>
+                            <div style="margin-top: 2px;">
+                                <img src="/assets/memberofcbi.png" height="18">
+                            </div>
+                        </td>
+                        <td>
+                                
+                            <div class="company">
+                                <div class="nama">
+                                    <h5 style="
+                                        margin: 0px;
+                                        margin-top: -5px;
+                                        margin-bottom: 5px;
+                                        font-size: 14px;
+                                    ">
+                                        PURCHASE ORDER
+                                    </h5>
+                                    <h4 style="
+                                        margin: 0px;
+                                        margin-top: -5px;
+                                        font-weight: bold;
+                                    ">
+                                        {{ PO.company_nama | uppercase }}
+                                    </h4>
+                                </div>
+                                <div class="alamat">
+                                    {{ PO.alamat.alamat }} {{ PO.alamat.kel }}, {{ PO.alamat.kota }}<br>
+                                    {{ PO.alamat.kab }} - {{ PO.alamat.prov }}<br>
+                                    {{ PO.alamat.negara }}, {{ PO.alamat.kodepos }}
+                                </div>
+                            </div>
+
+                        </td>
+                        <td nopadding width="250" style="max-width: 270px; white-space: nowrap;">
+
+                            <div class="date-line">
+                                <div class="pull-left">
+                                    DATE
+                                </div>
+                                <div class="pull-right">
+                                    <span *ngIf="PO.tanggal">
+                                        {{ PO.tanggal }}
+                                    </span>
+                                    <input  
+                                        *ngIf="!PO.tanggal"
+                                        placeholder="Please select date"
+                                        [(ngModel)]="form.set_tanggal" 
+                                        name="set_tanggal" 
+                                        required
+                                        class="text-center"
+                                        [dpDayPicker]="
+                                        {
+                                            locale : 'en',
+                                            format : 'DD/MM/YYYY',
+                                            drops: 'down',
+                                            appendTo: 'body',
+                                            disabled: true
+                                        }
+                                        " 
+                                        readonly
+                                        theme="dp-material"
+                                        style="
+                                            text-align: right;
+                                        "
+                                    >
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="date-line" style="font-size: 11px; border-top: none!important;">
+                                <div class="pull-left">
+                                    QUOTATION
+                                </div>
+                                <div class="pull-right">
+                                    {{ PO.pq_kode }}
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="clearfix"></div>
+
+                            <div class="po-line">
+                                <div class="pull-left">
+                                    NO#
+                                </div>
+                                <div class="pull-right">
+                                    {{ PO.kode ? PO.kode : 'AUTO GENERATE' }}
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="10" nopadding class="text-center">
+
+                            <div style="position: relative;">
+                                <div class="expire">
+
+                                </div>
+                                <h5 class="doc-number">
+                                    {{ PO.kode ? PO.kode : 'AUTO GENERATE' }}
+                                </h5>
+                                <div class="line"></div>
+                            </div>
+
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr nopadding>
+                        <td colspan="3">
+
+                            <table class="table table-noborder" style="margin: 0px!important; background: none!important;">
+                                <tr nopadding>
+                                    <td width="40%">
+
+                                        <table class="table table-noborder" style=" background: none!important;">
+                                            <tr>
+                                                <td width="30" style="color: #ef6c00!important; font-size: 11px; padding-top: 10px!important;">
+                                                    SUPP<br>
+                                                    LIER
+                                                </td>
+                                                <td class="info-container">
+                                                    <div class="list" style="font-weight: bold;">
+                                                        {{ form.supplier_jenis | uppercase }} {{ PO.supplier_nama | uppercase }}
+                                                    </div>
+                                                    <div class="list l1">
+                                                        {{ form.supplier_alamat }}
+                                                    </div>
+                                                    <div class="list l2">
+                                                        {{ PO.supplier_detail?.kab }}<span *ngIf="PO.supplier_detail?.kab && PO.supplier_detail?.prov">, </span>
+                                                        {{ PO.supplier_detail?.prov }}
+                                                    </div>
+                                                    <div class="list l3">
+                                                        {{ PO.supplier_detail?.negara }}
+                                                    </div>
+                                                    <div class="list l4">
+                                                        {{ PO.supplier_detail?.cp }}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </td>
+                                    <td width="40%">
+
+                                        <table class="table table-noborder" style=" background: none!important;">
+                                            <tr>
+                                                <td width="30" style="color: #0d9a44!important; font-size: 11px; padding-top: 10px!important;" class="text-right">
+                                                    SHIP<br>
+                                                    TO
+                                                </td>
+                                                <td class="info-container">
+                                                    <div class="list" style="font-weight: bold;">
+                                                        {{ PO.company_nama | uppercase }}
+                                                    </div>
+                                                    <div class="list l1">
+                                                        {{ PO.alamat.alamat }}, {{ PO.alamat.kel }}
+                                                    </div>
+                                                    <div class="list l2">
+                                                        {{ PO.alamat.kota }}, {{ PO.alamat.kab }}
+                                                    </div>
+                                                    <div class="list l3">
+                                                            {{ PO.alamat.prov }}, {{ PO.alamat.negara }}, {{ PO.alamat.kodepos }}
+                                                    </div>
+                                                    <div class="list l4">
+                                                        {{ PO.alamat.telp }} {{ PO.alamat.fax ? ' - ' + PO.alamat.fax : '' }}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </td>
+                                    <td width="10%" class="text-right">
+
+                                        <div
+                                            class="img-thumbnail" 
+                                            style="
+                                                padding: 0px!important;
+                                                margin-top: 26px;
+                                            "
+                                        >
+                                            <qr-code 
+                                            style="
+                                                margin: 0px!important;
+                                            "
+                                            [value]="PO.kode ? PO.kode : 'INVALID PURCHASING ORDER CODE'" 
+                                            [size]="100"
+                                            ></qr-code>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+                    <tr nopadding>
+                        <td colspan="10">
+
+                            <table class="table table-list table-responsive table-input table-border-top">
+                                <thead>
+                                    <tr>
+                                        <th width="10">
+                                            No.
+                                        </th>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th width="10">
+                                            Qty.
+                                        </th>
+                                        <th width="50">
+                                            Unit
+                                        </th>
+                                        <th>
+                                            Unit Price
+                                        </th>
+                                        <th>
+                                            Total
+                                        </th>
+                                        <th>
+                                            Origin / Quality
+                                        </th>
+                                        <th>
+                                            Remarks
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr padding5 *ngFor="let item of PO.detail; let i = index;">
+                                        <td align="center">
+                                            {{ i+1 }}
+                                        </td>
+                                        <td>
+                                            {{ item.nama }}
+                                        </td>
+                                        <td nopadding>
+                                            <input 
+                                                placeholder="Qty. PO"
+                                                type="text" 
+                                                autocomplete="off"
+                                                name="item-qty-{{i}}" 
+                                                id="item-qty-{{i}}" 
+                                                [ngModel]="item.qty_po"
+                                                maxlength="20"
+                                                readonly
+                                                currencyMask
+                                                [options]="item.in_decimal == 1 ? 
+                                                {
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 2
+                                                } : {
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                }
+                                                "
+                                            >
+                                        </td>
+                                        <td class="text-center">
+                                            {{ item.satuan }}
+                                        </td>
+                                        <td nopadding>
+                                            <input 
+                                                placeholder="Qty. Purchase"
+                                                type="text" 
+                                                autocomplete="off"
+                                                name="item-price-{{i}}" 
+                                                id="item-price-{{i}}" 
+                                                [ngModel]="item.price"
+                                                maxlength="20"
+                                                readonly
+                                                currencyMask
+                                                [options]="item.in_decimal == 1 ? 
+                                                {
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 2
+                                                } : {
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                }
+                                                "
+                                            >
+                                        </td>
+                                        <td nopadding>
+                                            <input 
+                                                placeholder="Total"
+                                                type="text" 
+                                                autocomplete="off"
+                                                name="item-total-{{i}}" 
+                                                id="item-total-{{i}}" 
+                                                [ngModel]="item.qty_po * item.price"
+                                                maxlength="20"
+                                                readonly
+                                                currencyMask
+                                                [options]="{
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                }"
+                                            >
+                                        </td>
+                                        <td>
+                                            {{ item.origin_quality }}
+                                        </td>
+                                        <td>
+                                            {{ item.remarks }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="10" style="background: #F7F7F7;"><div style="height: 5px;"></div></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot padding5 class="table-input-noborderx">
+                                    <tr>
+                                        <td colspan="5" class="text-right">
+                                            Subtotal
+                                        </td>
+                                        <td class="text-right" nopadding>
+                                            <input 
+                                                type="text" 
+                                                autocomplete="off"
+                                                name="subtotal" 
+                                                [ngModel]="PO.total"
+                                                maxlength="20"
+                                                readonly
+                                                currencyMask
+                                                [options]="{
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                }"
+                                            >
+                                        </td>
+                                        <td colspan="2" rowspan="10">
+                                            <div class="info_penagihan">
+                                                <strong>Billing Terms:</strong>
+                                                <ol>
+                                                    <li>Full Delivery</li>
+                                                    <li>Invoice, Receipt, & Tax Invoice (Original)</li>
+                                                    <li>Delivery Order, Acceptance Official Report, PO (Original)</li>
+                                                    <li>Payment due date starts from we receive the complete document</li>
+                                                    <li>Return fees by supplier (if any)</li>
+                                                </ol>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" class="text-right">
+                                            Discount 
+                                            <span *ngIf="PO.disc > 0">
+                                                {{ PO.disc }}%
+                                            </span>
+                                        </td>
+                                        <td class="text-right" nopadding>
+                                            <input 
+                                                type="text" 
+                                                autocomplete="off"
+                                                name="discount" 
+                                                [ngModel]="Discount"
+                                                maxlength="20"
+                                                readonly
+                                                currencyMask
+                                                [options]="{
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                }"
+                                            >
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" class="text-right">
+                                            Other Cost
+                                        </td>
+                                        <td class="text-right" nopadding>
+                                            <input 
+                                                type="text" 
+                                                autocomplete="off"
+                                                name="other_cost" 
+                                                [ngModel]="PO.other_cost"
+                                                maxlength="20"
+                                                readonly
+                                                currencyMask
+                                                [options]="{
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                }"
+                                            >
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" class="text-right">
+                                            Tax Base
+                                        </td>
+                                        <td class="text-right" nopadding>
+                                            <input 
+                                                type="text" 
+                                                autocomplete="off"
+                                                name="subtotal" 
+                                                [ngModel]="PO.tax_base"
+                                                maxlength="20"
+                                                readonly
+                                                currencyMask
+                                                [options]="{
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                }"
+                                            >
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" class="text-right">
+                                            PPN 
+                                            <span *ngIf="PO.ppn > 0">
+                                                {{ core.rupiah(PO.ppn) }}%
+                                            </span>
+                                        </td>
+                                        <td class="text-right" nopadding>
+                                            <input 
+                                                type="text" 
+                                                autocomplete="off"
+                                                name="subtotal" 
+                                                [ngModel]="PPN"
+                                                maxlength="20"
+                                                readonly
+                                                currencyMask
+                                                [options]="{
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                }"
+                                            >
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" class="text-right">
+                                            <strong>
+                                                GRANDTOTAL
+                                            </strong>
+                                        </td>
+                                        <td class="text-right" nopadding>
+                                            <input 
+                                                type="text" 
+                                                autocomplete="off"
+                                                name="grandtotal" 
+                                                [ngModel]="GrandTotal"
+                                                maxlength="20"
+                                                readonly
+                                                style="font-weight: bold"
+                                                currencyMask
+                                                [options]="{
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                }"
+                                            >
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <!-- / PRINT AREA -->
+
+    </mat-dialog-content>
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button 
+                type="button" 
+                mat-button 
+                color="primary" 
+                [disabled]="
+                    (
+                        !form.set_tanggal && 
+                        !PO?.tanggal
+                    ) || 
+                    WaitPrint || 
+                    Busy
+                " 
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                {{ !PO?.kode ? 'Save &' : '' }} Print Purchase Order
+            </button> 
+
+            <button 
+                type="button" 
+                mat-button 
+                color="warn"
+                *ngIf="
+                    form.submited != 1 && 
+                    form.from_po
+                " 
+                [disabled]="
+                    Busy
+                " 
+                (click)="Submit()"
+            >
+                <mat-icon>arrow_upward</mat-icon>
+                Submit PO
+            </button> 
+
+        </div>
+    
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+
+</div>

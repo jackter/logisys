@@ -1,0 +1,192 @@
+@media print { 
+    body {
+        background: #FFF;
+    }
+
+    // table, td, th{
+    //     border: 1px solid black!important;
+    // }
+
+    .print-sinv, 
+    .print-sinv td, 
+    .print-sinv th,
+    .print-sinv-outside {
+        border: 1px solid black!important;
+    }
+
+    .print-sinv-noborder,
+    .print-sinv-noborder td,
+    .print-sinv-noborder th {
+        border: none!important;
+    }
+
+    .company .nama {
+        border-bottom: 1px solid #000!important;
+    }
+
+
+}
+
+.print-area {
+    min-width: 834px;
+    // margin-top: 10px; 
+    // margin-bottom: 10px;
+    font-size: 13px;
+    position: relative;
+    display: block;
+    font-weight: normal!important;
+
+    // background-image: url('~/assets/images/bg-daun-2.png');
+    // background-repeat: no-repeat;
+    // background-position: top center;
+    // background-size: contain;
+
+    .company {
+
+        .nama {
+            font-weight: bold!important;
+        }
+
+    }
+
+    .doc-number {
+        margin: 0px;
+        margin-bottom: 10px;
+        border: 1px solid #0d9a44;
+        padding: 5px;
+        font-size: 15px;
+        display: inline;
+        background: #FFF;
+        position: relative;
+        z-index: 2;
+        font-weight: normal;
+    }
+
+    .line {
+        position: absolute;
+        z-index: 1;
+        top: 8px;
+        width: 100%;
+        // border-bottom: 1px solid #0d9a44;
+        border-bottom: 1px solid rgb(218, 218, 218);
+    }
+
+    .print-po {
+
+        .date-line {
+            border-top: 1px solid #0d9a44!important;
+            border-bottom: 1px solid #0d9a44!important;
+            padding: 5px 0px;
+        }
+        .po-line {
+            border-bottom: 2px solid #0d9a44!important;
+            padding: 5px 0px;
+        }
+
+        .info-container {
+
+            margin-left: 25px;
+            line-height: 20px;
+
+            // .list1 {
+            //     padding: 3px 0px;
+            //     border-bottom: 1px solid #0d9a44!important;
+            // }
+            // .list { 
+            //     padding: 3px 0px;
+            // }
+            // .list.l1 {
+            //     border-top: 1px solid #0d9a44!important;
+            //     border-bottom: 1px solid #0d9a44!important;
+            // }
+            // .list.l2 {
+            //     border-bottom: 1px solid #1c9c4d!important;
+            // }
+            // .list.l3 {
+            //     border-bottom: 1px solid #5ea87a!important;
+            // }
+            // .list.l4 {
+            //     border-bottom: 1px solid #9dd6b3!important;
+            // }
+
+        }
+
+    }
+
+    .info_penagihan {
+        ol {
+            margin:5px;
+            margin-left: 15px;
+            padding: 0px;
+            max-width: 250px;
+            font-size: 11px;
+        }
+    }
+
+    .table {
+        background: none!important;
+    }
+
+    .table.table-input input,
+    .table.table-input select,
+    .table.table-input textarea {
+        border: none!important;
+        font-size: 11px!important;
+    }
+
+    .table.table-input-border {
+        input, 
+        select,
+        textarea {
+            border-bottom: 1px solid #CCC!important;
+        }
+
+        input:focus, 
+        select:focus,
+        textarea:focus {
+            border-bottom: 1px dashed #CCC!important;
+        }
+    }
+
+    .table.table-small td {
+        font-size: 11px!important;
+    }
+
+    .table.table-border-top {
+        border-top: 1px solid #CCC;
+    }
+    .table thead tr th {
+        /*background: #616161!important;
+        color: #FFF!important;*/
+        background-color: #F7F7F7 !important;
+        color: #000 !important;
+        padding: 8px 6px!important;
+    }
+    .table>thead>tr>th {
+        vertical-align: middle!important;
+    }
+    .table thead.no-bg tr {
+        /*clear: both;*/
+        background: none!important;
+        color: #000!important;
+    }
+    .table.table-input thead td,
+    .table.table-input thead th {
+        font-size: 11px!important;
+        font-weight: normal!important;
+    }
+    .table.table-input [padding5] td {
+        font-size: 11px!important;
+    }
+    .table.table-padding-small td {
+        padding: 4px 2px;
+    }
+
+    .table.table-input.table-big td {
+        font-size: 12px!important;
+    }
+    .table.table-input.table-bold td {
+        font-weight: bold;
+    }
+
+}

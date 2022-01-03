@@ -1,0 +1,767 @@
+<form ngNativeValidate (ngSubmit)="Simpan()" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off" aria-autocomplete="none" style="min-width: 500px;">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <!-- <div fxLayout="row" fxLayout.sm="column" class="p-24 m-0" fxLayoutGap="10px"> -->
+
+        <!-- RIGHT -->
+        <mat-dialog-content fxLayout="column" fxFlex="1 1 auto" fxLayoutAlign="start center" class="m-0 p-24">
+
+            <div fxLayout="column" fxLayoutAlign="center center">
+                <div class="h3">
+                    <span *ngIf="!form.from_pr">CREATE</span> PURCHASE REQUEST
+                </div>
+                <div class="h2">
+                    {{ form.company_nama | uppercase }}
+                </div>
+                <div class="h2 primary-fg" *ngIf="form.pr_kode">
+                    {{ form.pr_kode }}
+                </div>
+                <div class="h3 mb-24">
+                    {{ form.kode }}
+                </div>
+            </div>
+
+            <div>
+                <table class="table table-responsive table-input table-small table-striped table-hover table-border-top">
+                    <thead>
+                        <tr>
+                            <th width="10">
+                                <div *ngIf="!form.is_detail">
+                                    <mat-icon color="warn">delete</mat-icon>
+                                </div>
+                                <div *ngIf="form.is_detail">
+                                    No.
+                                </div>
+                            </th>
+                            <th width="300">
+                                Item
+                            </th>
+                            <th width="50">
+                                UOM
+                            </th>
+                            <th width="100">
+                                Approved MR
+                            </th>
+                            <th width="100">
+                                Stock
+                            </th>
+                            <th width="100">
+                                Qty. Purchase
+                            </th>
+                            <th width="100">
+                                Est. Price / Last Price
+                            </th>
+                            <th>
+                                Remarks
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of List; let i = index;">
+                            <td class="text-center" *ngIf="form.is_detail && item.detail_id">
+                                <div *ngIf="!form.is_detail">
+                                    <button
+                                        type="button"
+                                        mat-icon-button
+                                        (click)="DeleteList(i)"
+                                        *ngIf="
+                                                List?.length > 1 && 
+                                                item.id && perm.del_item
+                                            "
+                                        tabindex="-1"
+                                    >
+                                        <mat-icon class="red-fg"
+                                            >close</mat-icon
+                                        >
+                                    </button>
+                                </div>
+                                <div *ngIf="form.is_detail || !perm.del_item" padding5>
+                                    {{ i+1 }}
+                                </div>
+                            </td>
+                            <td class="text-center" *ngIf="!form.is_detail">
+                                <div *ngIf="!form.is_detail">
+                                    <button
+                                        type="button"
+                                        mat-icon-button
+                                        (click)="DeleteList(i)"
+                                        *ngIf="
+                                                List?.length > 1 && 
+                                                item.id && perm.del_item
+                                            "
+                                        tabindex="-1"
+                                    >
+                                        <mat-icon class="red-fg"
+                                            >close</mat-icon
+                                        >
+                                    </button>
+                                </div>
+                                <div *ngIf="form.is_detail || !perm.del_item" padding5>
+                                    {{ i+1 }}
+                                </div>
+                            </td>
+
+                            <td style="position: relative;" *ngIf="form.is_detail && item.detail_id">
+
+                                <input
+                                    type="text"
+                                    placeholder="Item Name"
+                                    id="nama-{{i}}"
+                                    name="nama-{{i}}"
+                                    [(ngModel)]="item.nama"
+                                    [required]="i == 0"
+                                    [matAutocomplete]="acItem"
+                                    (ngModelChange)="ItemFilter(item.nama, i)"
+                                    [readonly]="form.is_detail || item.id"
+                                    [tabindex]="item.id ? '-1' : null"
+                                >
+
+                                <mat-autocomplete
+                                    autoActiveFirstOption
+                                    #acItem="matAutocomplete"
+                                    class="force-wrap ac-small"
+                                >
+                                    <mat-option
+                                        *ngFor="let item of Item"
+                                        (onSelectionChange)="ItemSelect($event, item, i)"
+                                        [value]="item.nama"
+                                    >
+                                        <sup
+                                            ><strong class="primary-fg"
+                                                >{{ item.kode }}</strong
+                                            ></sup
+                                        >
+                                        {{ item.nama }}
+                                    </mat-option>
+                                </mat-autocomplete>
+                                <div
+                                    *ngIf="WaitItem[i]"
+                                    style="
+                                        position: absolute;
+                                        right: 0px;
+                                        top: 0px;
+                                    "
+                                >
+                                    <mat-spinner
+                                        diameter="20"
+                                        strokeWidth="2"
+                                        color="error"
+                                        style="margin-top: 5px;"
+                                    ></mat-spinner>
+                                </div>
+
+                            </td>
+                            <td style="position: relative;" *ngIf="!form.is_detail">
+
+                                <input
+                                    type="text"
+                                    placeholder="Item Name"
+                                    id="nama-{{i}}"
+                                    name="nama-{{i}}"
+                                    [(ngModel)]="item.nama"
+                                    [required]="i == 0"
+                                    [matAutocomplete]="acItem"
+                                    (ngModelChange)="ItemFilter(item.nama, i)"
+                                    [readonly]="form.is_detail || item.id"
+                                    [tabindex]="item.id ? '-1' : null"
+                                >
+
+                                <mat-autocomplete
+                                    autoActiveFirstOption
+                                    #acItem="matAutocomplete"
+                                    class="force-wrap ac-small"
+                                >
+                                    <mat-option
+                                        *ngFor="let item of Item"
+                                        (onSelectionChange)="ItemSelect($event, item, i)"
+                                        [value]="item.nama"
+                                    >
+                                        <sup
+                                            ><strong class="primary-fg"
+                                                >{{ item.kode }}</strong
+                                            ></sup
+                                        >
+                                        {{ item.nama }}
+                                    </mat-option>
+                                </mat-autocomplete>
+                                <div
+                                    *ngIf="WaitItem[i]"
+                                    style="
+                                        position: absolute;
+                                        right: 0px;
+                                        top: 0px;
+                                    "
+                                >
+                                    <mat-spinner
+                                        diameter="20"
+                                        strokeWidth="2"
+                                        color="error"
+                                        style="margin-top: 5px;"
+                                    ></mat-spinner>
+                                </div>
+
+                            </td>
+
+                            <td padding5 class="text-center" *ngIf="form.is_detail && item.detail_id">
+                                {{ item.satuan }}
+                            </td>
+                            <td padding5 class="text-center" *ngIf="!form.is_detail">
+                                {{ item.satuan }}
+                            </td>
+
+                            <td *ngIf="form.is_detail && item.detail_id">
+                                <input 
+                                    [disabled]="!item.id"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_approved-{{i}}"
+                                    id="qty_approved-{{i}}"
+                                    tabindex="-1"
+                                    [ngModel]="item.qty_approved"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                >
+                            </td>
+                            <td *ngIf="!form.is_detail">
+                                <input 
+                                    [disabled]="!item.id"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_approved-{{i}}"
+                                    id="qty_approved-{{i}}"
+                                    tabindex="-1"
+                                    [ngModel]="item.qty_approved"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                >
+                            </td>
+
+                            <td *ngIf="form.is_detail && item.detail_id">
+                                <input 
+                                    [disabled]="!item.id"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="stock-{{i}}"
+                                    id="stock-{{i}}"
+                                    tabindex="-1"
+                                    [ngModel]="item.stock"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                    tabindex="-1"
+                                >
+                            </td>
+                            <td *ngIf="!form.is_detail">
+                                <input 
+                                    [disabled]="!item.id"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="stock-{{i}}"
+                                    id="stock-{{i}}"
+                                    tabindex="-1"
+                                    [ngModel]="item.stock"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                    tabindex="-1"
+                                >
+                            </td>
+
+                            
+                            <td *ngIf="form.is_detail && item.detail_id">
+                                <input 
+                                    [disabled]="!item.id"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_purchase-{{i}}"
+                                    id="qty_purchase-{{i}}"
+                                    [(ngModel)]="item.qty_purchase"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    [readonly]="form.is_detail && form.from_pr"
+                                >
+                            </td>
+                            <td *ngIf="!form.is_detail">
+                                <input 
+                                    [disabled]="!item.id"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_purchase-{{i}}"
+                                    id="qty_purchase-{{i}}"
+                                    [(ngModel)]="item.qty_purchase"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    [readonly]="form.is_detail && form.from_pr"
+                                >
+                            </td>
+
+                            <td *ngIf="form.is_detail && item.detail_id">
+                                <input 
+                                    [disabled]="!item.id || item.last_price == 1"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="25"
+                                    currencyMask
+                                    name="est_price-{{i}}"
+                                    id="est_price-{{i}}"
+                                    [(ngModel)]="item.est_price"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    [readonly]="
+                                        form.is_detail && 
+                                        form.from_pr
+                                    "
+                                >
+                            </td>
+                            <td *ngIf="!form.is_detail">
+                                <input 
+                                    [disabled]="!item.id || item.last_price == 1"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="25"
+                                    currencyMask
+                                    name="est_price-{{i}}"
+                                    id="est_price-{{i}}"
+                                    [(ngModel)]="item.est_price"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    [readonly]="
+                                        form.is_detail && 
+                                        form.from_pr
+                                    "
+                                >
+                            </td>
+
+                            <td padding5 *ngIf="form.is_detail && item.detail_id">
+                                <textarea
+                                type="text"
+                                placeholder="Remarks"
+                                id="remarks-{{i}}"
+                                name="remarks-{{i}}"
+                                [(ngModel)]="item.remarks"
+                                [tabindex]="item.id ? '-1' : null"
+                                [disabled]="!item.id"
+                                [required]="i == 0 || item.id"
+                                [readonly]="form.is_detail && form.from_pr"
+                            ></textarea>
+                            </td>
+                            <td padding5 *ngIf="!form.is_detail">
+                                <textarea
+                                type="text"
+                                placeholder="Remarks"
+                                id="remarks-{{i}}"
+                                name="remarks-{{i}}"
+                                [(ngModel)]="item.remarks"
+                                [tabindex]="item.id ? '-1' : null"
+                                [disabled]="!item.id"
+                                [required]="i == 0 || item.id"
+                                [readonly]="form.is_detail && form.from_pr"
+                            ></textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </mat-dialog-content>
+        <!-- / RIGHT -->
+
+    <!-- </div> -->
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+
+        <div fxLayout="row" fxFlex="1 1 auto" *ngIf="form.is_void != 1"> 
+
+            <button
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    Busy || form.is_void == 1
+                "
+                *ngIf="!form.from_pr"
+            >
+                <mat-icon>add_shopping_cart</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Create Purchase Request' }}
+            </button>
+
+            <div *ngIf="form.from_pr && !form.is_detail">
+
+                <button
+                    type="submit"
+                    mat-raised-button
+                    color="primary"
+                    [disabled]="
+                        Busy
+                    "
+                >
+                    <mat-icon>save</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Save' }}
+                </button>
+
+            </div>
+
+            <div *ngIf="form.from_pr && form.is_detail && perm.edit && form.verified != 1">
+
+                <!-- <button
+                    type="button"
+                    mat-button
+                    class="green-fg"
+                    [disabled]="
+                        Busy || form.is_void == 1
+                    "
+                    (click)="Edit()"
+                >
+                    <mat-icon>edit</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Edit' }}
+                </button> -->
+
+                <button
+                    type="button"
+                    mat-raised-button
+                    color="primary"
+                    [disabled]="
+                        Busy || form.is_void == 1
+                    "
+                    (click)="CheckEstimate()"
+                >
+                    {{ Busy ? 'Please Wait...' : 'Verify' }}
+                </button>
+
+            </div>
+
+            <div class="ml-8">
+                <button
+                    *ngIf="form.is_detail"
+                    type="button"
+                    mat-button
+                    color="primary"
+                    [disabled]="
+                        Busy || form.is_void == 1
+                    "
+                    (click)="ShowPrintDialog()"
+                >
+                    <mat-icon>print</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Print Purchase Request' }}
+                </button>
+            </div>
+
+            <!-- APPROVED -->
+            <div *ngIf="
+                form.verified == 1 &&
+                form.finish != 1 && 
+                (
+                    perm.approve ||
+                    perm.approve2 || 
+                    perm.approve3
+                )
+            ">
+
+                <div 
+                    *ngIf="
+                        form.is_detail && 
+                        form.from_pr && 
+                        perm.approve && 
+                        form.verified == 1 && 
+                        form.approved != 1 &&
+                        form.apvd >= 1
+                    "
+                >
+                    
+                    <button
+                        type="button"
+                        mat-button
+                        class="green-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="Approve(1)"
+                    >
+                        <mat-icon>check</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Approve' }}
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-button
+                        class="red-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="RejectDialog(1)"
+                    >
+                        <mat-icon>close</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Reject' }}
+                    </button>
+
+                </div>
+
+                <div 
+                    *ngIf="
+                        form.is_detail && 
+                        form.from_pr && 
+                        perm.approve2 && 
+                        form.approved == 1 && 
+                        form.approved2 != 1 &&
+                        form.apvd >= 2
+                    "
+                >
+                    
+                    <button
+                        type="button"
+                        mat-button
+                        class="green-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="Approve(2)"
+                    >
+                        <mat-icon>check</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Approve' }}
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-button
+                        class="red-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="RejectDialog(2)"
+                    >
+                        <mat-icon>close</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Reject' }}
+                    </button>
+
+                </div>
+
+                <div 
+                    *ngIf="
+                        form.is_detail && 
+                        form.from_pr && 
+                        perm.approve3 && 
+                        form.approved2 == 1 && 
+                        form.approved3 != 1 &&
+                        form.apvd >= 3
+                    "
+                >
+                    
+                    <button
+                        type="button"
+                        mat-button
+                        class="green-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="Approve(3)"
+                    >
+                        <mat-icon>check</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Approve' }}
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-button
+                        class="red-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="RejectDialog(3)"
+                    >
+                        <mat-icon>close</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Reject' }}
+                    </button>
+
+                </div>
+
+            </div>
+            <!-- / APPROVED -->
+
+            <!-- QUOTATION -->
+            <div *ngIf="
+                form.finish == 1 && 
+                perm.create_quotation && 
+                form.quoted != 1
+            ">
+                <button
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="ShowPQDialog()"
+                >
+                    <mat-icon>input</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Create Purchase Quotation' }}
+                </button>
+            </div>
+            <!-- / QUOTATION -->
+
+        </div>
+
+        <div>
+            <button
+                mat-button
+                type="button"
+                mat-dialog-close
+                *ngIf="!Busy"
+            >
+                Close
+            </button>
+        </div>
+
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+
+</form>

@@ -1,0 +1,467 @@
+<form
+    ngNativeValidate
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    aria-autocomplete="none"
+    style="min-width: 500px; max-width: 800px;"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="column" class="p-24 m-0">
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="10px">
+            <div fxFlex="1 1 auto" fxLayout="column">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                    *ngIf="form.id != 'add'"
+                >
+                    <mat-label>Item Code</mat-label>
+                    <textarea
+                        matInput
+                        type="text"
+                        placeholder="Item Code"
+                        name="kode"
+                        [(ngModel)]="form.kode"
+                        matTextareaAutosize
+                        [matAutosizeMinRows]="2"
+                        [readonly]="1"
+                    ></textarea>
+                </mat-form-field>
+
+                <div fxLayout="row" fxLayoutGap="10px">
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Item Type</mat-label>
+                        <mat-select
+                            [disabled]="
+                            (
+                                form.id != 'add' && 
+                                form.item_type != 0
+                            ) || 
+                            form.is_detail
+                            "
+                            name="item_type"
+                            placeholder="Item Type"
+                            [(ngModel)]="form.item_type_val"
+                            required
+                        >
+                            <mat-option [value]="1">Inventory Part</mat-option>
+                            <mat-option [value]="2"
+                                >Non Inventory Part</mat-option
+                            >
+                            <mat-option [value]="3">Service</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        appearance="outline"
+                        class="small"
+                        *ngIf="form.item_type_val == 2"
+                    >
+                        <mat-label>Sub Item Type</mat-label>
+                        <mat-select
+                            [disabled]="
+                            (
+                                form.id != 'add' && 
+                                form.sub_item_type != 0
+                            ) || 
+                            form.is_detail
+                            "
+                            name="sub_item_type"
+                            placeholder="Sub Item Type"
+                            [(ngModel)]="form.sub_item_type_val"
+                            required
+                        >
+                            <mat-option [value]="1">Asset</mat-option>
+                            <mat-option [value]="2">General Charge</mat-option>
+                            <mat-option [value]="3">Service</mat-option>
+                            <mat-option [value]="4">Other</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <ng-container *ngIf="form.item_type_val">
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Item Name</mat-label>
+                        <textarea
+                            matInput
+                            type="text"
+                            placeholder="Item Name"
+                            name="nama"
+                            [(ngModel)]="form.nama"
+                            required
+                            [matAutocomplete]="acItem"
+                            (ngModelChange)="ItemFilter()"
+                            matTextareaAutosize
+                            [matAutosizeMinRows]="2"
+                            [readonly]="form.is_detail || form.kode_old"
+                        ></textarea>
+                        <button
+                            mat-button
+                            type="button"
+                            *ngIf="form.nama && !form.is_detail"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="form.nama = null; form.kode_old = null; form.satuan_kode = null"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete
+                            autoActiveFirstOption
+                            #acItem="matAutocomplete"
+                            class="force-wrap ac-small"
+                        >
+                            <mat-option
+                                *ngFor="let item of Item"
+                                [value]="item.nama"
+                                (onSelectionChange)="ItemSelect($event, item)"
+                                >{{ item.nama }}<mat-divider></mat-divider
+                            ></mat-option>
+                        </mat-autocomplete>
+                        <div matSuffix>
+                            <mat-spinner
+                                *ngIf="WaitItem"
+                                diameter="20"
+                                strokeWidth="2"
+                                color="error"
+                                style="margin-top: 5px;"
+                            ></mat-spinner>
+                        </div>
+                    </mat-form-field>
+
+                    <div fxLayout="row" fxLayoutGap="10px">
+                        <mat-form-field
+                            fxFlex="1 1 auto"
+                            appearance="outline"
+                            class="small"
+                        >
+                            <mat-label>Unit of Measurement</mat-label>
+                            <input
+                                matInput
+                                type="text"
+                                placeholder="Unit of Measurement"
+                                name="satuan_kode"
+                                [(ngModel)]="form.satuan_kode"
+                                [matAutocomplete]="acSatuan"
+                                (ngModelChange)="SatuanFilter(form.satuan_kode)"
+                                (focus)="SatuanFilter(form.satuan_kode)"
+                                (click)="SatuanFilter(form.satuan_kode)"
+                                [readonly]="form.is_detail || form.satuan || form.id != 'add'"
+                                required
+                            />
+                            <button
+                                mat-button
+                                type="button"
+                                *ngIf="form.satuan && !form.is_detail && form.id == 'add'"
+                                matSuffix
+                                mat-icon-button
+                                aria-label="Clear"
+                                (click)="form.satuan = null; form.satuan_nama = null; form.satuan_kode = null;"
+                            >
+                                <mat-icon>close</mat-icon>
+                            </button>
+                            <mat-autocomplete
+                                autoActiveFirstOption
+                                #acSatuan="matAutocomplete"
+                                class="force-wrap ac-small"
+                            >
+                                <mat-option
+                                    *ngFor="let item of Satuan"
+                                    [value]="item.kode"
+                                    (onSelectionChange)="SatuanSelect($event, item)"
+                                >
+                                    {{ item.nama }} ({{ item.kode }})
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <mat-form-field
+                            fxFlex="1 1 auto"
+                            appearance="outline"
+                            class="small"
+                        >
+                            <mat-label>Item Group</mat-label>
+                            <input
+                                matInput
+                                type="text"
+                                placeholder="Item Group"
+                                name="grup_nama"
+                                [(ngModel)]="form.grup_nama"
+                                [matAutocomplete]="acGrup"
+                                (ngModelChange)="GrupFilter(form.grup_nama)"
+                                (focus)="GrupFilter(form.grup_nama)"
+                                (click)="GrupFilter(form.grup_nama)"
+                                [readonly]="form.is_detail || form.grup || form.id != 'add'"
+                                required
+                            />
+                            <button
+                                mat-button
+                                type="button"
+                                *ngIf="form.grup && !form.is_detail && form.id == 'add'"
+                                matSuffix
+                                mat-icon-button
+                                aria-label="Clear"
+                                (click)="form.grup = null; form.grup_nama = null; form.grup_kode = null;"
+                            >
+                                <mat-icon>close</mat-icon>
+                            </button>
+                            <mat-autocomplete
+                                autoActiveFirstOption
+                                #acGrup="matAutocomplete"
+                                class="force-wrap ac-small"
+                            >
+                                <mat-option
+                                    *ngFor="let item of Grup"
+                                    [value]="item.nama"
+                                    (onSelectionChange)="GrupSelect($event, item)"
+                                >
+                                    <strong>{{ item.kode }} : </strong>
+                                    {{ item.nama }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                    <mat-checkbox
+                        class="mb-4"
+                        name="in_decimal"
+                        [(ngModel)]="form.in_decimal"
+                        [checked]="form.in_decimal"
+                        [disabled]="form.is_detail"
+                        color="primary"
+                    >
+                        Qty In Decimal
+                    </mat-checkbox>
+
+                    <mat-checkbox
+                        class="mb-4"
+                        name="is_advanced"
+                        [(ngModel)]="form.is_advanced"
+                        [checked]="form.is_advanced"
+                        [disabled]="form.is_detail"
+                        color="primary"
+                    >
+                        Show Advanced Form
+                    </mat-checkbox>
+
+                    <mat-checkbox
+                        [ngClass]="form.is_fix ? 'mb-4' : 'mb-24'"
+                        name="is_fix"
+                        [(ngModel)]="form.is_fix"
+                        [checked]="form.is_fix"
+                        [disabled]="form.is_detail"
+                        color="primary"
+                    >
+                        Use Fix Rate Price
+                    </mat-checkbox>
+
+                    <mat-form-field
+                        *ngIf="form.is_fix"
+                        appearance="outline"
+                        class="small"
+                        fxFlex="1 1 auto"
+                    >
+                        <mat-label>Fix Price</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Please define Fix Price"
+                            name="fix_price"
+                            [(ngModel)]="form.fix_price"
+                            [readonly]="form.is_detail"
+                            currencyMask
+                            [required]="form.is_fix"
+                            [options]="
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2,
+                                    align: 'left'
+                                }
+                                "
+                        />
+                    </mat-form-field>
+
+                    <!-- DESCRIPTION -->
+                    <div class="mb-0" *ngIf="ShowEditor" fxFlex="1 1 auto">
+                        <div>
+                            <strong>
+                                ITEM DESCRIPTIONS / REMARKS
+                            </strong>
+                            (<em>optional</em>)
+                        </div>
+                        <div
+                            [froalaEditor]="FroalaOptions"
+                            [(froalaModel)]="form.description"
+                            *ngIf="!form.is_detail"
+                        ></div>
+
+                        <div
+                            *ngIf="form.is_detail && form.description"
+                            [innerHTML]="form.description"
+                            class="p-4 pl-24 pr-24 mat-grey-100-bg"
+                        ></div>
+                    </div>
+                    <!-- / DESCRIPTION -->
+                </ng-container>
+            </div>
+
+            <!-- Sparepart Form -->
+            <div fxFlex="0 1 auto" fxLayout="column" *ngIf="form.is_advanced">
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>Specifications</mat-label>
+                    <textarea
+                        matInput
+                        type="text"
+                        placeholder="Specifications"
+                        name="specifications"
+                        [(ngModel)]="form.specifications"
+                        matTextareaAutosize
+                        [matAutosizeMinRows]="2"
+                        [readonly]="form.is_detail"
+                    ></textarea>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>Size</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Size"
+                        name="size"
+                        [(ngModel)]="form.size"
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>Part No.</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Part No."
+                        name="part_no"
+                        [(ngModel)]="form.part_no"
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>Brand</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Brand"
+                        name="brand"
+                        [(ngModel)]="form.brand"
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>Model / Type</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Model / Type"
+                        name="model"
+                        [(ngModel)]="form.model"
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>Serial No.</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Serial No."
+                        name="serial_no"
+                        [(ngModel)]="form.serial_no"
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>EQP / Tag No.</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="EQP/Tag No."
+                        name="tag_no"
+                        [(ngModel)]="form.tag_no"
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+            </div>
+            <!-- / END : Sparepart Form -->
+        </div>
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="!form.is_detail"
+                type="button"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    (
+                        form.item_type_val == 0
+                    ) ||
+                    (
+                        form.item_type_val == 2 && 
+                        form.sub_item_type_val == 0
+                    ) || !this.form.grup
+                "
+                (click)="Simpan()"
+            >
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+        </div>
+
+        <div>
+            <button mat-button type="button" mat-dialog-close *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+</form>

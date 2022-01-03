@@ -1,0 +1,309 @@
+<form
+    ngNativeValidate
+    fxLayout="column"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    (ngSubmit)="Simpan()"
+>
+    <!-- TOOLBAR -->
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                Detail {{ Com.name }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+    <!-- END : TOOLBAR -->
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" class="m-0 p-24">
+        <!-- RETURN GR -->
+        <mat-dialog-content fxFlex="1 1 auto" fxLayout="column">
+            <!-- GRCode -->
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Deliver Code</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Please Define Deliver Code to Continue"
+                    name="deliver_kode"
+                    id="deliver_kode"
+                    [(ngModel)]="form.deliver_kode"
+                    required
+                    [matAutocomplete]="acDeliverCode"
+                    (ngModelChange)="DeliverCodeFilter(form.deliver_kode)"
+                    (focus)="DeliverCodeFilter(form.deliver_kode)"
+                    (click)="DeliverCodeFilter(form.deliver_kode)"
+                    [readonly]="form.is_detail || form.deliver"
+                    [tabindex]="form.id != 'add' ? '-1' : ''"
+                />
+                <button
+                    type="button"
+                    mat-button
+                    *ngIf="form.deliver && !form.is_detail"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="DeliverCodeRemove();"
+                    tabindex="-1"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acDeliverCode="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of DeliverCode"
+                        [value]="item.kode"
+                        (onSelectionChange)="DeliverCodeSelect($event, item)"
+                    >
+                        {{ item.kode }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <!-- / GRCode -->
+
+            <mat-form-field
+                *ngIf="form.deliver"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Return Date</mat-label>
+                <input
+                    matInput
+                    name="tanggal"
+                    placeholder="Please set Return date"
+                    [(ngModel)]="form.tanggal"
+                    [min]="minDate"
+                    [max]="maxDate"
+                    required
+                    [matDatepicker]="tanggal"
+                    (focus)="tanggal.open()"
+                    (click)="tanggal.open()"
+                    readonly
+                    [disabled]="form.is_detail"
+                    style="
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        padding: 0px !important;
+                    "
+                />
+                <mat-datepicker #tanggal></mat-datepicker>
+            </mat-form-field>
+        </mat-dialog-content>
+        <!-- END : RETURN GR -->
+
+        <!-- LIST ITEM -->
+        <mat-dialog-content
+            class="p-0 m-0 ml-24 mt-8"
+            fxLayout="column"
+            *ngIf="form.deliver && form.list?.length > 0 && form?.tanggal"
+        >
+            <table
+                class="table table-border-top table-list table-responsive table-input table-small"
+            >
+                <thead>
+                    <tr>
+                        <th>
+                            No.
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th width="100" *ngIf="!form.is_detail">
+                            Qty. Max Return
+                        </th>
+                        <th width="100">
+                            Qty. Return
+                        </th>
+                        <th width="50">
+                            Unit
+                        </th>
+                        <th>
+                            Remarks
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of form.list; let i = index;">
+                        <td padding5 align="center">
+                            {{ i + 1 }}
+                        </td>
+                        <td padding5>
+                            {{ item.nama }}
+                        </td>
+                        <td nopadding *ngIf="!form.is_detail">
+                            <input
+                                type="text"
+                                autocomplete="off"
+                                name="item-qty_max_return-{{i}}"
+                                id="item-qty_max_return-{{i}}"
+                                [ngModel]="item.qty_max_return"
+                                maxlength="20"
+                                readonly
+                                tabindex="-1"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? 
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }
+                                "
+                                [class]="item.qty_max_return > 0 ? 
+                                'mat-red-bg' : 'primary-bg'"
+                            />
+                        </td>
+                        <td nopadding>
+                            <input
+                                placeholder="Qty"
+                                type="text"
+                                autocomplete="off"
+                                name="item-qty_return-{{i}}"
+                                id="item-qty_return-{{i}}"
+                                [(ngModel)]="item.qty_return"
+                                (ngModelChange)="Calculate(item)"
+                                maxlength="20"
+                                currencyMask
+                                [readonly]="form.is_detail"
+                                [options]="item.in_decimal == 1 ? {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                            />
+                        </td>
+                        <td padding5 class="text-center">
+                            {{ item.satuan }}
+                        </td>
+                        <td *ngIf="!form.is_detail">
+                            <textarea
+                                placeholder="Remarks"
+                                type="text"
+                                autocomplete="off"
+                                name="item-remarks-{{i}}"
+                                id="item-remarks-{{i}}"
+                                [(ngModel)]="item.remarks"
+                                [readonly]="form.is_detail"
+                                maxlength="150"
+                            ></textarea>
+                        </td>
+                        <td padding5 *ngIf="form.is_detail">
+                            {{ item.remarks }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </mat-dialog-content>
+        <!-- END : LIST ITEM -->
+    </mat-dialog-content>
+    <!-- END : CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="end"
+        fxLayoutGap="10px"
+    >
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-button
+                color="primary"
+                [disabled]="!ReadySave"
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail && 
+                    form.verified != 1 &&
+                    perm.verify
+                "
+                type="button"
+                mat-button
+                color="primary"
+                (click)="Verify();"
+            >
+                <mat-icon>check</mat-icon>
+                Verify
+            </button>
+
+            <div
+                *ngIf="form.is_detail && perm.approve && form.verified == 1 && form.approved == 0"
+            >
+                <button
+                    type="button"
+                    mat-button
+                    color="primary"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Approve()"
+                >
+                    <mat-icon>check</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Approve' }}
+                </button>
+
+                <button
+                    type="button"
+                    mat-button
+                    color="warn"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Reject()"
+                >
+                    <mat-icon>close</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Reject' }}
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- END : ACTIONS -->
+</form>

@@ -1,0 +1,591 @@
+<div ngNativeValidate class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Generate Quotations
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <div fxLayout="row" fxLayout.sm="column">
+
+        <!-- RIGHT -->
+        <mat-dialog-content style="border: 1px solid #CCC;" class="m-0" fxLayoutGap="10px" fxLayoutAlign="start top" class="p-24 m-0" fxLayout="column">
+
+            <div fxLayout="row" fxLayoutGap="10px">
+                <mat-form-field style="width: 100%" floatPlaceholder="auto" appearance="outline" class="small">
+                    <input  
+                        matInput
+                        name="distribution" 
+                        placeholder="Send Date"
+                        [(ngModel)]="distribution" 
+                        (ngModelChange)="CheckDate()"
+                        mask="00/00/0000"
+                        required
+                        class="text-center"
+                        [dpDayPicker]="
+                        {
+                            locale : 'en',
+                            format : 'DD/MM/YYYY',
+                            min: minDate,
+                            drops: 'down',
+                            appendTo: 'body',
+                            disabled: true
+                        }
+                        " 
+                        theme="dp-material"
+                        tabindex="-1"
+                        style="
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        padding: 0px !important;
+                        text-align: center;
+                    "
+                    >
+                </mat-form-field>
+
+                <mat-form-field style="width: 100%" floatPlaceholder="auto" color="warn" appearance="outline" class="small">
+                    <input  
+                    matInput
+                    placeholder="Expire Date"
+                    [(ngModel)]="expire" 
+                    (ngModelChange)="CheckDate()"
+                    name="expire" 
+                    mask="00/00/0000"
+                    required
+                    class="text-center"
+                    [dpDayPicker]="
+                    {
+                        locale : 'en',
+                        format : 'DD/MM/YYYY',
+                        drops: 'down',
+                        appendTo: 'body',
+                        disabled: true
+                    }
+                    " 
+                    theme="dp-material"
+                    style="color: #f44336!important; text-align: center;
+                    "
+                    >
+                </mat-form-field>
+
+            </div>
+            <!-- <table class="table table-noborder">
+                <tr>
+                    <td>
+                        <mat-form-field style="width: 100%" floatPlaceholder="auto" appearance="outline" class="small">
+                            <input  
+                                matInput
+                                name="distribution" 
+                                placeholder="Send Date"
+                                [(ngModel)]="distribution" 
+                                (ngModelChange)="CheckDate()"
+                                mask="00/00/0000"
+                                required
+                                class="text-center"
+                                [dpDayPicker]="
+                                {
+                                    locale : 'en',
+                                    format : 'DD/MM/YYYY',
+                                    min: minDate,
+                                    drops: 'down',
+                                    appendTo: 'body',
+                                    disabled: true
+                                }
+                                " 
+                                theme="dp-material"
+                                tabindex="-1"
+                                style="
+                                font-size: 14px !important;
+                                color: #000 !important;
+                                padding: 0px !important;
+                                text-align: center;
+                            "
+                            >
+                        </mat-form-field>
+
+                    </td>
+                    <td>
+                        <mat-form-field style="width: 100%" floatPlaceholder="auto" color="warn">
+                            <input  
+                            matInput
+                            placeholder="Expire Date"
+                            [(ngModel)]="expire" 
+                            (ngModelChange)="CheckDate()"
+                            name="expire" 
+                            mask="00/00/0000"
+                            required
+                            class="text-center"
+                            [dpDayPicker]="
+                            {
+                                locale : 'en',
+                                format : 'DD/MM/YYYY',
+                                drops: 'down',
+                                appendTo: 'body',
+                                disabled: true
+                            }
+                            " 
+                            theme="dp-material"
+                            style="color: #f44336!important"
+                            >
+                        </mat-form-field>
+                    </td>
+                </tr>
+            </table> -->
+
+            <!-- PRINT AREA -->
+            <div class="print-area">
+
+                <!-- QUOTATION CONTAINER -->
+                <div class="quotation">
+
+                    <!-- HEADER -->
+                    <table class="table table-bordered table-input table-input-border">
+                        <thead class="no-bg" padding5>
+                            <tr>
+                                <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important;">
+                                    <div *ngIf="form.show_logo == 1">
+                                        <img src="/assets/logo/{{ form.company_abbr }}.png">
+                                    </div>
+                                    <div *ngIf="form.show_logo != 1">
+                                        <img src="/assets/logo/CBI.png">
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="h5">
+                                        {{ form.business_unit | uppercase }}
+                                    </div>
+                                </td>
+                                <td colspan="2">
+                                    <div class="h5 text-center text-bold">
+                                        {{ form.company_nama | uppercase }}
+                                    </div>
+                                </td>
+                                <!-- <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important; padding: 2px!important;">
+                                    <qr-code 
+                                        style="
+                                            margin: 0px!important;
+                                        "
+                                        [value]="form.qr" 
+                                        [size]="150"
+                                    ></qr-code>
+                                </td> -->
+                            </tr>
+                            <tr>
+                                <td rowspan="3" class="text-center" style="vertical-align: middle!important;">
+                                    <div class="h2 text-bold">
+                                        REQUEST FOR QUOTATION
+                                    </div>
+                                </td>
+                                <td width="30">
+                                    NO
+                                </td>
+                                <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                                    <!-- FIP-PA-02-02 / 192121 -->
+                                    FIP-FA-02-01
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    REVISION
+                                </td>
+                                <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                                    00
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    EFFECTIVE
+                                </td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                    </table>
+                    <!-- / END : HEADER -->
+
+                    <!-- SUBHEADER -->
+                    <table class="table table-input table-input-noborder">
+                        <tr>
+                            <td>
+                                <!-- TABLE SUPPLIER DETAIL -->
+                                <div class="company">
+                                    <!-- <div style="border-bottom: 1px solid #CCC; margin-bottom: 5px;">
+                                        Quote Sent to:
+                                    </div> -->
+                                    <div class="nama">
+                                        {{ data.jenis }} {{ data.nama }}
+                                    </div>
+                                    <div class="alamat">
+                                        {{ data.alamat }}
+                                    </div>
+                                </div>
+                                <!-- / END : TABLE SUPPLIER DETAIL -->
+                            </td>
+                            <td width="50%">
+                                <!-- TABLE IDENTITAS DOKUMEN -->
+                                <table class="table table-input table-big table-bold" style="border: 1px solid #CCC;">
+                                    <tbody padding5>
+                                        <tr>
+                                            <td width="75">PR. No.</td>
+                                            <td width="1">:</td>
+                                            <td>{{ form.pr_kode }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>PR Date</td>
+                                            <td>:</td>
+                                            <td>
+                                                {{ form.pr_tanggal_show }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>RFQ No.</td>
+                                            <td>:</td>
+                                            <td>{{ form.pq_kode }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>RFQ Date</td>
+                                            <td>:</td>
+                                            <td>
+                                                {{ form.tanggal_show }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- / END :TABLE IDENTITAS DOKUMEN -->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div style="margin-top: 15px;">
+                                        Dear {{ data.jenis }} {{ data.nama }},
+                                </div>
+                                <div style="margin-top: 5px; margin-right: 120px; margin-bottom: 10px;">
+                                    Your Company is invited to participate in the following Request for Quotation <br><span class="bold">{{ form.company_nama }}</span> ({{ form.pq_kode }}) with the specifications attached below.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- / END :SUBHEADER -->
+
+                    <!-- ITEM LIST -->
+                    <table class="table table-border-top table-list table-responsive table-input">
+                        <thead>
+                            <tr>
+                                <th width="10" rowspan="2">
+                                    No.
+                                </th>
+                                <!--<th width="50" rowspan="2">
+                                    Code
+                                </th>-->
+                                <th rowspan="2">
+                                    Name
+                                </th>
+                                <th width="75" rowspan="2">
+                                    Qty. Request
+                                </th>
+                                <th width="75" rowspan="2">
+                                    Qty.
+                                </th>
+                                <th width="30" rowspan="2">
+                                    Unit
+                                </th>
+                                <th colspan="2">
+                                    Unit Price
+                                </th>
+                                <th rowspan="2">
+                                    Origin / Quality
+                                </th>
+                                <th rowspan="2">
+                                    Remarks
+                                </th>
+                            </tr>
+                            <tr>
+                                <th width="100">
+                                    Cash
+                                </th>
+                                <th width="100">
+                                    Credit
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr padding5 *ngFor="let item of form.list; let i = index;">
+                                <td align="center">
+                                    {{ i+1 }}
+                                </td>
+                                <!--<td>
+                                    {{ item.kode }}
+                                </td>-->
+                                <td>
+                                    {{ item.nama }}
+                                </td>
+                                <td nopadding>
+                                    <input 
+                                        placeholder="Qty. Purchase"
+                                        type="text" 
+                                        autocomplete="off"
+                                        name="item-qty-{{i}}" 
+                                        id="item-qty-{{i}}" 
+                                        [ngModel]="item.qty_purchase"
+                                        [disabled]="!item.kode"
+                                        [required]="item.kode"
+                                        maxlength="20"
+                                        readonly
+                                        currencyMask
+                                        [options]="data.category == 3 
+                                                    ? 
+                                                    {
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 2
+                                                    }
+                                                    :
+                                                    {
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                    }
+                                                    "
+                                        >
+                                </td>
+                                <td>&nbsp;</td>
+                                <td class="text-center">
+                                    {{ item.satuan }}
+                                </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>
+                                    {{ item.remarks }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- / END : ITEM LIST -->
+
+                    <!-- FOOTER -->
+                    <table class="table table-noborder" style="margin: -5px!important; background: none!important;">
+                        <tr nopadding>
+                            <td>
+                                <div class="note" style="min-width: 150px;">
+                                    <div class="bold">Note:</div>
+                                    <div class="content">
+                                        {{ data.note }}
+                                    </div>
+                                </div>
+                            </td>
+                            <td width="250">
+
+                                <table class="table table-noborder table-small table-padding-small" style="background: none!important;">
+                                    <tr>
+                                        <td width="75">Currency</td>
+                                        <td width="1">:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>DP (%)</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>PPN (%)</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Trans. Costs</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                    <!--<tr>
+                                        <td>Trans. Tax (%)</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>-->
+                                    <tr>
+                                        <td>Disc. Cash</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Disc. Credit</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </td>
+                            <td width="250">
+                                    
+                                <table class="table table-noborder table-small table-padding-small" style="background: none!important;">
+                                    <tr>
+                                        <td width="100">Customs Costs</td>
+                                        <td width="1">:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Other Costs</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>PPBKB</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Delivery Plan</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Payment Terms</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Price Expire Date</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div class="underline">&nbsp;</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Delivery Term</td>
+                                        <td>:</td>
+                                        <td>
+                                            <div>
+                                                <div class="box pull-left"></div> Loco
+                                            </div>
+                                            <div class="clearfix" style="margin-top: 5px;"></div>
+                                            <div>
+                                                <div class="box pull-left"></div> Franco
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- / END : FOOTER -->
+
+                </div>
+                <!-- / END :QUOTATION CONTAINER -->
+    
+            </div>
+            <!-- / PRINT AREA -->
+
+        </mat-dialog-content>
+        <!-- / RIGHT -->
+
+        <!-- LEFT -->
+        <mat-dialog-content fxLayout="column" class="m-0 p-24">
+
+            <div class="h3">
+                History:
+            </div>
+
+            <table class="table table-input-noborder table-input table-small table-striped table-hover" style="max-width: 250px;">
+                <tr *ngFor="let item of form.history">
+                    <td width="75">
+                        <small>
+                            {{ item.time }}
+                        </small>
+                    </td>
+                    <td padding5>
+                        User {{ item.username }}, {{ item.description }}
+                    </td>
+                </tr>
+            </table>
+
+        </mat-dialog-content>
+        <!-- / LEFT -->
+
+    </div>
+    <!-- / CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button 
+                type="button" 
+                mat-button 
+                color="primary" 
+                [disabled]="
+                    !expire || 
+                    WaitPrint
+                " 
+                (click)="Print()"
+                *ngIf="!WaitPrint"
+            >
+                <mat-icon>print</mat-icon>
+                Print Quotations
+            </button> 
+            <div *ngIf="WaitPrint" fxLayout="row" fxFlex="1 1 auto" class="p-18 m-12">
+                <mat-spinner strokeWidth="1" diameter="16" style="margin-right: 10px;"></mat-spinner> 
+                Please Wait...
+            </div>
+            <div class="warn-fg" style="margin-left: 10px; margin-top: 5px;" *ngIf="!expire">
+                <small>
+                    <em>
+                        <i class="fa fa-warning"></i>
+                        Please fill <strong>Expire Date</strong> field to enable this button!
+                    </em>
+                </small>
+            </div>
+        </div>
+    
+        <div>
+            <button type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+
+</div>

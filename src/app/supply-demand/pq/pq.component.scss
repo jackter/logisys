@@ -1,0 +1,341 @@
+body {
+    background: #FFF;
+}
+
+// .print-area {
+//     min-width: 834px;
+//     width: 100%;
+//     margin-top: 10px; 
+//     margin-bottom: 10px;
+//     font-size: 13px;
+//     position: relative;
+//     display: block;
+//     font-weight: normal!important;
+
+//     background-image: url('~/assets/images/bg-daun-2.png');
+//     background-repeat: no-repeat;
+//     background-position: center center;
+//     // background-position: calc(100% + 200px) 0;
+//     // background-size: 400px;
+//     background-size: contain;
+
+//     .company {
+
+//         padding: 5px;
+
+//         .nama {
+//             font-weight: bold!important;
+//         }
+
+//     }
+
+//     .table.table-input input,
+//     .table.table-input select,
+//     .table.table-input textarea {
+//         border: none!important;
+//         font-size: 11px!important;
+//     }
+
+//     .table.table-input-border {
+//         input, 
+//         select,
+//         textarea {
+//             border-bottom: 1px solid #CCC!important;
+//         }
+
+//         input:focus, 
+//         select:focus,
+//         textarea:focus {
+//             border-bottom: 1px dashed #CCC!important;
+//         }
+//     }
+
+//     .table.table-small td {
+//         font-size: 11px!important;
+//     }
+
+//     .table.table-border-top {
+//         border-top: 1px solid #CCC;
+//     }
+//     .table thead tr th {
+//         /*background: #616161!important;
+//         color: #FFF!important;*/
+//         background-color: #F7F7F7 !important;
+//         color: #000 !important;
+//         padding: 8px 6px!important;
+//     }
+//     .table>thead>tr>th {
+//         vertical-align: middle!important;
+//     }
+//     .table thead.no-bg tr {
+//         /*clear: both;*/
+//         background: none!important;
+//         color: #000!important;
+//     }
+//     .table.table-input thead td,
+//     .table.table-input thead th {
+//         font-size: 11px!important;
+//         font-weight: normal!important;
+//     }
+//     .table.table-input [padding5] td {
+//         font-size: 11px!important;
+//     }
+//     .table.table-padding-small td {
+//         padding: 4px 2px;
+//     }
+
+// }
+
+dialog-reply-pq {
+
+    .table.table-input input,
+    .table.table-input select,
+    .table.table-input textarea {
+        border: none!important;
+        font-size: 11px!important;
+    }
+
+    .table.table-input-border {
+        input, 
+        select,
+        textarea {
+            border-bottom: 1px solid #CCC!important;
+        }
+
+        input:focus, 
+        select:focus,
+        textarea:focus {
+            border-bottom: 1px dashed #CCC!important;
+        }
+    }
+
+    .table.table-small td {
+        font-size: 11px!important;
+    }
+
+    .table.table-border-top {
+        border-top: 1px solid #CCC;
+    }
+    .table thead tr th {
+        /*background: #616161!important;
+        color: #FFF!important;*/
+        background-color: #F7F7F7 !important;
+        color: #000 !important;
+        padding: 2px 4px!important;
+    }
+    .table>thead>tr>th {
+        vertical-align: middle!important;
+    }
+    .table thead.no-bg tr {
+        /*clear: both;*/
+        background: none!important;
+        color: #000!important;
+    }
+    .table.table-input thead td,
+    .table.table-input thead th {
+        font-size: 11px!important;
+        font-weight: normal!important;
+    }
+    .table.table-input [padding5] td {
+        font-size: 11px!important;
+    }
+    .table.table-padding-small td {
+        padding: 4px 2px;
+    }
+}
+@media print {
+
+    .size10 {
+        font-size: 12px!important;
+    }
+    .print-area-compare {
+        // width: 100%;
+        overflow: visible;
+
+        .mat-radio-container {
+            display: none!important;
+        }
+
+        .mat-radio-button {
+            font-size: 12px;
+        }
+
+        .visible {
+            overflow: visible;
+            .table.table-print {
+                max-width: 350px;
+                width: 350px;
+            }
+        }
+
+    }
+
+}
+dialog-compare-pq {
+
+    @media print {
+        @page {
+            size:landscape
+        }
+    }
+
+    .mat-radio-container {
+        width: 10px;
+        height: 10px;
+
+        .mat-radio-outer-circle {
+            width: 10px;
+            height: 10px;
+            border-width: 1px;
+        }
+        .mat-radio-inner-circle {
+            width: 10px;
+            height: 10px;
+        }
+    }
+
+    .mat-radio-button {
+        font-size: 12px;
+    }
+
+    .size10 {
+        font-size: 10px!important;
+    }
+}
+
+.print-area {
+    .quotation {
+        min-width: 834px;
+        background: #FFF;
+        // background-image: url('~/assets/images/bg-daun-2.png');
+        // background-repeat: no-repeat;
+        // background-position: center center;
+        // background-size: contain;
+
+        .distribution {
+            position: absolute;
+            left: 0px;
+            top: -10px;
+            color: #000;
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .expire { 
+            position: absolute;
+            right: 0px;
+            top: -10px;
+            color: #f44336;
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .doc-number {
+            margin: 0px;
+            margin-bottom: 10px;
+            border: 1px solid #bababa;
+            padding: 5px;
+            font-size: 13px;
+            display: inline;
+            background: #F9F9F9;
+            position: relative;
+            z-index: 2;
+            font-weight: normal;
+        }
+
+        .line {
+            position: absolute;
+            z-index: 1;
+            top: 8px;
+            width: 100%;
+            border-bottom: 1px solid #bababa;
+        }
+
+        .doc-number-left {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            font-size: 32px;
+            color: #999;
+            opacity: 0.1;
+        }
+
+        .doc-number span, 
+        .doc-number-left span {
+            color: #F9F9F9;
+        }
+        
+        .table.table-input input,
+        .table.table-input select,
+        .table.table-input textarea {
+            border: none!important;
+            font-size: 11px!important;
+        }
+        .table.table-small td {
+            font-size: 11px!important;
+        }
+        .bold {
+            font-weight: bold!important;
+        }
+        .company {
+            
+        }
+        .company .nama {
+            font-weight: bold!important;
+        }
+        .table.table-border-top {
+            border-top: 1px solid #CCC;
+        }
+        .table thead tr th {
+            /*background: #616161!important;
+            color: #FFF!important;*/
+            background-color: #F7F7F7 !important;
+            color: #000 !important;
+            padding: 2px 4px!important;
+        }
+        .table>thead>tr>th {
+            vertical-align: middle!important;
+        }
+        .table thead.no-bg tr {
+            /*clear: both;*/
+            background: none!important;
+            color: #000!important;
+        }
+        .table.table-input thead td,
+        .table.table-input thead th {
+            font-size: 11px!important;
+            font-weight: normal!important;
+        }
+        .table.table-input [padding5] td {
+            font-size: 11px!important;
+        }
+        .table.table-padding-small td {
+            padding: 4px 2px;
+        }
+
+        .table.table-input.table-big td {
+            font-size: 12px!important;
+        }
+        .table.table-input.table-bold td {
+            font-weight: bold;
+        }
+
+        .note {
+            padding: 5px;
+            border:1px solid #CCC;
+            height: 140px;
+        }
+        .note .content {
+            font-size: 12px!important;
+        }
+        .underline {
+            border-bottom: 1px solid #CCC;
+        }
+        .box {
+            border: 1px solid #CCC;
+            padding: 7px;
+            margin-right: 5px;
+        }
+
+    }
+}

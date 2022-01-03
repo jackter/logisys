@@ -1,0 +1,143 @@
+<div fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary ma-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Print Preview
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="column" fxLayout.sm="column" class="m-0">
+        <div class="print-area" fxLayout="column" fxFlex="0 1 auto">
+            <ng-container *ngFor="let item of Data">
+                <div *ngIf="item" class="break">    
+                    <div class="h2 text-center text-bold">
+                        INVOICE AGING
+                    </div>           
+                    <div class="h3 text-center text-bold">
+                        {{ item[0].supplier_nama | uppercase }}
+                    </div>     
+    
+                    <table class="table table-input table-small table-responsive table-border-top m-8">
+                        <thead>
+                            <tr>
+                                <th width="30">
+                                    No.
+                                </th>
+                                <th>
+                                    Code
+                                </th>
+                                <th width="75">
+                                    Date
+                                </th>
+                                <th width="125">
+                                    Amount
+                                </th>
+                                <th width="75">
+                                    Due Date
+                                </th>
+                                <th width="125">
+                                    Current
+                                </th>
+                                <th width="125">
+                                    Due 1 - 30
+                                </th>
+                                <th width="125">
+                                    Due 30 - 60
+                                </th>
+                                <th width="125">
+                                    Due 60 - 90
+                                </th>
+                                <th width="125">
+                                    Due 91 - Over
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody *ngFor="let detail of item; let i = index;">
+                            <tr *ngIf="detail">
+                                <td padding5>
+                                    {{ i + 1 }}.
+                                </td>
+                                <td padding5>
+                                    {{ detail.kode }}
+                                </td>
+                                <td padding5>
+                                    {{ date_indo(detail.ref_tgl) }}
+                                </td>
+                                <td padding5 class="text-right">
+                                    {{ rupiah(detail.amount) }}
+                                </td>
+                                <td padding5>
+                                    {{ date_indo(detail.due_date) }}
+                                </td>
+                                <td padding5 class="text-right">
+                                    {{ rupiah(detail.due_curr) }}
+                                </td>
+                                <td padding5 class="text-right">
+                                    {{ rupiah(detail.due_30) }}
+                                </td>
+                                <td padding5 class="text-right">
+                                    {{ rupiah(detail.due_60) }}
+                                </td>
+                                <td padding5 class="text-right">
+                                    {{ rupiah(detail.due_90) }}
+                                </td>
+                                <td padding5 class="text-right">
+                                    {{ rupiah(detail.due_over_90) }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </ng-container>
+        </div>
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button 
+                type="button" 
+                mat-button 
+                color="primary" 
+                [disabled]="
+                    WaitPrint || 
+                    Busy
+                " 
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                Print
+            </button> 
+        </div>
+
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+
+</div>

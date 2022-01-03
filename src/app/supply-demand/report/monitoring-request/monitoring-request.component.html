@@ -1,0 +1,316 @@
+<div class="page-layout simple" fusePerfectScrollbar>
+    <!-- CONTENT HEADER -->
+    <div
+        class="header dx-header primary-bg primary p-12"
+        fxLayout="row"
+        fxLayoutAlign="end center"
+        fxLayoutGap="10px"
+        *fuseIfOnDom
+    >
+        <div fxFlex="1 1 auto" fxLayout="row" fxLayoutGap="10px">
+            <div
+                class="logo"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                style="position: relative;"
+            >
+                <mat-icon
+                    *ngIf="Com.icon_type != 'fa'"
+                    class="logo-icon mr-16"
+                    [@animate]="{
+                        value: '*',
+                        params: { delay: '50ms', scale: '0.2' }
+                    }"
+                >
+                    {{ Com.icon }}
+                </mat-icon>
+                <span
+                    *ngIf="Com.icon_type == 'fa'"
+                    class="mr-16"
+                    [@animate]="{
+                        value: '*',
+                        params: { delay: '50ms', scale: '0.2' }
+                    }"
+                >
+                    <i [class]="Com.icon"></i>
+                </span>
+                <span
+                    class="logo-text h3"
+                    *fuseIfOnDom
+                    [@animate]="{
+                        value: '*',
+                        params: { delay: '100ms', x: '-25px' }
+                    }"
+                >
+                    {{ Com.title }}
+                </span>
+
+                <button
+                    mat-button
+                    color="accent"
+                    (click)="Reload()"
+                    [@animate]="{
+                        value: '*',
+                        params: { delay: '550ms', x: '35px' }
+                    }"
+                >
+                    <mat-icon>refresh</mat-icon>
+                    Refresh Data
+                </button>
+            </div>
+        </div>
+
+        <!-- BUTTON ADD -->
+        <div fxFlex="0 0 auto" *ngIf="!isEmpty(filter)">
+            <button
+                mat-raised-button
+                class="accent-bg"
+                (click)="toggleFilterShow()"
+                [@animate]="{
+                    value: '*',
+                    params: { delay: '150ms', y: '35px' }
+                }"
+            >
+                <ng-container *ngIf="!FilterShow">
+                    <mat-icon class="accent-bg">filter_list</mat-icon>
+                    Show Filter
+                </ng-container>
+                <ng-container *ngIf="FilterShow">
+                    <mat-icon class="accent-bg">close</mat-icon>
+                    Close Filter
+                </ng-container>
+            </button>
+        </div>
+        <!-- / BUTTON ADD -->
+    </div>
+    <!-- CONTENT HEADER -->
+
+    <!-- FILTER -->
+    <div
+        class="grey-100 pl-12 pr-12 pt-8 pb-0"
+        fxLayout="row"
+        *ngIf="FilterShow"
+    >
+        <!-- PERODE -->
+        <div fxLayout="column" class="m-0">
+            <div class="text-bold">
+                Select Period
+            </div>
+
+            <div fxLayoutGap="10px">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Date From</mat-label>
+                    <input
+                        matInput
+                        name="F_Start"
+                        placeholder="Date From"
+                        [(ngModel)]="filter.F_Start"
+                        [matDatepicker]="F_Start"
+                        (ngModelChange)="Reload()"
+                        (focus)="F_Start.open()"
+                        (click)="F_Start.open()"
+                        [min]="minDateStart"
+                        [max]="maxDateStart"
+                        readonly
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                        "
+                    />
+                    <mat-datepicker
+                        #F_Start
+                        startView="multi-year"
+                        (monthSelected)="
+                            chosenMonthHandler($event, F_Start, 'F_Start')
+                        "
+                    ></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Date To</mat-label>
+                    <input
+                        matInput
+                        name="F_End"
+                        placeholder="Date From"
+                        [(ngModel)]="filter.F_End"
+                        [matDatepicker]="F_End"
+                        (ngModelChange)="Reload()"
+                        (focus)="F_End.open()"
+                        (click)="F_End.open()"
+                        readonly
+                        [min]="minDateEnd"
+                        [max]="maxDateEnd"
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                        "
+                    />
+                    <mat-datepicker
+                        #F_End
+                        startView="multi-year"
+                        (monthSelected)="
+                            chosenMonthHandler($event, F_End, 'F_End')
+                        "
+                    ></mat-datepicker>
+                </mat-form-field>
+            </div>
+        </div>
+        <!-- / PERIODE -->
+
+        <!-- COMPANY -->
+        <div fxLayout="column" class="m-0 pl-20" fxFlex="1 1 auto">
+            <div fxLayout="row" class="text-bold">
+                Select Company
+            </div>
+
+            <div fxLayout="row" fxLayoutGap="10px" fxFlex="1 1 auto">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    floatLabel="always"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Company</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        name="company_nama"
+                        placeholder="Company"
+                        [(ngModel)]="filter.company_nama"
+                        [matAutocomplete]="acCompany"
+                        (ngModelChange)="CompanyFilter(filter.company_nama)"
+                        [readonly]="CompanyLen == 1 || filter.company"
+                    />
+                    <button
+                        mat-button
+                        *ngIf="filter.company"
+                        matSuffix
+                        mat-icon-button
+                        aria-label="Clear"
+                        (click)="
+                            filter.company = null;
+                            filter.company_nama = null;
+                            filter.dept = null;
+                            filter.dept_nama = null;
+                            CompanyFilter()
+                        "
+                    >
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete
+                        autoActiveFirstOption
+                        #acCompany="matAutocomplete"
+                        class="force-wrap ac-small"
+                    >
+                        <mat-option
+                            *ngFor="let item of Company"
+                            [value]="item.nama"
+                            (onSelectionChange)="CompanySelect($event, item)"
+                        >
+                            <small>{{ item.nama }}</small>
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+                <!-- DEPT -->
+                <div *ngIf="filter.company" fxFlex="1 1 auto">
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        floatLabel="auto"
+                        floatPlaceholder="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Deptartment/Plant</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Department/Plant (Leave empty to show all)"
+                            name="dept_nama"
+                            [(ngModel)]="filter.dept_nama"
+                            [matAutocomplete]="acDept"
+                            (ngModelChange)="DeptFilter()"
+                            [readonly]="filter.dept"
+                        />
+                        <button
+                            mat-button
+                            *ngIf="filter.dept"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="filter.dept_nama = ''; DeptFilter()"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete
+                            autoActiveFirstOption
+                            #acDept="matAutocomplete"
+                            class="force-wrap ac-small"
+                        >
+                            <mat-option
+                                *ngFor="let item of Dept"
+                                [value]="item.nama"
+                                (onSelectionChange)="DeptSelect($event, item)"
+                            >
+                                {{ item.abbr }} :
+                                {{ item.nama }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <!-- / DEPT -->
+            </div>
+        </div>
+        <!-- / COMPANY -->
+    </div>
+    <!-- / FILTER -->
+
+    <!-- CONTENT -->
+    <div class="content" style="height: 100%;" *ngIf="filter.company">
+        <ag-grid-angular
+            style="width: 100%; height: 100%;"
+            class="ag-theme-balham"
+            [defaultColDef]="gridOptions.defaultColDef"
+            [columnDefs]="TableCol"
+            [context]="gridOptions.context"
+            [enableFilter]="gridOptions.enableFilter"
+            [floatingFilter]="gridOptions.floatingFilter"
+            [animateRows]="gridOptions.animateRows"
+            [enableColResize]="gridOptions.enableColResize"
+            [allowContextMenuWithControlKey]="
+                gridOptions.allowContextMenuWithControlKey
+            "
+            [getContextMenuItems]="getContextMenuItems"
+            [rowModelType]="gridOptions.rowModelType"
+            [rowBuffer]="gridOptions.rowBuffer"
+            [debug]="gridOptions.debug"
+            [rowSelection]="gridOptions.rowSelection"
+            [rowDeselection]="gridOptions.rowDeselection"
+            [cacheOverflowSize]="gridOptions.cacheOverflowSize"
+            [maxConcurrentDatasourceRequests]="
+                gridOptions.maxConcurrentDatasourceRequests
+            "
+            [infiniteInitialRowCount]="gridOptions.infiniteInitialRowCount"
+            [cacheBlockSize]="gridOptions.cacheBlockSize"
+            [maxBlocksInCache]="gridOptions.maxBlocksInCache"
+            (gridReady)="onGridReady($event)"
+            (filterChanged)="FilterChanged($event)"
+            (cellDoubleClicked)="onDoubleClick($event)"
+            [overlayLoadingTemplate]="overlayLoadingTemplate"
+            [overlayNoRowsTemplate]="overlayNoRowsTemplate"
+            [excelStyles]="ExcelStyles"
+            [defaultExportParams]="defaultExportParams"
+        ></ag-grid-angular>
+    </div>
+    <!-- / CONTENT -->
+</div>

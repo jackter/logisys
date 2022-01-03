@@ -1,0 +1,264 @@
+<div fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary ma-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Print Preview
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="column" fxLayout.sm="column" class="m-0">
+        <div class="print-area" fxLayout="column" fxFlex="0 1 auto">
+            <table class="table table-bordered table-input table-input-border print-po">
+                <thead class="no-bg" padding5>
+                    <tr>
+                        <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important;">
+                            <img src="/assets/logo/{{ form.company_abbr }}.png">
+                        </td>
+                        <td class="text-center" colspan="4">
+                            <div class="h3">
+                                {{ form.business_unit | uppercase }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3" class="text-center" style="vertical-align: middle!important;">
+                            <div class="h4 text-bold">
+                                BANK PAYMENT
+                            </div>
+                        </td>
+                        <td width="125">
+                            NO
+                        </td>
+                        <td width="100">
+                            FIP-FA-03-04
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            REVISI
+                        </td>
+                        <td>
+                            00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            TANGGAL EFEKTIF
+                        </td>
+                        <td>
+                            02-01-2018
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="h5 text-center text-bold" style="margin-bottom: 10px;">
+                NO. {{ form.kode }}
+            </div>
+
+            <div fxLayout="row" fxLayoutGap="10px">
+                <div fxLayout="column" fxFlex="1 1 auto">
+                    <table class="table table-small table-input table-input-noborder">
+                        <tr>
+                            <td padding5 class="text-bold">
+                                {{ form.company_nama | uppercase }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td padding5>
+                                <div [innerHtml]="form.company_alamat"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td padding5>
+                                &nbsp;
+                            </td>
+                        </tr>        
+                    </table>
+                </div>
+                <div fxLayout="column" fxFlex="1 1 20%" *ngIf="form.rekon == 1">
+                    <table class="table table-input table-small table-input-border"> 
+                        <tr>
+                            <td padding5 class="text-center" style="vertical-align: middle!important;">
+                                <div class="h2 text-bold">
+                                    RECONCILED
+                                </div> 
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div fxLayout="row" fxFlex="0 1 auto" fxLayoutGap="10px">
+                <div fxFlex="1 1 auto">
+                    <table class="table table-small table-input table-input-noborder">
+                        <tr padding5>
+                            <td width="100">
+                                Paid From
+                            </td>
+                            <td width="1">:</td>
+                            <td>
+                                {{ form.bank_nama }} - {{ form.no_rekening }}
+                            </td>
+                        </tr>
+                        <tr padding5>
+                            <td width="100">
+                                Payee
+                            </td>
+                            <td width="1">:</td>
+                            <td>
+                                {{ form.penerima_nama | titlecase }}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div fxFlex="1 1 auto">
+                    <table class="table table-small table-input table-input-noborder">
+                        <tr padding5>
+                            <td width="100">
+                                Date
+                            </td>
+                            <td width="1">:</td>
+                            <td>
+                                {{ date_indo(form.tanggal) }}
+                            </td>
+                            <td width="100">
+                                Amount
+                            </td>
+                            <td width="1">:</td>
+                            <td>
+                                {{ rupiah(form.total) }}
+                            </td>
+                        </tr>
+                        <tr padding5>
+                            <td width="100">
+                                Currency
+                            </td>
+                            <td width="1">:</td>
+                            <td>
+                                {{ form.currency }}
+                            </td>
+                            <td width="100">
+                                Reff. Type
+                            </td>
+                            <td width="1">:</td>
+                            <td>
+                                {{ form.reff_nama }}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <table class="table table-small table-responsive table-input table-border-top mb-8">
+                <thead>
+                    <tr>
+                        <th width="30">No.</th>
+                        <th width="100">Refference</th>
+                        <th width="150">Account Code</th>
+                        <th width="150">Account Desc</th>
+                        <th width="200">Remarks</th>
+                        <th width="100">Total</th>
+                    </tr>
+                </thead>
+                <tbody *ngFor="let item of form.detail; let i = index">
+                    <tr *ngIf="item">
+                        <td padding5 class="text-center">
+                            {{ i + 1 }}.
+                        </td>
+                        <td padding5>
+                            {{ item.reff_kode }}
+                        </td>
+                        <td padding5>
+                            {{ item.coa_kode }}
+                        </td>
+                        <td padding5>
+                            {{ item.coa_nama }}
+                        </td> 
+                        <td padding5>
+                            {{ item.uraian }}
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(item.total) }}
+                        </td>
+                    </tr>
+                </tbody>
+                <tr>
+                    <td colspan="6" style="background: #F7F7F7;">
+                        <div style="height: 5px;"></div>
+                    </td>
+                </tr>
+                <tr class="text-bold">
+                    <td padding5 colspan="5" class="text-center">
+                        Total Amount
+                    </td>
+                    <td padding5 class="text-right">
+                        {{ rupiah(form.total) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5" style="background: #F7F7F7;">
+                        <div style="height: 5px;"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td padding5 colspan="3">
+                        Memo :
+                        <div style="margin-left: 20px;">
+                        <!-- {{ form.terbilang | titlecase }} -->
+                        </div>
+                    </td>
+                    <td padding5 colspan="3">
+                        In Words :
+                        <div style="margin-left: 20px;">
+                            {{ form.terbilang | titlecase }}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button 
+                type="button" 
+                mat-button 
+                color="primary" 
+                [disabled]="
+                    WaitPrint || 
+                    Busy
+                " 
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                Print
+            </button> 
+        </div>
+
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+
+</div>

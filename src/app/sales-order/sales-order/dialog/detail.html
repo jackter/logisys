@@ -1,0 +1,565 @@
+<div fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Print Preview
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="row" fxLayoutGap="10px" class="p-24 m-0">
+        <div class="print-area" fxLayout="column" fxFlex="0 1 auto">
+            <table class="table table-bordered table-input table-input-border print-po">
+                <thead class="no-bg" padding5>
+                    <tr>
+                        <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important;">
+                            <img src="/assets/logo/CBI.png">
+                        </td>
+                        <td class="text-center" colspan="4">
+                            <div class="h3">
+                                {{ form.business_unit | uppercase }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3" class="text-center" style="vertical-align: middle!important;">
+                            <div class="h4 text-bold">
+                                SALES ORDER
+                            </div>
+                        </td>
+                        <td width="50">
+                            NO
+                        </td>
+                        <td width="100">
+                            FIP-PPIC-01-06
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            REVISION
+                        </td>
+                        <td>
+                            00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            EFFECTIVE
+                        </td>
+                        <td>
+                            01-06-2018
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-input table-input-noborder">
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td padding5 width="40%">
+                        <strong>BUYER</strong>
+                    </td>
+                    <td padding5 width="40%" colspan="3">
+                        <strong>SALES ORDER INFORMATION</strong>
+                    </td>
+                    <td width="20%" colspan="2">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td padding5>
+                        {{ form.cust_abbr | uppercase }}
+                    </td>
+                    <td padding5>
+                        SO No. / Date
+                    </td>
+                    <td padding5>:</td>
+                    <td padding5>{{ form.kode }} </td>
+                    <td padding5>/</td>
+                    <td padding5>{{ form.tanggal_show }} </td>
+                </tr>
+                <tr>
+                    <td padding5>
+                        {{ form.cust_nama | uppercase }}
+                    </td>
+                    <td padding5>
+                        PC Number / Date
+                    </td>
+                    <td padding5>:</td>
+                    <td padding5>{{ form.kontrak_kode }} </td>
+                    <td padding5>/</td>
+                    <td padding5>{{ form.kontrak_tanggal_show }} </td>
+                </tr>
+                <tr>
+                    <td padding5>
+                        {{ form.cust_alamat | uppercase }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+            </table>
+
+            <div class="text-bold">DELIVERY DETAIL</div>
+            <table class="table table-input table-input-border table-border-top">
+                <thead>
+                    <tr>
+                        <th width="150">Item Code</th>
+                        <th>Description</th>
+                        <th width="150">Quantity</th>
+                        <!-- <th width="150">Price</th>
+                        <th width="200">Total Price</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td padding5 class="text-center">
+                            {{ form.item_kode }}
+                        </td>
+                        <td padding5>
+                            {{ form.item_nama }}
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(form.qty_so) }} {{ form.item_satuan }}
+                        </td>
+                        <!-- <td padding5 class="text-right">
+                            {{ form.currency }} {{ rupiah(form.sold_price) }} / {{ form.item_satuan }}
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ form.currency }} {{ rupiah(form.grand_total) }}
+                        </td> -->
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-input table-input-noborder">
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr *ngIf="form.destination">
+                    <td padding5 width="150">Destination</td>
+                    <td padding5 width="1">:</td>
+                    <td padding5> {{ form.destination }} </td>
+                </tr>
+                <tr *ngIf="form.pod">
+                    <td padding5>Port Of Discharge</td>
+                    <td padding5 width="1">:</td>
+                    <td padding5> {{ form.pod }} </td>
+                </tr>
+                <tr *ngIf="form.shipment_period">
+                    <td padding5>Shipment Period</td>
+                    <td padding5 width="1">:</td>
+                    <td padding5> {{ form.shipment_period }} </td>
+                </tr>
+                <tr *ngIf="form.vessel">
+                    <td padding5>Vessel</td>
+                    <td padding5 width="1">:</td>
+                    <td padding5> {{ form.vessel }} </td>
+                </tr>
+                <tr *ngIf="form.barges">
+                    <td padding5>Barges</td>
+                    <td padding5 width="1">:</td>
+                    <td padding5> {{ form.barges }} </td>
+                </tr>
+                <tr *ngIf="form.spesifikasi">
+                    <td padding5>Specification</td>
+                    <td padding5 width="1">:</td>
+                    <td padding5> {{ form.spesifikasi }} </td>
+                </tr>
+                <tr *ngIf="form.pembayaran">
+                    <td padding5>Payment Term</td>
+                    <td padding5 width="1">:</td>
+                    <td padding5> {{ form.pembayaran }} </td>
+                </tr>
+                <tr *ngIf="form.basis">
+                    <td padding5>Basis</td>
+                    <td padding5 width="1">:</td>
+                    <td padding5> {{ form.basis }} </td>
+                </tr>
+                <tr *ngIf="form.inspeksi">
+                    <td padding5>Inspection Data</td>
+                    <td padding5 width="1">:</td>
+                    <td padding5> {{ form.inspeksi }} </td>
+                </tr>
+                <tr *ngIf="Additional?.length > 0">
+                    <td padding5>Additional</td>
+                    <td padding5 width="1">:</td>
+                    <td padding5>
+                        <ng-container *ngFor="let item of Additional">
+                            * {{ item.additional }} <br/>
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr *ngIf="Document?.length > 0">
+                    <td padding5>Document</td>
+                    <td padding5 width="1">:</td>
+                    <td padding5>
+                        <ng-container *ngFor="let item of Document; let i = index;">
+                            {{ i + 1 }}. {{ item.dokumen }} <br/>
+                        </ng-container>
+                    </td>
+                </tr>
+            </table>
+
+            <table class="table table-input table-input-noborder">
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr class="text-center">
+                    <td padding5 width="25%">Prepared By,</td>
+                    <td padding5 width="25%">Acknowledge By,</td>
+                    <td padding5 width="25%">Acknowledge By,</td>
+                    <td padding5 width="25%">Approved By,</td>
+                </tr>
+                <tr>
+                    <td height="75"></td>
+                </tr>
+                <tr class="text-center">
+                    <td padding5>Officer</td>
+                    <td padding5>PPIC Dept.</td>
+                    <td padding5>F & A Dept.</td>
+                    <td padding5>General Manager</td>
+                </tr>
+            </table>
+
+        </div>
+    </mat-dialog-content>
+
+    <!-- <mat-dialog-content fxLayout="column" class="m-0 p-24">
+
+        <div class="print-area" fxLayout="column" fxFlex="0 1 auto">
+
+            <table class="table table-bordered table-input table-input-border">
+                <thead class="no-bg" padding5>
+                    <tr>
+                        <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important;">
+                            <div>
+                                <img src="/assets/logo/CBI.png">
+                            </div>
+                        </td>
+                        <td class="text-center" colspan="4">
+                            <div class="h3">
+                                CITRA BORNEO INDAH GROUP - DOWNSTREAM BUSINESS UNIT
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3" class="text-center" style="vertical-align: middle!important; min-width: 250px;">
+                            <div class="h4">
+                                SALES ORDER
+                            </div>
+                        </td>
+                        <td width="30">
+                            NO
+                        </td>
+                        <td style="min-width: 75px;">
+                            FIP-PPIC-01-06
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            REVISION
+                        </td>
+                        <td>
+                            00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            EFFECTIVE
+                        </td>
+                        <td>
+                            01-06-2018
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+
+            <div fxLayout="row" fxFlex="0 1 auto">
+
+                <div fxFlex="1 1 auto">
+                    <table class="table table-input table-input-noborder">
+                        <tr padding5>
+                            <td width="320">
+                                <b>BUYER</b>
+                            </td>
+                            <td colspan="3">
+                                SALES ORDER INFORMATION
+                            </td>
+                        </tr>
+                        <tr padding5>
+                            <td>
+                                <b>{{ form.cust_abbr | uppercase }}</b>
+                            </td>
+                            <td>
+                                SO No. / Date
+                            </td>
+                            <td>
+                                :
+                            </td>
+                            <td>
+                                {{form.kode}}
+                            </td>
+                            <td>
+                                / {{form.tanggal}}
+                            </td>
+                        </tr>
+                        <tr padding5>
+                            <td>
+                                {{ form.cust_nama | uppercase }}
+                            </td>
+                            <td>
+                                SC No. / Date
+                            </td>
+                            <td>
+                                :
+                            </td>
+                            <td>
+                                {{form.kontrak_kode}}
+                            </td>
+                            <td>
+                                / {{form.kontrak_tanggal}}
+                            </td>
+                        </tr>
+                        <tr padding5>
+                            <td>
+                                <div [innerHtml]="form.cust_alamat"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+
+            <b>DELIVERY DETAILS</b>
+
+            <div class="mt-0">
+                <table class="table table-responsive table-input table-small table-striped table-hover table-border-top">
+                    <thead>
+                        <tr>
+                            <th width="75">
+                                CODE
+                            </th>
+                            <th>
+                                DESCRIPTION
+                            </th>
+                            <th width="50">
+                                UOM
+                            </th>
+                            <th width="100">
+                                QTY
+                            </th>
+                            <th width="100">
+                                PRICE
+                            </th>
+                            <th>
+                                TOTAL
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr padding5>
+                            <td>
+                                {{ Data.item_kode }}
+                            </td>
+                            <td>
+                                {{ Data.nama }}
+                            </td>
+                            <td class="text-center">
+                                {{ Data.satuan }}
+                            </td>
+                            <td nopadding style="min-width: 75px;">
+                                <input 
+                                    [disabled]="!Data.id"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_so"
+                                    id="qty_so"
+                                    tabindex="-1"
+                                    [ngModel]="Data.qty_so"
+                                    [required]="Data.id"
+                                    [options]="
+                                    Data.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                    tabindex="-1"
+                                >
+                            </td>
+                            <td nopadding style="min-width: 75px;">
+                                <input 
+                                    [disabled]="!Data.id"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="sold_price"
+                                    id="sold_price"
+                                    tabindex="-1"
+                                    [ngModel]="Data.sold_price"
+                                    [required]="Data.id"
+                                    [options]="
+                                    Data.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                    tabindex="-1"
+                                >
+                            </td>
+                            <td nopadding style="min-width: 75px;">
+                                <input 
+                                    [disabled]="!Data.id"
+                                    type="text" 
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="total"
+                                    id="total"
+                                    tabindex="-1"
+                                    [ngModel]="Data.total"
+                                    [required]="Data.id"
+                                    [options]="
+                                    Data.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                    tabindex="-1"
+                                >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-noborder">
+                    <tr>
+                        <td width="150">Destination</td>
+                        <td width="10"> : </td>
+                        <td>{{ form.destination }}</td>
+                    </tr>
+                    <tr>
+                        <td width="150">Port Of Discharge</td>
+                        <td width="10"> : </td>
+                        <td>{{ form.pod }}</td>
+                    </tr>
+                    <tr>
+                        <td width="150">Shipment Period</td>
+                        <td width="10"> : </td>
+                        <td>{{ form.shipment_period }}</td>
+                    </tr>
+                    <tr>
+                        <td width="150">Vessel</td>
+                        <td width="10"> : </td>
+                        <td>{{ form.vessel }}</td>
+                    </tr>
+                    <tr>
+                        <td width="150">Barges</td>
+                        <td width="10"> : </td>
+                        <td>{{ form.barges }}</td>
+                    </tr>
+                    <tr>
+                        <td width="150">Specification</td>
+                        <td width="10"> : </td>
+                        <td>{{ form.mutu }}</td>
+                    </tr>
+                    <tr>
+                        <td width="150">Payment Term</td>
+                        <td width="10"> : </td>
+                        <td>{{ form.pembayaran }}</td>
+                    </tr>
+                    <tr>
+                        <td width="150">Basis</td>
+                        <td width="10"> : </td>
+                        <td>{{ form.dasar_timbangan }}</td>
+                    </tr>
+                    <tr>
+                        <td width="150">Additional</td>
+                        <td width="10"> : </td>
+                        <td>{{ form.additional }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </mat-dialog-content> -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button 
+                type="button" 
+                mat-button 
+                color="primary" 
+                [disabled]="
+                    WaitPrint || 
+                    Busy
+                " 
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                Print
+            </button>
+        </div>
+
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+
+</div>

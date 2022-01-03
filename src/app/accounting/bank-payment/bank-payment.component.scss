@@ -1,0 +1,360 @@
+@media print { 
+    body {
+        background: #FFF;
+    }
+}
+
+.print-area {
+    min-width: 834px;
+    margin-top: 10px; 
+    margin-bottom: 10px;
+    font-size: 13px;
+    position: relative;
+    display: block;
+    font-weight: normal!important;
+
+    // background-image: url('/assets/images/bg-daun-2.png');
+    // background-repeat: no-repeat;
+    // background-position: center center;
+    // background-size: 400px;
+    /*background-size: cover;*/
+
+    .company {
+
+        .nama {
+            font-weight: normal!important;
+        }
+
+    }
+
+    .doc-number {
+        margin: 0px;
+        margin-bottom: 10px;
+        border: 1px solid #0d9a44;
+        padding: 5px;
+        font-size: 15px;
+        display: inline;
+        background: #FFF;
+        position: relative;
+        z-index: 2;
+        font-weight: normal;
+    }
+
+    .line {
+        position: absolute;
+        z-index: 1;
+        top: 8px;
+        width: 100%;
+        border-bottom: 1px solid #0d9a44;
+    }
+
+    .print-po {
+
+        .date-line {
+            border-top: 1px solid #0d9a44!important;
+            border-bottom: 1px solid #0d9a44!important;
+            padding: 5px 0px;
+        }
+        .po-line {
+            border-bottom: 2px solid #0d9a44!important;
+            padding: 5px 0px;
+        }
+
+    }
+
+    .info_penagihan {
+        ol {
+            margin:5px;
+            margin-left: 15px;
+            padding: 0px;
+            max-width: 250px;
+            font-size: 11px;
+        }
+    }
+
+    .table.table-input input,
+    .table.table-input select,
+    .table.table-input textarea {
+        border: none!important;
+        font-size: 11px!important;
+    }
+
+    .table.table-input-border {
+        input, 
+        select,
+        textarea {
+            border-bottom: 1px solid #CCC!important;
+        }
+
+        input:focus, 
+        select:focus,
+        textarea:focus {
+            border-bottom: 1px dashed #CCC!important;
+        }
+    }
+
+    .table.table-small td {
+        font-size: 11px!important;
+    }
+
+    .table.table-border-top {
+        border-top: 1px solid #CCC;
+    }
+    .table thead tr th {
+        /*background: #616161!important;
+        color: #FFF!important;*/
+        background-color: #F7F7F7 !important;
+        color: #000 !important;
+        padding: 8px 6px!important;
+    }
+    .table>thead>tr>th {
+        vertical-align: middle!important;
+    }
+    .table thead.no-bg tr {
+        /*clear: both;*/
+        background: none!important;
+        color: #000!important;
+    }
+    .table.table-input thead td,
+    .table.table-input thead th {
+        font-size: 11px!important;
+        font-weight: normal!important;
+    }
+    .table.table-input [padding5] td {
+        font-size: 11px!important;
+    }
+    .table.table-padding-small td {
+        padding: 4px 2px;
+    }
+
+}
+
+.print-area2 {
+
+    .bpu {
+
+        min-width: 834px;
+        background: url('/assets/logo/bg-daun-2.png') no-repeat center center;
+        background-size: contain;
+
+        .box-container {
+            float: left;
+            margin-right: 10px;
+
+            .box {
+                float: left;
+                padding: 6px 10px;
+                border: 1px solid #666;
+                margin-right: 10px;            
+            }
+
+            .box.active {
+
+                position: relative;
+                background: #1b5e20;
+                padding: 7px 10px;
+
+                .checkmark {
+                    position: absolute;
+                    top: -4px;
+                    left: -2px;
+                    display:inline-block;
+                    width: 22px;
+                    height: 22px;
+                    -ms-transform: rotate(45deg); /* IE 9 */
+                    -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+                    transform: rotate(45deg);
+                }
+
+                .checkmark:before {
+                    content: "";
+                    position: absolute;
+                    width:3px;
+                    height:12px;
+                    background-color:#FFF;
+                    left: 11px;
+                    top:3px;
+                }
+                
+                .checkmark:after {
+                    content: "";
+                    position: absolute;
+                    width:3px;
+                    height:3px;
+                    background-color:#FFF;
+                    left:8px;
+                    top:12px;
+                }
+
+            }
+
+        }
+
+        .header {
+
+            text-align: center;
+
+            .logo {
+
+                text-align: left!important;
+                width: 150px;
+                height: 125px;
+
+                img {
+                    max-height: 125px;
+                }
+
+            }
+
+            h1 {
+                margin: 0px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .header-table {
+
+                margin-top: 20px;
+                background: none!important;
+
+                tr.border-line td,
+                td.border-line {
+                    border-bottom: 1px dotted #666!important;
+                }
+
+                td {
+                    text-align: left;
+                    padding:2px;
+                    border: none;
+                    font-size: 13px;
+                }
+            }
+
+        }
+
+        .content {
+
+            .title {
+                font-weight: bold;
+                font-size: 13px;
+            }
+
+            .table-content {
+
+                border: 1px solid #666;
+                margin-left: 16px;
+                margin-top: 5px;
+                font-size: 13px;
+                font-weight: normal;
+                padding: 5px 10px;
+
+                table {
+
+                    width: 100%;
+                    border: none;
+                    margin: 0px;
+
+                    .subtitle {
+                        font-size: 13px;
+                    }
+
+                    td {
+                        border: none;
+                        padding: 5px!important;
+                        vertical-align: top;
+
+                        sub {
+                            font-style: italic;
+                            color: #666;
+                        }
+
+                    }
+
+                    td.title-fly {
+                        position: relative;
+                        height: 25px;
+
+                        div { 
+                            font-weight: bold;
+                            position: absolute;
+                            left: -10px;
+                            top: -5px;
+                            border-bottom: 1px solid #666;
+                            border-right: 1px solid #666;
+                            padding: 3px 15px;
+                            width: 300px;
+                            background: #FFF;
+                        }
+                    }
+
+                    tr.border-line td,
+                    td.border-line {
+                        border-bottom: 1px dotted #666;
+                    }
+
+                }
+
+                .table.uraian {
+                    margin: -20px -10px!important;
+                    td {
+                        font-size: 10px;
+
+                        input {
+                            background: transparent!important;
+                        }
+                    }
+                }
+
+                table.padding-small {
+                    td {
+                        padding: 0px 5px!important;
+                    }
+                }
+
+                .uraian {
+                    font-size: 12px;
+                }
+
+            }
+
+            .table-persetujuan {
+
+                margin-top: 10px;
+                margin-left: -11px;
+                margin-right: -11px;
+                margin-bottom: -7px;
+                font-size: 12px;
+                font-weight: normal;
+                
+                table {
+
+                    width: 100%;
+
+                    .header {
+                        td {
+                            padding: 8px;
+                        }
+                    }
+                    
+                    td {
+                        text-align: center;
+                        border: 1px solid #666;
+                        border-bottom: none;
+                        width: 16.5%;
+
+                        .signature {
+                            margin-top: 65px;
+                            margin-bottom: 5px;
+                            font-size: 10px;
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+}

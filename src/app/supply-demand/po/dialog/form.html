@@ -1,0 +1,946 @@
+<form ngNativeValidate (ngSubmit)="Save()" fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Purchase Order
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" class="m-0 p-24">
+
+        <!-- PRINT AREA -->
+        <div class="print-area" *ngIf="PO">
+
+            <!-- HEADER -->
+            <table class="table table-bordered table-input table-input-border print-po">
+                <thead class="no-bg" padding5>
+                    <tr>
+                        <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important;">
+                            <!-- <div *ngIf="form.show_logo == 1"> -->
+                                <img src="/assets/logo/{{ form.company_abbr }}.png">
+                            <!-- </div>
+                            <div *ngIf="form.show_logo != 1">
+                                <img src="/assets/logo/CBI.png">
+                            </div> -->
+                        </td>
+                        <td class="text-center">
+                            <div class="h5">
+                                {{ form.business_unit | uppercase }}
+                            </div>
+                        </td>
+                        <td colspan="2">
+                            <div class="h5 text-center text-bold">
+                                {{ form.company_nama | uppercase }}
+                            </div>
+                        </td>
+                        <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important; padding: 2px!important;">
+                            <qr-code 
+                                style="
+                                    margin: 0px!important;
+                                "
+                                [value]="PO.kode" 
+                                [size]="150"
+                            ></qr-code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3" class="text-center" style="vertical-align: middle!important;">
+                            <div class="h5 text-bold">
+                                PURCHASE ORDER
+                            </div>
+                            <div>
+                                <small>
+                                    Jl. H. UDAN SAID NO. 47<br>
+                                    KELURAHAN BARU, PANGKALAN BUN, KAB. KOTAWARINGIN BARAT<br>
+                                    <!-- KEBUPATEN KOTAWARINGIN BARAT<br> -->
+                                    KALIMANTAN TENGAH, INDONESIA, 74113
+                                </small>
+                            </div>
+                            <div class="mt-4">
+                                <small>
+                                    Telp. 0532-21297; Fax. 0532-28268; Kode Pos, 74113
+                                </small>
+                            </div>
+                        </td>
+                        <td width="30">
+                            NO
+                        </td>
+                        <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                            <!-- FIP-SCM/WHS-01-01 / 191021 -->
+                            FIP-FA-02-03
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            REVISION
+                        </td>
+                        <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                            00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            EFFECTIVE
+                        </td>
+                        <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                            01-06-2018
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+            <!-- / END : HEADER -->
+
+            <!-- SUBHEADER -->
+            <table class="table table-input table-input-noborder print-po print-po-noborder">
+                <tr>
+                    <td>
+                        <!-- TABLE SUPPLIER DETAIL -->
+                        <div class="company">
+                            <div class="nama" style="border-bottom: 1px solid #CCC; margin-bottom: 5px;">
+                                TO: {{ form.supplier_jenis | uppercase }} {{ PO.supplier_nama | uppercase }}
+                            </div>
+                            <div class="info-container">
+                                <div class="list l1">
+                                    {{ form.supplier_alamat }}
+                                </div>
+                                <div class="list l2">
+                                    {{ PO.supplier_detail?.kab }}<span *ngIf="PO.supplier_detail?.kab && PO.supplier_detail?.prov">, </span>
+                                    {{ PO.supplier_detail?.prov }}
+                                </div>
+                                <div class="list l3">
+                                    {{ PO.supplier_detail?.negara }}
+                                </div>
+                                <div class="list l4" *ngIf="PO.supplier_detail?.cp">
+                                    <div *ngIf="PO.supplier_detail.cp_telp1 || PO.supplier_detail.cp_telp2" style="float: left; margin-right: 5px;">
+                                        Telp./Fax.
+                                    </div>
+                                    <div style="float: left;">
+                                        <div *ngIf="PO.supplier_detail?.cp_telp1">
+                                            {{ PO.supplier_detail?.cp_telp1 }}
+                                        </div>
+                                        <div *ngIf="PO.supplier_detail?.cp_telp2">
+                                            {{ PO.supplier_detail?.cp_telp2 }}
+                                        </div>
+                                    </div>
+                                    <div style="clear: both;"></div>
+                                </div>
+                            </div>
+
+                            <div class="nama" style="margin-bottom: 5px; margin-top: 10px;">
+                                UP: {{ UP | uppercase }}
+                            </div>
+                            <div class="info-container">
+                                <div *ngIf="PO.supplier_detail?.cp_hp1">
+                                    {{ PO.supplier_detail?.cp_hp1 }}
+                                </div>
+                                <div *ngIf="PO.supplier_detail?.cp_hp2">
+                                    {{ PO.supplier_detail?.cp_hp2 }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / END : TABLE SUPPLIER DETAIL -->
+                    </td>
+                    <td width="50%">
+                        <!-- TABLE IDENTITAS DOKUMEN -->
+                        <table class="table table-input table-big table-bold print-po-outside" style="border: 1px solid #CCC;">
+                            <tbody padding5>
+                                <tr>
+                                    <td width="150">No.</td>
+                                    <td width="1">:</td>
+                                    <td>
+                                        {{ PO.kode ? PO.kode : 'AUTO GENERATE' }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Date</td>
+                                    <td>:</td>
+                                    <td>
+                                        <!-- <input  
+                                            style="
+                                                padding: 0px;
+                                                font-size: 12px!important;
+                                                color: rgba(0, 0, 0, 0.87);
+                                            "
+                                            placeholder="Please select date"
+                                            [(ngModel)]="form.set_tanggal" 
+                                            name="set_tanggal" 
+                                            required
+                                            class="text-bold"
+                                            tabindex="-1"
+                                            [dpDayPicker]="
+                                            {
+                                                locale : 'en',
+                                                format : 'DD MMMM YYYY',
+                                                drops: 'down',
+                                                appendTo: 'body',
+                                                disabled: true
+                                            }
+                                            " 
+                                            readonly
+                                            theme="dp-material"
+                                        > -->
+                                        <input 
+                                            name="set_tanggal" 
+                                            placeholder="Please set PO Date"
+                                            [(ngModel)]="form.set_tanggal" 
+                                            required
+                                            [min]="minDate"
+                                            [max]="maxDate"
+                                            [matDatepicker]="set_tanggal"
+                                            (click)="set_tanggal.open()"
+                                            readonly
+                                            [disabled]="PO?.kode"
+                                            [ngClass]="!form.set_tanggal ? 'red-500' : ''"
+                                            style="font-size: 14px!important; color: #000!important; padding: 0px!important;"
+                                        >
+                                        <mat-datepicker #set_tanggal></mat-datepicker>
+                                    </td>
+                                </tr>
+                                <!-- <tr>
+                                    <td>Required Date</td>
+                                    <td>:</td>
+                                    <td>
+                                        
+                                    </td>
+                                </tr> -->
+                                <tr *ngIf="PO.customs && PO.company == 3">
+                                    <td>Customs</td>
+                                    <td>:</td>
+                                    <td>
+                                        <span *ngIf="!form.is_modif">
+                                            {{ PO.customs }}
+                                        </span>
+
+                                        <mat-form-field fxFlex="1 1 auto" class="small" *ngIf="form.is_modif">
+                                            <mat-select
+                                                type="text"
+                                                placeholder="PO Customs"
+                                                name="customs"
+                                                [(ngModel)]="form.customs"
+                                                [disabled]="form.submited == 1"
+                                            >
+                                                <mat-option [value]="1">Yes</mat-option>
+                                                <mat-option [value]="2">No</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+
+                                    </td>
+                                </tr>
+                                <tr *ngIf="form.is_modif">
+                                    <td>Inclusive Tax</td>
+                                    <td>:</td>
+                                    <td>
+                                        <mat-form-field fxFlex="1 1 auto" class="small">
+                                            <mat-select
+                                                type="text"
+                                                placeholder="Inclusive Tax"
+                                                name="inclusive_ppn"
+                                                [(ngModel)]="PO.inclusive_ppn"
+                                                (ngModelChange)="Calculate()"
+                                                [disabled]="form.submited == 1"
+                                            >
+                                                <mat-option [value]="1">Yes</mat-option>
+                                                <mat-option [value]="0">No</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="PO.weight_base == 1">
+                                    <td>Weight Base</td>
+                                    <td>:</td>
+                                    <td>
+                                        Supplier
+                                    </td>
+                                </tr>
+                                <tr *ngIf="PO.po_contract == 1">
+                                    <td>Contract Reff</td>
+                                    <td>:</td>
+                                    <td>
+                                        <input
+                                            name="contract_ref"
+                                            type="text"
+                                            [(ngModel)] = "form.wb_kontrak_kode"
+                                            required
+                                            readonly
+                                            style="font-size: 14px!important; color: #000!important; padding: 0px!important;"
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Down Payment</td>
+                                    <td>:</td>
+                                    <td>
+                                        <span *ngIf="!form.is_modif">
+                                            {{ rupiah(PO.dp) }}%
+                                        </span>
+
+                                        <mat-form-field fxFlex="1 1 auto" class="small" *ngIf="form.is_modif">
+                                            <input
+                                                matInput
+                                                type="text"
+                                                placeholder="Change DP"
+                                                name="dp"
+                                                [(ngModel)]="PO.dp"
+                                                (ngModelChange)="ChangeDP()"
+                                                required
+                                                [readonly]="form.submited == 1"
+                                                style="font-size: 14px!important; color: #000!important; padding: 0px!important;"
+                                                currencyMask
+                                                [options]="{
+                                                    prefix: '',
+                                                    suffix: ' %',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0,
+                                                    max:100,
+                                                    align: left
+                                                }
+                                                "
+                                            />
+                                        </mat-form-field>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Payment Terms</td>
+                                    <td>:</td>
+                                    <td>
+                                        <span *ngIf="!form.is_modif">
+                                            {{ rupiah(PO.payment_term) }} days
+                                        </span>
+
+                                        <mat-form-field fxFlex="1 1 auto" class="small" *ngIf="form.is_modif">
+                                            <input
+                                                matInput
+                                                type="text"
+                                                placeholder="Change Payment Term"
+                                                name="payment_term"
+                                                [(ngModel)]="PO.payment_term"
+                                                required
+                                                style="font-size: 14px!important; color: #000!important; padding: 0px!important;"
+                                                currencyMask
+                                                [options]="{
+                                                    prefix: '',
+                                                    suffix: ' days',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0,
+                                                    max:100,
+                                                    align: left
+                                                }"
+                                            />
+                                        </mat-form-field>
+                                    </td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td>Currency</td>
+                                    <td>:</td>
+                                    <td>
+                                        {{ PO.currency }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PR No.</td>
+                                    <td>:</td>
+                                    <td>
+                                        {{ PO.pr_kode }}
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <td>Delivery Location</td>
+                                    <td>:</td>
+                                    <td style="position: relative;">
+                                        <ng-container>
+                                            {{ PO.storeloc_nama }}
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Notes</td>
+                                    <td>:</td>
+                                    <td>
+                                        <div *ngIf="form.is_detail && PO.kode">
+                                            {{ form.note }}
+                                        </div>  
+                                        <input
+                                            *ngIf="!form.is_detail || !PO.kode"
+                                            name="note"
+                                            type="text"
+                                            placeholder="Input Note"
+                                            [(ngModel)] = "form.note"
+                                            required
+                                            [disabled]="form.submited == 1"
+                                            style="font-size: 14px!important; color: #000!important; padding: 0px!important;"
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- / END :TABLE IDENTITAS DOKUMEN -->
+                    </td>
+                </tr>
+            </table>
+            <!-- / END :SUBHEADER -->
+
+            <!-- LIST -->
+            <table class="table table-list table-responsive table-input table-border-top print-po">
+                <thead>
+                    <tr>
+                        <th width="10">
+                            No.
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th width="10">
+                            Qty.
+                        </th>
+                        <th width="50">
+                            Unit
+                        </th>
+                        <th>
+                            Unit Price
+                        </th>
+                        <th>
+                            Total
+                        </th>
+                        <th *ngIf="form.is_modif">
+                            PPh
+                        </th>
+                        <th>
+                            Origin / Quality
+                        </th>
+                        <th>
+                            Remarks
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr padding5 *ngFor="let item of PO.detail; let i = index;">
+                        <td align="center">
+                            {{ i+1 }}
+                        </td>
+                        <td>
+                            {{ item.nama }}
+                        </td>
+                        <td class="text-right">
+                            <!-- <input 
+                                placeholder="Qty. PO"
+                                type="text" 
+                                autocomplete="off"
+                                name="item-qty-{{i}}" 
+                                id="item-qty-{{i}}" 
+                                [ngModel]="item.qty_po"
+                                maxlength="20"
+                                readonly
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? 
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }
+                                "
+                            > -->
+                            {{ rupiah(item.qty_po) }}
+                        </td>
+                        <td class="text-center">
+                            {{ item.satuan }}
+                        </td>
+                        <td class="text-right">
+                            <input 
+                                *ngIf="form.is_modif"
+                                placeholder="Change Price"
+                                type="text" 
+                                autocomplete="off"
+                                name="item-price-{{i}}" 
+                                id="item-price-{{i}}" 
+                                [(ngModel)]="item.price"
+                                maxlength="20"
+                                (ngModelChange)="Calculate()"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? 
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }
+                                "
+                                [readonly]="item.qty_receipt > 0"
+                            >
+                            <span *ngIf="!form.is_modif">
+                                {{ rupiah(item.price) }}
+                            </span>
+                        </td>
+                        <td class="text-right">
+                            <!-- <input 
+                                placeholder="Total"
+                                type="text" 
+                                autocomplete="off"
+                                name="item-total-{{i}}" 
+                                id="item-total-{{i}}" 
+                                [ngModel]="item.qty_po * item.price"
+                                maxlength="20"
+                                readonly
+                                currencyMask
+                                [options]="{
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                            > -->
+                            {{ rupiah(item.qty_po * item.price) }}
+                        </td>
+                        <td nopadding class="text-center" *ngIf="form.is_modif">
+                            <mat-checkbox
+                                [(ngModel)]="item.pph"
+                                (ngModelChange)="Calculate()"
+                                [checked]="item.pph == 1"
+                                name="pph-{{i}}"
+                                color="primary"
+                                [disabled]="item.qty_receipt > 0"
+                            >
+                            </mat-checkbox>
+                        </td>
+                        <td>
+                            <span *ngIf="form.is_detail">
+                                {{ item.origin_quality }}
+                            </span>
+                            <input
+                                type="text"
+                                name="origin_quality_{{i}}"
+                                [(ngModel)]="item.origin_quality"
+                                [readonly]="form.is_detail"
+                                *ngIf="!form.is_detail"
+                            >
+                        </td>
+                        <td>
+                            <span *ngIf="form.is_detail">
+                                {{ item.remarks }}
+                            </span>
+                            <input
+                                type="text"
+                                name="remarks_{{i}}"
+                                [(ngModel)]="item.remarks"
+                                [readonly]="form.is_detail"
+                                *ngIf="!form.is_detail"
+                            >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="10" style="background: #F7F7F7;"><div style="height: 5px;"></div></td>
+                    </tr>
+                </tbody>
+                <tfoot padding5 class="table-input-noborderx">
+                    <tr>
+                        <td colspan="5" class="text-right">
+                            Subtotal
+                        </td>
+                        <td class="text-right">
+                            <!-- <input 
+                                type="text" 
+                                autocomplete="off"
+                                name="subtotal" 
+                                [ngModel]="PO.total"
+                                maxlength="20"
+                                readonly
+                                currencyMask
+                                [options]="{
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                            > -->
+                            {{ rupiah(PO.total) }}
+                        </td>
+                        <td colspan="2" rowspan="10" *ngIf="!form.is_modif">
+                            <div class="info_penagihan">
+                                <strong>Billing Terms:</strong>
+                                <ol>
+                                    <li>Full Delivery</li>
+                                    <li>Invoice, Receipt, & Tax Invoice (Original)</li>
+                                    <li>Delivery Order, Acceptance Official Report, PO (Original)</li>
+                                    <li>Payment due date starts from we receive the complete document</li>
+                                    <li>Return fees by supplier (if any)</li>
+                                </ol>
+                            </div>
+                        </td>
+                        <td colspan="3" rowspan="10" *ngIf="form.is_modif">
+                            <div class="info_penagihan">
+                                <strong>Billing Terms:</strong>
+                                <ol>
+                                    <li>Full Delivery</li>
+                                    <li>Invoice, Receipt, & Tax Invoice (Original)</li>
+                                    <li>Delivery Order, Acceptance Official Report, PO (Original)</li>
+                                    <li>Payment due date starts from we receive the complete document</li>
+                                    <li>Return fees by supplier (if any)</li>
+                                </ol>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">
+                            Discount 
+                            <span *ngIf="PO.disc > 0">
+                                {{ rupiah(PO.disc) }}%
+                            </span>
+                        </td>
+                        <td class="text-right">
+                            <!-- <input 
+                                type="text" 
+                                autocomplete="off"
+                                name="discount" 
+                                [ngModel]="Discount"
+                                maxlength="20"
+                                readonly
+                                currencyMask
+                                [options]="{
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                            > -->
+                            {{ rupiah(Discount) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">
+                            Tax Base
+                        </td>
+                        <td class="text-right">
+                            <!-- <input 
+                                type="text" 
+                                autocomplete="off"
+                                name="subtotal" 
+                                [ngModel]="PO.tax_base"
+                                maxlength="20"
+                                readonly
+                                currencyMask
+                                [options]="{
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                            > -->
+                            {{ rupiah(PO.tax_base) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">
+                            <span *ngIf="!form.is_modif">PPN</span>
+                            <span *ngIf="PO.ppn > 0 && !form.is_modif">
+                                {{ toFixed(PO.ppn, 0) }}%
+                            </span>
+                            <span *ngIf="PO.inclusive_ppn == 1 && !form.is_modif">
+                                Inclusive Tax
+                            </span>
+
+                            <label *ngIf="form.is_modif">PPN</label>
+                            <select
+                                name="ppn"
+                                [(ngModel)]="PO.ppn"
+                                (ngModelChange)="Calculate()"
+                                *ngIf="form.is_modif"
+                                [disabled]="form.submited == 1"
+                                tabindex="-1"
+                            >
+                                <option [value]="0">
+                                    -
+                                </option>
+                                <option [value]="1">
+                                    1 %
+                                </option>
+                                <option [value]="10">
+                                    10 %
+                                </option>
+                            </select>
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(PPN) }}
+                        </td>
+                    </tr>
+                    <tr *ngIf="PO.pph_code && PO.pph && PPH && !form.is_modif">
+                        <td colspan="5" class="text-right">
+                            {{ PO.pph_code }}
+                        </td>
+                        <td class="text-right" *ngIf="PPH > 0">
+
+                            {{ rupiah(PPH) }}
+
+                        </td>
+                        <td class="text-right" *ngIf="PPH < 0">
+
+                            {{ rupiah(PPH*-1) }}
+
+                        </td>
+                    </tr>
+                    <tr *ngIf="form.is_modif">
+                        <td colspan="5" class="text-right">
+                            <label>PPh</label>
+                            <select
+                                name="pph_code"
+                                [(ngModel)]="PO.pph_code"
+                                (ngModelChange)="SetPPh()"
+                                [disabled]="form.submited == 1"
+                                tabindex="-1"
+                            >
+                                <option value="">
+                                    -
+                                </option>
+                                <option
+                                    *ngFor="let item of Default.pph"
+                                    [value]="item.code"
+                                >
+                                    {{ item.code }}
+                                </option>
+                            </select>
+                        </td>
+                        <td class="text-right" *ngIf="PPH > 0">
+
+                            {{ rupiah(PPH) }}
+
+                        </td>
+                        <td class="text-right" *ngIf="PPH < 0">
+
+                            {{ rupiah(PPH*-1) }}
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">
+                            Other Cost
+                        </td>
+                        <td class="text-right">
+                            <span *ngIf="!form.is_modif">
+                                {{ rupiah(PO.other_cost) }}
+                            </span>
+
+                            <input 
+                                *ngIf="form.is_modif"
+                                type="text" 
+                                autocomplete="off"
+                                name="other_cost" 
+                                [(ngModel)]="PO.other_cost"
+                                (ngModelChange)="Calculate()"
+                                maxlength="20"
+                                [readonly]="form.submited == 1"
+                                currencyMask
+                                [options]="{
+                                    prefix: '',
+                                    allowNegative: true,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                }"
+                            >
+                        </td>
+                    </tr>
+                    <tr *ngIf="PO.ppbkb > 0 || form.is_modif">
+                        <td colspan="5" class="text-right">
+                            PPBKB
+                        </td>
+                        <td class="text-right">
+                            <span *ngIf="!form.is_modif">
+                                {{ rupiah(PO.ppbkb) }}
+                            </span>
+
+                            <input 
+                                *ngIf="form.is_modif"
+                                type="text" 
+                                autocomplete="off"
+                                name="ppbkb" 
+                                [(ngModel)]="PO.ppbkb"
+                                (ngModelChange)="Calculate()"
+                                maxlength="20"
+                                [readonly]="form.submited == 1"
+                                currencyMask
+                                [options]="{
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                }"
+                            >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-right">
+                            <strong>
+                                GRANDTOTAL
+                            </strong>
+                        </td>
+                        <td class="text-right text-bold">
+                            <!-- <input 
+                                type="text" 
+                                autocomplete="off"
+                                name="grandtotal" 
+                                [ngModel]="GrandTotal"
+                                maxlength="20"
+                                readonly
+                                style="font-weight: bold"
+                                currencyMask
+                                [options]="{
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                            > -->
+                            {{ rupiah(GrandTotal) }}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <!-- / END : LIST -->
+
+            <!-- SIGNATURE -->
+            <div class="mt-48">
+                <table class="table table-noborder">
+                    <tr>
+                        <td width="50%" style="padding-left: 75px;">
+                            <div style="width: 200px;" class="text-center">
+                                <div class="text-bold">
+                                    SUPPLIER,
+                                </div>
+                                <div style="height: 80px;"></div>
+                                <hr>
+                                <div>
+                                    {{ form.supplier_jenis | uppercase }} {{ PO.supplier_nama | uppercase }}
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding-right: 75px;">
+                            <div style="width: 200px; float: right;" class="text-center">
+                                <div class="text-bold">
+                                    {{ form.company_nama | uppercase }},
+                                </div>
+                                <div style="height: 80px;"></div>
+                                <hr>
+                                <div>
+                                    PURCHASING DEPT. HEAD
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- SIGNATURE -->
+
+        </div>
+        <!-- / PRINT AREA -->
+
+    </mat-dialog-content>
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button
+                *ngIf="!form.is_detail"
+                mat-raised-button
+                class="mat-primary"
+                type="submit"
+                [disabled]="Busy">
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button 
+                type="button" 
+                mat-button 
+                color="primary" 
+                *ngIf="form.is_detail && form.is_void == 0"
+                [disabled]="
+                    (
+                        !form.set_tanggal && 
+                        !PO?.tanggal
+                    ) || 
+                    WaitPrint || 
+                    Busy
+                " 
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                {{ !PO?.kode ? 'Save &' : '' }} Print Purchase Order
+            </button> 
+
+            <div *ngIf="!form.set_tanggal && !PO?.tanggal" class="pt-8 red-fg">
+                <em>Please Define PO Date to Continue</em>
+            </div>
+
+            <button 
+                type="button" 
+                mat-button 
+                color="warn"
+                *ngIf="
+                    form.submited != 1 && 
+                    form.from_po &&
+                    form.is_void != 1 && form.is_detail
+                " 
+                [disabled]="
+                    Busy
+                " 
+                (click)="Submit()"
+            >
+                <mat-icon>arrow_upward</mat-icon>
+                Submit PO
+            </button> 
+
+        </div>
+    
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+
+</form>

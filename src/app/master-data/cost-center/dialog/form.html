@@ -1,0 +1,167 @@
+<form
+    fxLayout="column"
+    ngNativeValidate
+    (ngSubmit)="Save()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    style="min-width: 500px;"
+>
+    <!-- Toolbar -->
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id === 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id !== 'add'">
+                Detail {{ Com.name }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <div class="p-0 m-0" fxLayout="row">
+        <div fxLayout="column" fxFlex="1 1 auto">
+            <mat-dialog-content fxLayout="column" class="p-16 m-0">
+                <div fxLayout="column">
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Company</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Find Company Name"
+                            name="company"
+                            [(ngModel)]="form.company_nama"
+                            [matAutocomplete]="acCompany"
+                            (ngModelChange)="CompanyFilter(form.company_nama)"
+                            (focus)="CompanyFilter(form.company_nama)"
+                            (click)="CompanyFilter(form.company_nama)"
+                            [readonly]="form.is_detail || form.company"
+                        />
+                        <button
+                            mat-button
+                            type="button"
+                            *ngIf="form.company && !form.is_detail"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="form.company = null; form.company_nama = null; form.company_abbr = null;"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete
+                            autoActiveFirstOption
+                            #acCompany="matAutocomplete"
+                            class="force-wrap ac-small"
+                        >
+                            <mat-option
+                                *ngFor="let item of Company"
+                                [value]="item.nama"
+                                (onSelectionChange)="CompanySelect($event, item)"
+                            >
+                                {{ item.nama }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Code Cost Center</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Input Code Cost Center"
+                            name="kode"
+                            [(ngModel)]="form.kode"
+                            required
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Name Cost Center</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Input Name Cost Center"
+                            name="nama"
+                            [(ngModel)]="form.nama"
+                            required
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Description</mat-label>
+                        <textarea
+                            matInput
+                            type="text"
+                            placeholder=" Input Description"
+                            name="keterangan"
+                            [(ngModel)]="form.keterangan"
+                            matTextareaAutosize
+                            [matAutosizeMinRows]="4"
+                            [readonly]="form.is_detail"
+                        ></textarea>
+                    </mat-form-field>
+                </div>
+            </mat-dialog-content>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <mat-dialog-actions
+        cdkDragHandle
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="row"
+        fxLayoutAlign="end"
+    >
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="!form.is_detail"
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="Busy"
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+        </div>
+
+        <div>
+            <button mat-button mat-dialog-close type="button">
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+</form>

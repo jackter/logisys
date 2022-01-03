@@ -1,0 +1,94 @@
+<form fxLayou="column" ngNativeValidate (ngSubmit)="Simpan()" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off" style="min-width: 500px;">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                List Permissions
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content class="p-0 m-0 noshadow" fxLayout="column">
+
+        <mat-accordion 
+            displayMode="default" 
+            multi="false"
+            class="mat-expansion-demo-width"
+        >
+            <mat-expansion-panel 
+                                *ngFor="let item of Data; let i = index;"
+                                [hideToggle]="false"
+                                >
+                <mat-expansion-panel-header>
+                    <strong style="padding-right: 20px;">[{{ item.id }}]</strong>
+                    {{ item.alias }}
+                </mat-expansion-panel-header>
+
+                <table class="table table-noborder">
+                    <tr *ngFor="let child of item.children; let j = index;">
+                        <td>
+                            <div style="margin-bottom: 5px;">
+                                <mat-checkbox 
+                                            [(ngModel)]="Data[i].children[j].checked"
+                                            [checked]="child.checked || child.action.length == child.count"
+                                            (ngModelChange)="CheckChecked(i + '-' + j, 'com')"
+                                            name="com-{{i}}-{{j}}"
+                                            >
+                                    <div style="padding-left: 10px;">
+                                        <strong>
+                                            {{ child.alias }} ({{ child.id }})
+                                        </strong>
+                                    </div>
+                                </mat-checkbox>
+                            </div>
+                            
+                            <div 
+                                *ngFor="let act of child.action; let x = index;" 
+                                style="padding: 5px; padding-left: 40px;"
+                                >
+                                <div>
+                                    <mat-checkbox 
+                                                [(ngModel)]="Data[i].children[j].action[x].checked"
+                                                [checked]="true"
+                                                (ngModelChange)="CheckChecked(i + '-' + j, act)"
+                                                name="act-{{i}}-{{j}}-{{x}}"
+                                                >
+                                        {{ act.text }}
+                                    </mat-checkbox>
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                </table>
+
+            </mat-expansion-panel>
+        </mat-accordion>
+
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="row" fxLayoutAlign="end">
+
+        <button
+            mat-raised-button
+            class="mat-primary-900-bg"
+            type="submit"
+        >
+            Simpan
+        </button>
+
+    </mat-dialog-actions>
+
+</form>

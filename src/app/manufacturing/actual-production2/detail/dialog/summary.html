@@ -1,0 +1,72 @@
+<div fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary ma-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Summary of {{ Default.JO.jo_kode }}
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="column" class="m-0">
+        <table class="table table-input table-responsive table-input-border table-border-top" *ngIf="Summary?.length > 0">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Item</th>
+                    <th>Total Receive</th>
+                    <th>Total Consume</th>
+                    <th>Total Return</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let item of Summary; let i = index;">
+                <tr *ngIf="item">
+                    <td padding5 class="text-center">
+                        {{ i + 1 }}.
+                    </td>
+                    <td padding5>
+                        {{ item.nama }}
+                    </td>
+                    <td padding5 class="text-right">
+                        {{ rupiah(item.total_receive) }}
+                    </td>
+                    <td padding5 class="text-right">
+                        {{ rupiah(item.total_consume) }}
+                    </td>
+                    <td padding5>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </mat-dialog-content>
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+</div>

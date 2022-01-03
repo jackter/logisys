@@ -1,0 +1,71 @@
+<div id="lock" fxLayout="column" fusePerfectScrollbar fxFlexFill *ngIf="Profil">
+
+    <div id="lock-form-wrapper" fxLayout="column" fxLayoutAlign="center center">
+
+        <div id="lock-form" *fuseIfOnDom [@animate]="{value:'*',params:{duration:'300ms',y:'100px'}}">
+
+            <div class="lock-form-header" fxLayout="column" fxLayoutAlign="center center"
+                 fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="start center">
+
+                <div class="avatar-container">
+                    <img class="avatar big" [src]="fuseConfig.themes.logo">
+                    <mat-icon class="s-36">lock</mat-icon>
+                </div>
+
+                <div>
+                    <div class="title">YOUR SESSION IS LOCKED</div>
+                    <div class="subtitle">
+                        Due to inactivity, your session is locked. Enter your password to continue.
+                    </div>
+                </div>
+
+            </div>
+
+            <form name="lock" ngNativeValidate (ngSubmit)="Login()">
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Name / Username</mat-label>
+                    <input matInput 
+                        placeholder="Name / Username" 
+                        name="username"
+                        disabled 
+                        [(ngModel)]="Profil.nama"
+                    >
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Password</mat-label>
+                    <input matInput 
+                        id="lock-password"
+                        name="password"
+                        placeholder="Password"
+                        type="password"
+                        [(ngModel)]="password"
+                    >
+                </mat-form-field>
+
+                <button 
+                    mat-raised-button 
+                    class="submit-button" 
+                    color="primary" 
+                    aria-label="UNLOCK"
+                    [disabled]="
+                        !password || 
+                        !Profil.uname || 
+                        Busy
+                    "
+                >
+                    UNLOCK
+                </button>
+
+            </form>
+
+            <div class="message">
+                <a class="link" [routerLink]="'/system/login'">Are you not {{ Profil.nama }}?</a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

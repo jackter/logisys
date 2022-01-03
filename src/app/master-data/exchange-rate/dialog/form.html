@@ -1,0 +1,99 @@
+<form fxLayout="column" ngNativeValidate (ngSubmit)="Save()" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off" style="min-width: 500px;">
+
+    <!-- Toolbar -->
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Generate New {{ Com.name }}
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <div class="p-0 m-0" fxLayout="row">
+        <div fxLayout="column" fxFlex="1 1 auto">
+            <mat-dialog-content fxLayout="column" class="p-16 m-0">
+                <div fxLayout="column">
+
+                    <mat-form-field floatPlaceholder="always" appearance="outline" class="small">
+                        <mat-label>EXCHANGE DATE FROM</mat-label>
+                        <input matInput
+                            name="min_date"
+                            placeholder="Please Select Date"
+                            [(ngModel)]="form.min_date"
+                            required
+                            [matDatepicker]="min_date"
+                            [max]="maxDate"
+                            (ngModelChange)="dateChange()"
+                            (focus)="min_date.open()"
+                            (click)="min_date.open()"
+                            [disabled]="form.is_detail"
+                            readonly
+                            style="font-size: 14px!important; color: #000!important; padding: 0px!important; text-align: center"
+                        >
+                        <mat-datepicker #min_date></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field floatPlaceholder="always" appearance="outline" class="small">
+                        <mat-label>EXCHANGE DATE TO</mat-label>
+                        <input matInput
+                            name="max_date"
+                            placeholder="Please Select Date"
+                            [(ngModel)]="form.max_date"
+                            required
+                            [matDatepicker]="max_date"
+                            [max]="maxDate"
+                            (focus)="max_date.open()"
+                            (click)="max_date.open()"
+                            [disabled]="form.is_detail"
+                            readonly
+                            style="font-size: 14px!important; color: #000!important; padding: 0px!important; text-align: center"
+                        >
+                        <mat-datepicker #max_date></mat-datepicker>
+                    </mat-form-field>
+                    
+                </div>
+            </mat-dialog-content>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <mat-dialog-actions cdkDragHandle class="p-16 m-0" fxLayout="row" fxLayoutAlign="row" fxLayoutAlign="end">
+        
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="!form.is_detail"
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="Busy"
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+        </div>
+
+        <div>
+            <button
+                mat-button
+                mat-dialog-close
+                type="button"
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+
+</form>

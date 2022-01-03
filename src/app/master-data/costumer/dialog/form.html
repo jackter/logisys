@@ -1,0 +1,428 @@
+<form
+    ngNativeValidate
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    aria-autocomplete="none"
+    style="min-width: 500px;"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content
+        fxLayout="row"
+        fxLayout.lt-sm="column"
+        fxLayoutGap="10px"
+        class="p-24 m-0"
+    >
+        <!-- LEFT CONTENT -->
+        <div fxLayout="column" fxFlex="1 1 auto">
+            <div class="form-section-header">
+                CUSTOMER DATA
+            </div>
+
+            <!-- <div fxLayout="row" fxLayoutGap="10px">
+                
+            </div> -->
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Customer name</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Customer Name"
+                    name="nama"
+                    [(ngModel)]="form.nama"
+                    required
+                    [readonly]="form.is_detail"
+                />
+            </mat-form-field>
+
+            <div fxLayout="row" fxFlex="1 1 auto">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    floatPlaceholder="always"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Customer abbr</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Customer Abbr"
+                        name="abbr"
+                        [(ngModel)]="form.abbr"
+                        required
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+
+                <mat-form-field
+                    fxFlex="1 1 30%"
+                    floatPlaceholder="always"
+                    appearance="outline"
+                    class="small ml-8"
+                >
+                    <mat-label>Jenis Perusahaan</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Jenis Perusahaan"
+                        name="jenis"
+                        [(ngModel)]="form.jenis"
+                        [matAutocomplete]="acJenis"
+                        (ngModelChange)="JenisFilter(form.jenis)"
+                        (focus)="JenisFilter(form.jenis)"
+                        (click)="JenisFilter(form.jenis)"
+                        [readonly]="form.is_detail || form.jenis_show"
+                    />
+                    <button
+                        mat-button
+                        type="button"
+                        *ngIf="form.jenis && !form.is_detail"
+                        matSuffix
+                        mat-icon-button
+                        aria-label="Clear"
+                        (click)="form.jenis = null; form.jenis_show = null"
+                    >
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete
+                        autoActiveFirstOption
+                        #acJenis="matAutocomplete"
+                        class="force-wrap ac-small"
+                    >
+                        <mat-option
+                            *ngFor="let item of Jenis"
+                            [value]="item"
+                            (onSelectionChange)="JenisSelect($event, item)"
+                        >
+                            {{ item }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
+            <div class="form-section-header">
+                LOCATION
+            </div>
+
+            <mat-form-field
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Address</mat-label>
+                <textarea
+                    matInput
+                    type="text"
+                    placeholder="Address"
+                    name="alamat"
+                    [(ngModel)]="form.alamat"
+                    matTextareaAutosize
+                    [matAutosizeMinRows]="2"
+                    [readonly]="form.is_detail"
+                ></textarea>
+            </mat-form-field>
+
+            <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="10px">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    floatPlaceholder="always"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Regency</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Regency"
+                        name="kabkota"
+                        [(ngModel)]="form.kabkota"
+                        [matAutocomplete]="acKabkota"
+                        (ngModelChange)="KabkotaFilter(form.kabkota)"
+                        (focus)="KabkotaFilter(form.kabkota)"
+                        (click)="KabkotaFilter(form.kabkota)"
+                        [readonly]="form.is_detail || form.kabkota_show"
+                    />
+                    <button
+                        mat-button
+                        type="button"
+                        *ngIf="form.kabkota && !form.is_detail"
+                        matSuffix
+                        mat-icon-button
+                        aria-label="Clear"
+                        (click)="form.kabkota = null; form.kabkota_show = null"
+                    >
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete
+                        autoActiveFirstOption
+                        #acKabkota="matAutocomplete"
+                        class="force-wrap ac-small"
+                    >
+                        <mat-option
+                            *ngFor="let item of Kabkota"
+                            [value]="item"
+                            (onSelectionChange)="KabkotaSelect($event, item)"
+                        >
+                            {{ item }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    floatPlaceholder="always"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Province</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Province"
+                        name="provinsi"
+                        [(ngModel)]="form.provinsi"
+                        [matAutocomplete]="acProvinsi"
+                        (ngModelChange)="ProvinsiFilter(form.provinsi)"
+                        (focus)="ProvinsiFilter(form.provinsi)"
+                        (click)="ProvinsiFilter(form.provinsi)"
+                        [readonly]="form.is_detail || form.provinsi_show"
+                    />
+                    <button
+                        mat-button
+                        type="button"
+                        *ngIf="form.provinsi && !form.is_detail"
+                        matSuffix
+                        mat-icon-button
+                        aria-label="Clear"
+                        (click)="form.provinsi = null; form.provinsi_show = null"
+                    >
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete
+                        autoActiveFirstOption
+                        #acProvinsi="matAutocomplete"
+                        class="force-wrap ac-small"
+                    >
+                        <mat-option
+                            *ngFor="let item of Provinsi"
+                            [value]="item"
+                            (onSelectionChange)="ProvinsiSelect($event, item)"
+                        >
+                            {{ item }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Description</mat-label>
+                <textarea
+                    matInput
+                    type="text"
+                    placeholder="Description"
+                    name="declaration"
+                    [(ngModel)]="form.declaration"
+                    matTextareaAutosize
+                    [matAutosizeMinRows]="2"
+                    [readonly]="form.is_detail"
+                ></textarea>
+            </mat-form-field>
+        </div>
+        <!-- END LEFT CONTENT -->
+
+        <!-- RIGHT CONTENT -->
+        <div fxLayout="column" fxFlex="1 1 auto">
+            <div class="form-section-header">
+                CONTACT PERSON
+            </div>
+
+            <mat-form-field
+                fxFlex="0 1 auto"
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>CP Name</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="CP Name"
+                    name="cp"
+                    [(ngModel)]="form.cp"
+                    [readonly]="form.is_detail"
+                />
+            </mat-form-field>
+
+            <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="10px">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    floatPlaceholder="always"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>CP Telp 1</mat-label>
+                    <input
+                        matInput
+                        type="tel"
+                        placeholder="CP Telp 1"
+                        name="cp_telp1"
+                        [(ngModel)]="form.cp_telp1"
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    floatPlaceholder="always"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>CP Telp 2</mat-label>
+                    <input
+                        matInput
+                        type="tel"
+                        placeholder="CP Telp 2"
+                        name="cp_telp2"
+                        [(ngModel)]="form.cp_telp2"
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+            </div>
+
+            <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="10px">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    floatPlaceholder="always"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>CP Mobile Phone 1</mat-label>
+                    <input
+                        matInput
+                        type="tel"
+                        placeholder="CP Mobile Phone 1"
+                        name="cp_hp1"
+                        [(ngModel)]="form.cp_hp1"
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    floatPlaceholder="always"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>CP Mobile Phone 2</mat-label>
+                    <input
+                        matInput
+                        type="tel"
+                        placeholder="CP Mobile Phone 2"
+                        name="cp_hp2"
+                        [(ngModel)]="form.cp_hp2"
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+            </div>
+
+            <div class="form-section-header">
+                OTHERS
+            </div>
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Description</mat-label>
+                <textarea
+                    matInput
+                    type="text"
+                    placeholder="Description"
+                    name="keterangan"
+                    [(ngModel)]="form.keterangan"
+                    matTextareaAutosize
+                    [matAutosizeMinRows]="2"
+                    [readonly]="form.is_detail"
+                ></textarea>
+            </mat-form-field>
+        </div>
+        <!-- END RIGHT CONTENT -->
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    Busy || 
+                    !form.nama
+                "
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail && 
+                    perm.edit
+                "
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                Edit
+            </button>
+        </div>
+
+        <div>
+            <button mat-button type="button" mat-dialog-close *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+</form>

@@ -1,0 +1,108 @@
+<form ngNativeValidate fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off" style="min-width: 500px" (ngSubmit)="Save()">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id === 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id !== 'add'">
+                {{ Com.title }}
+            </span>
+            <button mat-button type="button" class="mat-icon-button ml-24" mat-dialog-close aria-label="Close dialog"
+                tabindex="-1" *ngIf="!Busy">
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!--Content-->
+    <mat-dialog-content fxLayout="column" class="p-24 m-0">
+
+        <mat-form-field fxFlex="1 1 auto" floatPlaceholder="always" appearance="outline" class="small">
+            <mat-label>Company</mat-label>
+            <input 
+                matInput type="text" 
+                placeholder="Company" 
+                name="nama" 
+                [(ngModel)]="form.nama" 
+                required
+                [readonly]="form.is_detail"
+            >
+            <button mat-button 
+                *ngIf="form.nama && !form.is_detail" 
+                matSuffix 
+                mat-icon-button 
+                aria-label="Clear"
+                (click)="form.nama = null;">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="1 1 auto" floatPlaceholder="always" appearance="outline" class="small">
+            <mat-label>Abbr</mat-label>
+            <input 
+                matInput type="text" 
+                placeholder="Abbr" 
+                name="abbr" 
+                [(ngModel)]="form.abbr" 
+                required
+                [readonly]="form.is_detail"
+            >
+            <button mat-button 
+                *ngIf="form.abbr && !form.is_detail" 
+                matSuffix 
+                mat-icon-button 
+                aria-label="Clear"
+                (click)="form.abbr = null;">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="1 1 auto" floatPlaceholder="always" appearance="outline" class="small">
+            <mat-label>Grup</mat-label>
+            <input 
+                matInput type="text" 
+                placeholder="Grup" 
+                name="grup" 
+                [(ngModel)]="form.grup" 
+                required
+                [readonly]="form.is_detail"
+            >
+            <button mat-button 
+                *ngIf="form.grup && !form.is_detail" 
+                matSuffix mat-icon-button aria-label="Clear"
+                (click)="form.grup = null;">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+
+    </mat-dialog-content>
+
+    <!--Action-->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+
+        <div fxFlex="1 1 auto">
+            <button 
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="Busy">
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+        </div>
+
+        <div>
+            <button
+                mat-button
+                type="button"
+                mat-dialog-close
+                *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+
+    </mat-dialog-actions>
+
+</form>

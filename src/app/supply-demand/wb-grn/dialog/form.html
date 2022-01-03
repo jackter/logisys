@@ -1,0 +1,259 @@
+<form
+    ngNativeValidate
+    fxLayout="column"
+    (ngSubmit)="Simpan()"
+    style="min-width: 500px;"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary ma-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                {{Com.name}} Form
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" class="m-0 p-24">
+        <!-- RIGHT FORM -->
+        <mat-dialog-content fxFlex="1 1 auto" fxLayout="column">
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Contract</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Please Select Kontrak"
+                    name="kontrak_kode"
+                    id="kontrak_kode"
+                    [(ngModel)]="form.kontrak_kode"
+                    (ngModelChange)="KontrakFilter(form.kontrak_kode)"
+                    [matAutocomplete]="acKontrak"
+                    (focus)="KontrakFilter(form.kontrak_kode)"
+                    (click)="KontrakFilter(form.kontrak_kode)"
+                    [readonly]="form.id != 'add' || form.kontrak"
+                />
+                <button
+                    type="button"
+                    *ngIf="form.kontrak && form.id == 'add'"
+                    mat-button
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="KontrakRemove(); KontrakFilter(form.supplier_nama);"
+                    tabindex="-1"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acKontrak="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of Kontrak"
+                        [value]="item.kode"
+                        (onSelectionChange)="KontrakSelect($event, item)"
+                    >
+                        {{ item.kode }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Notes</mat-label>
+                <textarea
+                    matInput
+                    type="text"
+                    placeholder="Notes"
+                    name="note"
+                    [(ngModel)]="form.note"
+                    matTextareaAutosize
+                    [matAutosizeMinRows]="4"
+                    [readonly]="form.is_detail"
+                ></textarea>
+            </mat-form-field>
+        </mat-dialog-content>
+
+        <mat-dialog-content
+            class="p-0 m-0 ml-24 mt-8"
+            fxLayout="column"
+            *ngIf="form.kontrak"
+        >
+            <div>
+                <table
+                    class="table table-list table-responsive table-input table-border-top table-small"
+                >
+                    <thead>
+                        <tr>
+                            <th width="10">
+                                <mat-checkbox
+                                    [disabled]="disabled"
+                                    name="check_all"
+                                    [(ngModel)]="form.check_all"
+                                    (ngModelChange)="Uncheckall()"
+                                >
+                                </mat-checkbox>
+                            </th>
+                            <th>
+                                Date
+                            </th>
+                            <th>
+                                Code
+                            </th>
+                            <th>
+                                Ticket Number
+                            </th>
+                            <th>
+                                Transporter
+                            </th>
+                            <th>
+                                Vehicle Number
+                            </th>
+                            <th>
+                                Weigh In (Kg)
+                            </th>
+                            <th>
+                                Weigh Out (Kg)
+                            </th>
+                            <th>
+                                Netto (Kg)
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let item of form.list; let i = index;">
+                            <td align="center">
+                                <mat-checkbox
+                                    [disabled]="disabled"
+                                    name="check_list-{{i}}"
+                                    [(ngModel)]="item.check_list"
+                                    (ngModelChange)="checkAllSelect()"
+                                >
+                                </mat-checkbox>
+                            </td>
+                            <td padding5>
+                                {{item.create_date}}
+                            </td>
+                            <td padding5>
+                                {{item.kode}}
+                            </td>
+                            <td padding5>
+                                {{item.ticket_no}}
+                            </td>
+                            <td padding5>
+                                {{item.transporter_nama}}
+                            </td>
+                            <td padding5>
+                                {{item.veh_nopol}}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ Rupiah(item.weigh_in) }}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ Rupiah(item.weigh_out) }}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ Rupiah(item.netto) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="10" style="background: #f7f7f7;">
+                                <div style="height: 5px;"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot padding5 class="table-input-noborderx">
+                        <tr>
+                            <td colspan="6" class="text-right text-bold">
+                                Total
+                            </td>
+                            <td class="text-right text-bold">
+                                {{ Rupiah(form.tot_weigh_in) }}
+                            </td>
+                            <td class="text-right text-bold">
+                                {{ Rupiah(form.tot_weigh_out) }}
+                            </td>
+                            <td class="text-right text-bold">
+                                {{ Rupiah(form.tot_netto) }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </mat-dialog-content>
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="end"
+        fxLayoutGap="10px"
+    >
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-button
+                color="primary"
+                [disabled]="
+                        !form.check
+                    "
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="
+                        form.is_detail &&
+                        form.verified != 1
+                    "
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                Edit
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail && 
+                    form.verified != 1 &&
+                    perm.verify
+                "
+                type="button"
+                mat-raised-button
+                color="accent"
+                [disabled]="Busy"
+                (click)="Verify()"
+            >
+                {{ Busy ? 'Please Wait...' : 'Verify'}}
+            </button>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+</form>

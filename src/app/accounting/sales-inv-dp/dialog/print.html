@@ -1,0 +1,388 @@
+<form ngNativeValidate fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Sales Invoice
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" class="m-0 p-24">
+
+        <!-- PRINT AREA -->
+        <div class="print-area">
+
+            <!-- HEADER -->
+            <table class="table table-bordered table-input table-input-border print-sinv">
+                <thead class="no-bg" padding5>
+                    <tr>
+                        <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important;">
+                            <!-- <div *ngIf="form.show_logo == 1"> -->
+                                <img src="/assets/logo/{{ form.company_abbr }}.png">
+                            <!-- </div>
+                            <div *ngIf="form.show_logo != 1">
+                                <img src="/assets/logo/CBI.png">
+                            </div> -->
+                        </td>
+                        <td class="text-center">
+                            <div class="h5">
+                                {{ form.business_unit | uppercase }}
+                            </div>
+                        </td>
+                        <td colspan="2">
+                            <div class="h5 text-center text-bold">
+                                {{ form.company_nama | uppercase }}
+                            </div>
+                        </td>
+                        <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important; padding: 2px!important;">
+                            <qr-code 
+                                style="
+                                    margin: 0px!important;
+                                "
+                                [value]="PO.kode" 
+                                [size]="150"
+                            ></qr-code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3" class="text-center" style="vertical-align: middle!important;">
+                            <div class="h5 text-bold">
+                                SALES INVOICE
+                            </div>
+                            <div>
+                                <small>
+                                    Jl. H. UDAN SAID NO. 47<br>
+                                    KELURAHAN BARU, PANGKALAN BUN, KAB. KOTAWARINGIN BARAT<br>
+                                    KALIMANTAN TENGAH, INDONESIA, 74113
+                                </small>
+                            </div>
+                            <div class="mt-4">
+                                <small>
+                                    Telp. 0532-21297; Fax. 0532-28268; Kode Pos, 74113
+                                </small>
+                            </div>
+                        </td>
+                        <td width="30">
+                            NO
+                        </td>
+                        <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                            FIP-FA-02-03
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            REVISION
+                        </td>
+                        <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                            00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            EFFECTIVE
+                        </td>
+                        <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                            01-01-2021
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+            <!-- / END : HEADER -->
+
+            <!-- SUBHEADER -->
+            <table class="table table-input table-input-noborder print-sinv print-sinv-noborder">
+                <tr>
+                    <td>
+                        <!-- TABLE SUPPLIER DETAIL -->
+                        <div class="company">
+                            <div class="nama" style="border-bottom: 1px solid #CCC; margin-bottom: 5px;">
+                                CUSTOMER: {{ form.cust_jenis | uppercase }} {{ form.cust_nama | uppercase }}
+                            </div>
+                            <div class="info-container">
+                                <div class="list l1">
+                                    {{ form.cust_alamat }}
+                                </div>
+                                <div class="list l2">
+                                    {{ form.cust_detail?.kab }}<span *ngIf="form.cust_detail?.kab && form.cust_detail?.prov">, </span>
+                                    {{ form.cust_detail?.prov }}
+                                </div>
+                                <div class="list l3">
+                                    {{ form.cust_detail?.negara }}
+                                </div>
+                                <div class="list l4" *ngIf="form.cust_detail?.cp">
+                                    <div *ngIf="form.cust_detail.cp_telp1 || form.cust_detail.cp_telp2" style="float: left; margin-right: 5px;">
+                                        Telp./Fax.
+                                    </div>
+                                    <div style="float: left;">
+                                        <div *ngIf="form.cust_detail?.cp_telp1">
+                                            {{ form.cust__detail?.cp_telp1 }}
+                                        </div>
+                                        <div *ngIf="form.cust_detail?.cp_telp2">
+                                            {{ form.cust__detail?.cp_telp2 }}
+                                        </div>
+                                    </div>
+                                    <div style="clear: both;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / END : TABLE SUPPLIER DETAIL -->
+                    </td>
+                    <td width="50%">
+                        <!-- TABLE IDENTITAS DOKUMEN -->
+                        <table class="table table-input table-big table-bold print-sinv-outside" style="border: 1px solid #CCC;">
+                            <tbody padding5>
+                                <tr>
+                                    <td width="150">No. Invoice</td>
+                                    <td width="1">:</td>
+                                    <td>
+                                        {{ form.kode }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Inv Date</td>
+                                    <td>:</td>
+                                    <td>
+                                        <input 
+                                            name="inv_tgl"
+                                            [(ngModel)]="form.inv_tgl" 
+                                            required
+                                            readonly
+                                            disabled
+                                            style="font-size: 14px!important; color: #000!important; padding: 0px!important;"
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="150">No. Contract</td>
+                                    <td width="1">:</td>
+                                    <td>
+                                        {{ form.sc_kode }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Contract Date</td>
+                                    <td>:</td>
+                                    <td>
+                                        <input 
+                                            name="sc_tgl"
+                                            [(ngModel)]="form.sc_tgl" 
+                                            required
+                                            readonly
+                                            disabled
+                                            style="font-size: 14px!important; color: #000!important; padding: 0px!important;"
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="150">Delivery Condition</td>
+                                    <td width="1">:</td>
+                                    <td>
+                                        {{ form.syarat_penyerahan }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="150">Payment</td>
+                                    <td width="1">:</td>
+                                    <td>
+                                        {{ form.pembayaran }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="150">Tax</td>
+                                    <td width="1">:</td>
+                                    <td *ngIf="form.ppn == 10">
+                                        VAT-OUT
+                                    </td>
+                                    <td *ngIf="form.ppn == 0">
+                                        N/A
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- / END :TABLE IDENTITAS DOKUMEN -->
+                    </td>
+                </tr>
+            </table>
+            <!-- / END :SUBHEADER -->
+
+            <!-- LIST -->
+            <table class="table table-list table-responsive table-input table-border-top print-sinv">
+                <thead>
+                    <tr>
+                        <th>
+                            Product Name
+                        </th>
+                        <th width="10">
+                            Qty.
+                        </th>
+                        <th width="50">
+                            Unit
+                        </th>
+                        <th>
+                            Unit Price
+                        </th>
+                        <th>
+                            Total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr padding5 *ngFor="let item of form.list; let i = index;">
+                        <td>
+                            {{ item.nama }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(item.qty) }}
+                        </td>
+                        <td class="text-center">
+                            {{ item.satuan }}
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(item.price) }}
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(item.qty * item.price) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="background: #F7F7F7;"><div style="height: 5px;"></div></td>
+                    </tr>
+                </tbody>
+                <tfoot padding5 class="table-input-noborderx">
+                    <tr>
+                        <td colspan="4" class="text-right">
+                            Subtotal
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(form.subtotal) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-right">
+                            Tax Base {{ rupiah(form.dp) }}%
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(form.tax_base) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-right">
+                            <span>PPN</span>
+                            <span>
+                                {{ toFixed(form.ppn, 0) }}%
+                            </span>
+                        </td>
+                        <td class="text-right">
+                            {{ rupiah(form.ppn_amount) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-right">
+                            <strong>
+                                GRAND TOTAL
+                            </strong>
+                        </td>
+                        <td class="text-right text-bold">
+                            {{ rupiah(form.grand_total) }}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <!-- / END : LIST -->
+
+            <!-- SIGNATURE -->
+            <div class="mt-48">
+                <table class="table table-noborder">
+                    <tr>
+                        <td style="padding-right: 75px;">
+                            <div style="width: 200px; float: right;" class="text-center">
+                                <div class="text-bold">
+                                    {{ form.company_nama | uppercase }},
+                                </div>
+                                <div style="height: 80px;"></div>
+                                <hr>
+                                <div>
+                                    MARKETING DEPT. HEAD
+                                </div>
+                            </div>
+                        </td>
+                        <td width="50%" style="padding-left: 75px;">
+                            <div style="width: 200px;" class="text-center">
+                                <div class="text-bold">
+                                    CUSTOMER,
+                                </div>
+                                <div style="height: 80px;"></div>
+                                <hr>
+                                <div>
+                                    {{ form.cust_jenis | uppercase }} {{ form.cust_nama | uppercase }}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- SIGNATURE -->
+
+        </div>
+        <!-- / PRINT AREA -->
+
+    </mat-dialog-content>
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="end"
+        fxLayoutGap="10px"
+    >
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="form.is_detail"
+                type="button"
+                mat-button
+                color="primary"
+                [disabled]="
+                        WaitPrint
+                    "
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                Print Invoice
+            </button>
+
+            <button
+                *ngIf="form.is_detail && form.verified != 1"
+                type="button"
+                mat-raised-button
+                color="accent"
+                [disabled]="
+                        Busy
+                    "
+                (click)="Verify()"
+            >
+                {{ Busy ? 'Please Wait...' : 'Verify' }}
+            </button>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- END : ACTIONS -->
+
+</form>

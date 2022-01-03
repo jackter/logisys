@@ -1,0 +1,234 @@
+<form
+    ngNativeValidate
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    aria-autocomplete="none"
+    style="min-width: 500px;"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content
+        fxLayout="column"
+        fxFlex="1 1 auto"
+        fxLayout.sm="column"
+        class="p-24 m-0"
+    >
+        <mat-form-field appearance="outline" class="small">
+            <mat-label>Company</mat-label>
+            <input
+                matInput
+                type="text"
+                placeholder="Company"
+                name="company_nama"
+                [(ngModel)]="form.company_nama"
+                [matAutocomplete]="acCompany"
+                (ngModelChange)="CompanyFilter()"
+                [readonly]="CompanyLen == 1 || form.is_detail || form.company"
+                required
+            />
+            <button
+                mat-button
+                type="button"
+                *ngIf="form.company && !form.is_detail"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="CompanyRemove();"
+                tabindex="-1"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete
+                autoActiveFirstOption
+                #acCompany="matAutocomplete"
+                class="force-wrap ac-small"
+            >
+                <mat-option
+                    *ngFor="let item of Company"
+                    [value]="item.nama"
+                    (onSelectionChange)="CompanySelect($event, item)"
+                >
+                    {{ item.nama }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+
+        <div *ngIf="form.company" fxLayout="column" fxFlex="1 1 auto">
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Doc Name</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Doc Name"
+                    name="doc_name"
+                    [(ngModel)]="form.doc_name"
+                    [matAutocomplete]="acDocName"
+                    (ngModelChange)="DocNameFilter(form.doc_name)"
+                    (focus)="DocNameFilter(form.doc_name)"
+                    [readonly]="form.is_detail || form.doc_id"
+                    required
+                />
+                <button
+                    mat-button
+                    type="button"
+                    *ngIf="form.doc_id && !form.is_detail"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="DocNameRemove();"
+                    tabindex="-1"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acDocName="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of DocTrx"
+                        [value]="item.doc_source + ' - ' + item.doc_nama"
+                        (onSelectionChange)="DocNameSelect($event, item)"
+                    >
+                        {{item.doc_source}} - {{ item.doc_nama }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Account</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Account"
+                    name="account"
+                    [(ngModel)]="form.account"
+                    [matAutocomplete]="acAccount"
+                    (ngModelChange)="AccountFilter(form.account)"
+                    (focus)="AccountFilter(form.account)"
+                    [readonly]="form.is_detail || form.coa_id"
+                    required
+                />
+                <button
+                    mat-button
+                    type="button"
+                    *ngIf="form.account && !form.is_detail"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="AccountOfRemove();"
+                    tabindex="-1"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acAccount="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of Account"
+                        [value]="item.kode + ' - ' + item.nama"
+                        (onSelectionChange)="AccountSelect($event, item)"
+                    >
+                        {{item.kode}} - {{ item.nama }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field
+                appearance="outline"
+                class="small"
+                fxFlex="1 1 auto"
+            >
+                <mat-label>Seq</mat-label>
+                <input
+                    matInput
+                    type="number"
+                    placeholder="Sequence"
+                    name="seq"
+                    [min]="1"
+                    [(ngModel)]="form.seq"
+                    [readonly]="form.is_detail"
+                />
+            </mat-form-field>
+
+            <mat-form-field
+                floatLabel="always"
+                fxFlex="0 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Remarks</mat-label>
+                <textarea
+                    matInput
+                    type="text"
+                    placeholder="Remarks"
+                    name="remarks"
+                    [(ngModel)]="form.remarks"
+                    matTextareaAutosize
+                    [matAutosizeMinRows]="2"
+                    [readonly]="form.is_detail"
+                ></textarea>
+            </mat-form-field>
+        </div>
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="Busy"
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="form.is_detail && perm.edit"
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                Edit
+            </button>
+        </div>
+
+        <div>
+            <button mat-button type="button" mat-dialog-close *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+</form>

@@ -1,0 +1,97 @@
+<div id="login" class="inner-scroll" fxLayout="row" fxLayoutAlign="start">
+
+    <div id="login-intro" fxFlex fxHide fxShow.gt-xs>
+
+        <div class="logo" *fuseIfOnDom [@animate]="{value:'*',params:{scale:'0.2'}}">
+            <img src="assets/logo.png">
+        </div>
+
+        <div class="title" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'50ms',y:'25px'}}">
+            LogiSys
+        </div>
+
+        <div class="description" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'100ms',y:'25px'}}">
+            <div style="font-size: 22px;">
+                Logistic, Procurement, Stock Control, and Inventory Control 
+            </div>
+            <div class="accent-fg">
+                Designed for CBI Group Business Unit
+            </div>
+        </div>
+
+    </div>
+
+    <div id="login-form-wrapper" fusePerfectScrollbar *fuseIfOnDom [@animate]="{value:'*',params:{delay:'300ms',x:'100%'}}">
+
+        <div id="login-form">
+
+            <!--<div class="logo">
+                <span>F</span>
+            </div>-->
+            <div style="margin-bottom: 20px; text-align: center;">
+                <img src="assets/logo.png" style="width: 100px;">
+            </div>
+
+
+            <div class="title" align="center">LogiSys AUTHORIZATION</div>
+            <div class="description" align="center">
+                Please insert <strong>Username</strong> and <strong>Password</strong>!
+            </div>
+
+            <form name="login" ngNativeValidate (ngSubmit)="Login()">
+
+                <mat-form-field appearance="outline">
+                    <mat-label>
+                        Username
+                    </mat-label>
+                    <input matInput placeholder="Username" name="username" [(ngModel)]="username" autocomplete="off">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>
+                        Password
+                    </mat-label>
+                    <input matInput type="password" placeholder="Password" name="password" [(ngModel)]="password">
+                </mat-form-field>
+
+                <!--<div class="remember-forgot-password" fxLayout="row" fxLayout.xs="column"
+                     fxLayoutAlign="space-between center">
+                    <mat-checkbox class="remember-me" aria-label="Remember Me">
+                        Remember Me
+                    </mat-checkbox>
+
+                    <a class="forgot-password" [routerLink]="'/pages/auth/forgot-password-2'">
+                        Forgot Password?
+                    </a>
+                </div>-->
+
+                <button mat-raised-button color="primary" class="submit-button" aria-label="LOGIN" [disabled]="!username || !password || busy">
+                    LOGIN
+                </button>
+
+            </form>
+
+            <!--<div class="separator">
+                <span class="text">OR</span>
+            </div>
+
+            <div fxLayout="column" fxLayoutAlign="start center">
+
+                <button mat-raised-button class="google">
+                    Log in with Google
+                </button>
+
+                <button mat-raised-button class="facebook">
+                    Log in with Facebook
+                </button>
+
+            </div>
+
+            <div class="register" fxLayout="column" fxLayoutAlign="center center">
+                <span class="text">Don't have an account?</span>
+                <a class="link" [routerLink]="'/pages/auth/register-2'">Create an account</a>
+            </div>-->
+
+        </div>
+    </div>
+</div>

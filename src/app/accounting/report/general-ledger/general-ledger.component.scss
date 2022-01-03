@@ -1,0 +1,9 @@
+app-report-item {
+    .ag-header-group-cell-label,
+    .ag-header-cell-label {
+        justify-content: center;
+    }
+    .ag-row-drag:hover {
+        cursor: move;
+    }
+}

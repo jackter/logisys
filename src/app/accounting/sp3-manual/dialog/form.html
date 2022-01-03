@@ -1,0 +1,610 @@
+<form
+    fxLayout="column"
+    ngNativeValidate
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    style="min-width: 500px;"
+>
+    <!-- Toolbar -->
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span
+                class="title dialog-title"
+                *ngIf="form.id != 'add' && !form.is_detail"
+            >
+                Edit {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.is_detail">
+                Detail Kode: {{ form.kode }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+    <!-- End Toolbar -->
+
+    <!-- Content -->
+    <div class="p-0 m-0" fxLayout="row">
+        <mat-dialog-content
+            fxFlex="1 1 auto"
+            fxLayout="column"
+            class="p-16 m-0"
+        >
+            <mat-form-field
+                fxFlex="1 1 auto"
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Date</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Select Date"
+                    name="tanggal"
+                    [(ngModel)]="form.tanggal"
+                    (ngModelChange)="dateChange('tgl')"
+                    [max]="maxDate"
+                    [matDatepicker]="tanggal"
+                    (click)="tanggal.open()"
+                    [disabled]="form.id != 'add'"
+                    readonly
+                    required
+                    style="
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        padding: 0px !important;
+                    "
+                />
+                <mat-datepicker #tanggal></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                appearance="outline"
+                class="small"
+                *ngIf="form.tanggal"
+            >
+                <mat-label>Company</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Pilih Company"
+                    name="company_nama"
+                    [(ngModel)]="form.company_nama"
+                    [matAutocomplete]="acCompany"
+                    (ngModelChange)="CompanyFilter()"
+                    required
+                    [readonly]="form.company || form.id != 'add'"
+                />
+                <button
+                    mat-button
+                    *ngIf="form.company && form.id == 'add'"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="RemoveCompany()"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acCompany="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of Company"
+                        [value]="item.nama"
+                        (onSelectionChange)="CompanySelect($event, item)"
+                    >
+                        {{ item.nama }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <ng-container>
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                    *ngIf="form.company"
+                >
+                    <mat-label>Nomor (SPK/PO/Contract)</mat-label>
+                    <input
+                        matInput
+                        name="po_no"
+                        placeholder="Nomor (SPK/PO/Kontrak)"
+                        [(ngModel)]="form.po_no"
+                        maxlength="45"
+                        required
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                    *ngIf="form.po_no"
+                >
+                    <mat-label>Date (SPK/PO/Contract)</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Select Date"
+                        name="po_tgl"
+                        [(ngModel)]="form.po_tgl"
+                        (ngModelChange)="dateChange('po_tgl')"
+                        [max]="maxDate"
+                        [matDatepicker]="po_tgl"
+                        (focus)="po_tgl.open()"
+                        (click)="po_tgl.open()"
+                        [disabled]="form.is_detail"
+                        required
+                        readonly
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                        "
+                    />
+                    <mat-datepicker #po_tgl></mat-datepicker>
+                </mat-form-field>
+
+                <!-- <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small" *ngIf="form.po_tgl">
+                    <mat-label>Received By</mat-label>
+                    <input matInput
+                        name="penerima_nama" 
+                        placeholder="Received By"
+                        [(ngModel)]="form.penerima_nama"
+                        [readonly]="form.is_detail"
+                        required
+                    >
+                </mat-form-field> -->
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Penerima</mat-label>
+                    <input
+                        matInput
+                        name="penerima_nama"
+                        placeholder="Isi Nama Penerima"
+                        id="penerima_nama"
+                        [(ngModel)]="form.penerima_nama"
+                        (ngModelChange)="PenerimaFilter(form.penerima_nama)"
+                        [matAutocomplete]="acPenerima"
+                        (focus)="PenerimaFilter(form.penerima_nama)"
+                        (click)="PenerimaFilter(form.penerima_nama)"
+                        [readonly]="form.is_detail || form.penerima"
+                        required
+                    />
+
+                    <mat-autocomplete
+                        autoActiveFirstOption
+                        #acPenerima="matAutocomplete"
+                        class="force-wrap ac-small"
+                    >
+                        <mat-option
+                            *ngFor="let item of Penerima"
+                            [value]="item.nama"
+                            (onSelectionChange)="PenerimaSelect($event, item)"
+                        >
+                            <small>{{ item.nama }}</small>
+                        </mat-option>
+                    </mat-autocomplete>
+
+                    <button
+                        mat-button
+                        *ngIf="!form.is_detail && form.penerima"
+                        matSuffix
+                        mat-icon-button
+                        aria-label="Clear"
+                        (click)="form.penerima = null; form.penerima_nama = null"
+                    >
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                    *ngIf="form.penerima_nama"
+                >
+                    <mat-label>Select Currency</mat-label>
+                    <!-- <mat-select 
+                        name="currency"
+                        [(ngModel)]="form.currency"
+                        placeholder="Select Currency"
+                        required
+                        [disabled]="form.is_detail"
+                    >
+                        <mat-option value="IDR">IDR</mat-option>
+                        <mat-option value="USD">USD</mat-option>
+                    </mat-select> -->
+                    <mat-select
+                        name="currency"
+                        [(ngModel)]="form.currency"
+                        placeholder="Select Currency"
+                        required
+                        [disabled]="form.is_detail"
+                    >
+                        <mat-option *ngFor="let item of Cur" [value]="item.kode"
+                            >{{ item.kode }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </ng-container>
+        </mat-dialog-content>
+
+        <!-- RIGHT -->
+        <mat-dialog-content
+            style="min-width: 500px;"
+            class="p-16 m-0"
+            fxLayout="column"
+            *ngIf="form.currency"
+        >
+            <div fxLayout="row" fxLayoutGap="10px">
+                <div fxLayout="column" fxFlex="1 1 auto">
+                    <div
+                        fxLayout="row"
+                        fxLayoutAlign="start top"
+                        fxLayoutGap="10px"
+                    >
+                        <mat-form-field
+                            fxFlex="1 1 auto"
+                            appearance="outline"
+                            class="small"
+                        >
+                            <mat-label>Cost Center</mat-label>
+                            <input
+                                matInput
+                                type="text"
+                                placeholder="Select Cost Center"
+                                name="cost_nama"
+                                [(ngModel)]="form.cost_nama"
+                                required
+                                [matAutocomplete]="acCost"
+                                (ngModelChange)="CostFilter(form.cost_nama)"
+                                (focus)="CostFilter(form.cost_nama)"
+                                (click)="CostFilter(form.cost_nama)"
+                                [readonly]="form.is_detail || form.cost"
+                            />
+                            <button
+                                mat-button
+                                *ngIf="!form.is_detail && form.cost"
+                                matSuffix
+                                mat-icon-button
+                                aria-label="Clear"
+                                (click)="RemoveCost()"
+                            >
+                                <mat-icon>close</mat-icon>
+                            </button>
+                            <mat-autocomplete
+                                autoActiveFirstOption
+                                #acCost="matAutocomplete"
+                                class="force-wrap ac-small"
+                            >
+                                <mat-option
+                                    *ngFor="let item of Cost"
+                                    [value]="item.nama"
+                                    (onSelectionChange)="CostSelect($event, item)"
+                                >
+                                    <small>{{ item.nama }}</small>
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+
+                        <mat-form-field
+                            *ngIf="form.company && form.cost"
+                            fxFlex="1 0 50px"
+                            appearance="outline"
+                            class="small"
+                        >
+                            <mat-label>Cost Center Code</mat-label>
+                            <input
+                                matInput
+                                type="text"
+                                placeholder="Cost Center Code"
+                                name="cost_kode"
+                                [(ngModel)]="form.cost_kode"
+                                [required]="form.company && !form.cost"
+                                readonly
+                            />
+                        </mat-form-field>
+                    </div>
+
+                    <mat-form-field
+                        appearance="outline"
+                        class="small"
+                        fxFlex="1 1 auto"
+                    >
+                        <mat-label>Notes</mat-label>
+                        <textarea
+                            matInput
+                            type="text"
+                            placeholder="Note"
+                            name="keterangan_bayar"
+                            [(ngModel)]="form.keterangan_bayar"
+                            matTextareaAutosize
+                            [matAutosizeMinRows]="3"
+                            [readonly]="form.is_detail"
+                        ></textarea>
+                    </mat-form-field>
+
+                    <div fxLayout="column" fxFlex="1 1 auto">
+                        <div class="form-section-header">
+                            <strong>DETAIL PAYMENT</strong>
+                        </div>
+
+                        <div>
+                            <hr class="mt-0 mb-0" />
+                            <table
+                                class="table table-responsive table-input table-striped table-hover"
+                            >
+                                <thead>
+                                    <tr>
+                                        <th width="10">
+                                            <div *ngIf="!form.is_detail">
+                                                <mat-icon color="warn"
+                                                    >delete</mat-icon
+                                                >
+                                            </div>
+                                            <div *ngIf="form.is_detail">
+                                                No.
+                                            </div>
+                                        </th>
+                                        <th style="min-width: 250px;">
+                                            DETAIL
+                                        </th>
+                                        <th>
+                                            SUMMARY ({{ form.currency }})
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        class="text-center"
+                                        *ngFor="let item of List; let i = index;"
+                                    >
+                                        <td>
+                                            <div *ngIf="!form.is_detail">
+                                                <button
+                                                    type="button"
+                                                    mat-icon-button
+                                                    (click)="DeleteList(i, item)"
+                                                    *ngIf="
+                                                        (
+                                                            List?.length > 1
+                                                        ) && 
+                                                        (
+                                                            item.uraian || item.jumlah || i > 0
+                                                        )
+                                                    "
+                                                    tabindex="-1"
+                                                >
+                                                    <mat-icon class="red-fg"
+                                                        >close</mat-icon
+                                                    >
+                                                </button>
+                                            </div>
+                                            <div *ngIf="form.is_detail">
+                                                {{ i+1 }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                name="uraian-{{i}}"
+                                                [(ngModel)]="item.uraian"
+                                                [required]="i == 0"
+                                                [readonly]="form.is_detail"
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                autocomplete="off"
+                                                maxlength="23"
+                                                currencyMask
+                                                name="jumlah-{{i}}"
+                                                [(ngModel)]="item.jumlah"
+                                                [required]="i == 0 || item.uraian"
+                                                (ngModelChange)="ListState(i)"
+                                                [options]="
+                                                form.currency == 'IDR'
+                                                ?
+                                                {
+                                                    prefix: '',
+                                                    allowNegative: true,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                }
+                                                :
+                                                {
+                                                    prefix: '',
+                                                    allowNegative: true,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 2
+                                                }
+                                                "
+                                                [readonly]="form.is_detail"
+                                            />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr *ngIf="form.total > 0">
+                                        <td
+                                            padding5
+                                            colspan="2"
+                                            class="text-center"
+                                        >
+                                            <strong>
+                                                TOTAL
+                                            </strong>
+                                        </td>
+                                        <td>
+                                            <input
+                                                placeholder="-"
+                                                type="text"
+                                                autocomplete="off"
+                                                maxlength="23"
+                                                currencyMask
+                                                name="total"
+                                                [(ngModel)]="form.total"
+                                                readonly
+                                                [options]="form.currency == 'IDR'
+                                                ?
+                                                {
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 0
+                                                }
+                                                :
+                                                {
+                                                    prefix: '',
+                                                    allowNegative: false,
+                                                    thousands: '.',
+                                                    decimal: ',',
+                                                    precision: 2
+                                                }
+                                                "
+                                                class="text-bold"
+                                            />
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-dialog-content>
+    </div>
+
+    <!-- Actions -->
+    <mat-dialog-actions
+        cdkDragHandle
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="row"
+        fxLayoutAlign="end"
+    >
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button
+                *ngIf="!form.is_detail"
+                mat-raised-button
+                class="mat-primary"
+                type="submit"
+                [disabled]="
+                    Busy || 
+                    !form.company || 
+                    !form.penerima_nama || 
+                    !form.currency
+                "
+            >
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail && form.verified != 1 && perm.edit && form.status == 1
+                "
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                Edit
+            </button>
+
+            <button
+                *ngIf="form.is_detail"
+                type="button"
+                mat-button
+                color="primary"
+                [disabled]="
+                    Busy
+                "
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                {{ WaitPrint ? 'Please Wait...' : 'Print Preview' }}
+            </button>
+
+            <button
+                *ngIf="form.is_detail && perm.verify && form.verified == 0 && form.status == 1"
+                type="button"
+                mat-raised-button
+                color="accent"
+                [disabled]="
+                    Busy
+                "
+                (click)="Verify()"
+            >
+                {{ Busy ? 'Please Wait...' : 'Verify' }}
+            </button>
+
+            <div
+                *ngIf="form.is_detail && perm.approve && form.verified == 1 && form.approved == 0 && form.status == 1"
+            >
+                <button
+                    type="button"
+                    mat-button
+                    color="primary"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Approve()"
+                >
+                    <mat-icon>check</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Approve' }}
+                </button>
+
+                <button
+                    type="button"
+                    mat-button
+                    color="warn"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Reject()"
+                >
+                    <mat-icon>close</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Reject' }}
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <button mat-button mat-dialog-close type="button" *ngIf="!Busy">
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- END : Actions -->
+</form>

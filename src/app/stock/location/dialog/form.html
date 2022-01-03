@@ -1,0 +1,314 @@
+<form
+    ngNativeValidate
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    aria-autocomplete="none"
+    style="min-width: 500px;"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="column" class="p-24 m-0">
+        <!-- Company -->
+        <mat-form-field appearance="outline" class="small">
+            <mat-label>Company</mat-label>
+            <input
+                matInput
+                type="text"
+                placeholder="Find company name"
+                name="company_nama"
+                [(ngModel)]="form.company_nama"
+                [matAutocomplete]="acCompany"
+                (ngModelChange)="CompanyFilter(form.company_nama)"
+                (focus)="CompanyFilter(form.company_nama)"
+                (click)="CompanyFilter(form.company_nama)"
+                [readonly]="CompanyLen == 1 || form.is_detail || form.id != 'add' || form.company"
+                required
+            />
+            <button
+                mat-button
+                type="button"
+                *ngIf="form.company && !form.is_detail"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="form.company = null; form.company_nama = null; form.company_abbr = null;"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete
+                autoActiveFirstOption
+                #acCompany="matAutocomplete"
+                class="force-wrap ac-small"
+            >
+                <mat-option
+                    *ngFor="let item of Company"
+                    [value]="item.nama"
+                    (onSelectionChange)="CompanySelect($event, item)"
+                >
+                    {{ item.nama }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+        <!-- / Company -->
+
+        <!-- After Company -->
+        <div *ngIf="form.company" fxLayout="column">
+            <mat-form-field
+                fxFlex="1 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Category</mat-label>
+                <mat-select
+                    name="kategori"
+                    [(ngModel)]="form.kategori"
+                    placeholder="Category"
+                    required
+                    [disabled]="form.is_detail || form.id != 'add'"
+                >
+                    <mat-option
+                        *ngFor="let item of Default.kategori"
+                        [value]="item.id"
+                        (click)="SetSTKode(item.kode)"
+                    >
+                        {{ item.nama }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Sounding</mat-label>
+                <mat-select
+                    name="sounding"
+                    [(ngModel)]="form.sounding"
+                    placeholder="Sounding"
+                    required
+                    [disabled]="form.is_detail"
+                >
+                    <mat-option value="0">No</mat-option>
+                    <mat-option value="1">Yes</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field
+                appearance="outline"
+                class="small"
+                *ngIf="form.sounding == 1"
+            >
+                <mat-label>Product</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Product"
+                    name="product"
+                    [(ngModel)]="form.product"
+                    [matAutocomplete]="acProduct"
+                    (ngModelChange)="ProductFilter(form.product)"
+                    [readonly]="form.is_detail || form.prod_id"
+                    required
+                />
+                <button
+                    mat-button
+                    type="button"
+                    *ngIf="form.prod_id && !form.is_detail"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="ProductRemove();"
+                    tabindex="-1"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acProduct="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of Product"
+                        [value]="item.nama"
+                        (onSelectionChange)="ProductSelect($event, item)"
+                    >
+                        {{ item.nama }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <div class="m-0" *ngIf="form.sounding == 1">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Meja Ukur</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        autocomplete="off"
+                        maxlength="23"
+                        placeholder="Meja Ukur"
+                        currencyMask
+                        name="meja_ukur"
+                        id="meja_ukur"
+                        [(ngModel)]="form.meja_ukur"
+                        [options]="{
+                            prefix: '',
+                            allowNegative: false,
+                            thousands: '.',
+                            decimal: ',',
+                            precision: 1
+                        }
+                        "
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+
+                <mat-form-field
+                    appearance="outline"
+                    class="small ml-8"
+                    fxFlex="1 1 30%"
+                >
+                    <mat-label>Kapasitas</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        autocomplete="off"
+                        maxlength="23"
+                        placeholder="Kapasitas"
+                        currencyMask
+                        name="kapasitas"
+                        id="kapasitas"
+                        [(ngModel)]="form.kapasitas"
+                        [options]="{
+                                prefix: '',
+                                allowNegative: false,
+                                thousands: '.',
+                                decimal: ',',
+                                precision: 0
+                            }
+                            "
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+
+                <mat-form-field
+                    appearance="outline"
+                    class="small ml-8"
+                    fxFlex="1 1 30%"
+                >
+                    <mat-label>Suhu</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        autocomplete="off"
+                        maxlength="23"
+                        placeholder="Suhu"
+                        currencyMask
+                        name="suhu"
+                        id="suhu"
+                        [(ngModel)]="form.suhu"
+                        [options]="{
+                            prefix: '',
+                            allowNegative: false,
+                            thousands: '.',
+                            decimal: ',',
+                            precision: 0
+                        }
+                        "
+                        [readonly]="form.is_detail"
+                    />
+                </mat-form-field>
+            </div>
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Store Location Name</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Store Location Name"
+                    name="nama"
+                    [(ngModel)]="form.nama"
+                    [readonly]="form.is_detail"
+                    required
+                />
+            </mat-form-field>
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Description</mat-label>
+                <textarea
+                    matInput
+                    type="text"
+                    placeholder="Description"
+                    name="declaration"
+                    [(ngModel)]="form.declaration"
+                    matTextareaAutosize
+                    [matAutosizeMinRows]="2"
+                    [readonly]="form.is_detail"
+                ></textarea>
+            </mat-form-field>
+        </div>
+        <!-- / After Company -->
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    Busy || 
+                    !form.company
+                "
+            >
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+        </div>
+
+        <div>
+            <button mat-button type="button" mat-dialog-close *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+</form>

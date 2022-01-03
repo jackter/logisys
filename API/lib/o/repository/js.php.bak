@@ -1,0 +1,22 @@
+<?php
+$DIR_CLEAN = "../../";
+include $DIR_CLEAN . "var.php";
+
+$path_to_js = $DIR_CLEAN . "../" . THEMEPATH . "/" . $ActiveTheme . "/assets/js"; // edit path to js directory
+
+function get_files($dir = '.', $sort = 0) {
+	$files = scandir($dir, $sort);
+	$files = array_diff($files, array('.', '..'));
+	return $files;
+}
+$files = get_files($path_to_js, 0);
+
+$JS = "";
+foreach($files as $file) {
+	//include($path_to_js . '/' . $file);
+	//file_get_contents($path_to_js . '/' . $file);
+	$JS[] = $path_to_js . '/' . $file;
+}
+
+return $JS;
+?>

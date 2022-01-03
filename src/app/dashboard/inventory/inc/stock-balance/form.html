@@ -1,0 +1,46 @@
+<!-- <div fxFlex="1 1 auto" fxLayout="column" [chart]="stock_balance"></div> -->
+<div fxFlex="1 1 auto" fxLayout="column">
+    <mat-card>
+        <mat-card-title>
+            STOCK BALANCE
+        </mat-card-title>
+        <table class="table table-hover table-responsive">
+            <thead>
+                <th class="text-center">
+                    No.
+                </th>
+                <th class="text-center">
+                    Name
+                </th>
+                <th class="text-center">
+                    Total
+                </th>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let item of Data; let i = index">
+                    <tr *ngIf="item"> 
+                        <td class="text-center">
+                            {{ i + 1 }}
+                        </td>
+                        <td>
+                            {{ item.name }}
+                        </td>
+                        <td align="right">
+                            Rp {{ item.y_cast }}
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2" class="text-bold text-center">
+                        TOTAL
+                    </td>
+                    <td align="right" class="text-bold">
+                        Rp {{ Total }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </mat-card>
+</div>

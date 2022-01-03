@@ -1,0 +1,477 @@
+<div
+    fxLayout="column"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Bukti Pengeluaran Uang
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="row" fxLayoutGap="10px" class="p-24 m-0">
+        <div class="print-area2">
+            <table class="table table-noborder bpu">
+                <tr class="header">
+                    <td class="logo">
+                        <img src="/assets/logo/{{ form.company_abbr }}.png" />
+                    </td>
+                    <td>
+                        <h1>
+                            BUKTI PENGELUARAN UANG
+                        </h1>
+
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td valign="top">
+                                    <table class="table header-table">
+                                        <tr>
+                                            <td>
+                                                Nomor
+                                            </td>
+                                            <td>
+                                                :
+                                            </td>
+                                            <td>
+                                                <strong
+                                                    >{{ form.kode
+                                                    }}</strong
+                                                >
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Tanggal
+                                            </td>
+                                            <td>
+                                                :
+                                            </td>
+                                            <td>
+                                                {{ form.tanggal_show }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="logo">
+                        <qr-code
+                            style="margin: 0px !important;"
+                            [value]="form.kode"
+                            [size]="125"
+                        ></qr-code>
+                    </td>
+                </tr>
+                <tr class="content">
+                    <td colspan="3">
+                        <div class="title">
+                            A. DIISI OLEH DEPARTEMEN KEUANGAN
+
+                            <div class="table-content">
+                                <table>
+                                    <tr>
+                                        <td colspan="5" class="title-fly">
+                                            <div>
+                                                DETAIL PEMBAYARAN:
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="150">
+                                            Dibayarkan Kepada
+                                        </td>
+                                        <td width="1">:</td>
+                                        <td class="border-line">
+                                            {{ form.penerima_nama }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Uang Sebesar
+                                        </td>
+                                        <td>:</td>
+                                        <td class="border-line">
+                                            <strong>
+                                                <span
+                                                    style="margin-right: 10px;"
+                                                >
+                                                    {{ form.currency }}
+                                                </span>
+                                                {{ form.debit_show }}
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Terbilang
+                                        </td>
+                                        <td>:</td>
+                                        <td class="border-line">
+                                            <em style="font-size: 12px;">
+                                                {{ form.terbilang | titlecase }}
+                                            </em>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            Untuk Pembayaran
+                                        </td>
+                                        <td>:</td>
+                                        <td style="padding: 0px!important;">
+                                                
+                                            <table class="uraian">
+                                                <ng-container *ngFor="let item of form.detail">
+                                                    <tr class="border-line" *ngIf="item.total">
+                                                        <td>
+                                                            
+                                                                <b>{{ item.reff_kode }}</b>, 
+                                                                {{ item.uraian }}
+                                                            
+                                                        </td>
+                                                        <td class="text-right" width="100px">
+                                                            <input 
+                                                                placeholder="-"
+                                                                type="text" 
+                                                                autocomplete="off"
+                                                                maxlength="23"
+                                                                currencyMask
+                                                                name="total"
+                                                                [(ngModel)]="item.total"
+                                                                readonly
+                                                                [options]="{
+                                                                    prefix: form.currency+' ',
+                                                                    suffix: '',
+                                                                    allowNegative: true,
+                                                                    thousands: '.',
+                                                                    decimal: ',',
+                                                                    precision: 2
+                                                                }"
+                                                            >
+                                                        </td>
+                                                    </tr>
+                                                </ng-container>
+                                                <tfoot>
+                                                    <tr class="border-line">
+                                                        <td class="text-center">
+                                                            <strong>
+                                                                TOTAL
+                                                            </strong>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <input 
+                                                                placeholder="-"
+                                                                type="text" 
+                                                                autocomplete="off"
+                                                                maxlength="23"
+                                                                currencyMask
+                                                                name="total"
+                                                                [(ngModel)]="form.total"
+                                                                readonly
+                                                                [options]="{
+                                                                    prefix: form.currency+' ',
+                                                                    suffix: '',
+                                                                    allowNegative: false,
+                                                                    thousands: '.',
+                                                                    decimal: ',',
+                                                                    precision: 2
+                                                                }"
+                                                                class="text-bold"
+                                                            >
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <hr
+                                    style="
+                                        margin-left: -10px !important;
+                                        margin-right: -10px !important;
+                                        margin-top: 20px !important;
+                                    "
+                                />
+
+                                <table class="padding-small">
+                                    <tr>
+                                        <td colspan="5" class="title-fly">
+                                            <div>
+                                                INFORMASI TAMBAHAN PEMBAYARAN:
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="150">
+                                            Cheque / Bilyet Giro
+                                        </td>
+                                        <td width="1">:</td>
+                                        <td width="250">
+                                            Penerima
+                                        </td>
+                                        <td width="1">:</td>
+                                        <td class="border-line">
+                                            {{ form.penerima_nama }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>yang Dikeluarkan</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            No. Cheque / Bilyet Giro
+                                        </td>
+                                        <td>:</td>
+                                        <td class="border-line">
+                                            {{ form.buku_cek_ket }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            Pemilik No. Cheque / Bilyet Giro
+                                        </td>
+                                        <td>:</td>
+                                        <td class="border-line">
+                                            {{ form.company_nama }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            No. Rek Pengeluaran
+                                        </td>
+                                        <td>:</td>
+                                        <td class="border-line">
+                                            {{ form.no_rekening }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            Bank / Cabang
+                                        </td>
+                                        <td>:</td>
+                                        <td class="border-line">
+                                            {{ form.bank_nama }}
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <div>&nbsp;</div>
+
+                                <table class="padding-small">
+                                    <tr>
+                                        <td width="150">
+                                            Transfer Uang
+                                        </td>
+                                        <td width="1">:</td>
+                                        <td width="250">
+                                            Penerima
+                                        </td>
+                                        <td width="1">:</td>
+                                        <td class="border-line">
+                                            {{ form.penerima_nama_bank }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ditujukan Kepada</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            No. Rek
+                                        </td>
+                                        <td>:</td>
+                                        <td class="border-line">
+                                            {{ form.penerima_bank_rek }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            Bank / Cabang
+                                        </td>
+                                        <td>:</td>
+                                        <td class="border-line">
+                                            {{ form.penerima_bank_nama }}
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <div>&nbsp;</div>
+
+                                <table class="padding-small">
+                                    <tr>
+                                        <td width="150">&nbsp;</td>
+                                        <td width="1">&nbsp;</td>
+                                        <td width="250">
+                                            Pengirim
+                                        </td>
+                                        <td width="1">:</td>
+                                        <td class="border-line">
+                                            {{ form.company_nama }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            No. Rek
+                                        </td>
+                                        <td>:</td>
+                                        <td class="border-line">
+                                            {{ form.no_rekening }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                            Bank / Cabang
+                                        </td>
+                                        <td>:</td>
+                                        <td class="border-line">
+                                            {{ form.bank_nama }}
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <hr
+                                    style="
+                                        margin-left: -10px;
+                                        margin-right: -10px;
+                                        margin-top: 20px;
+                                    "
+                                />
+
+                                <table>
+                                    <tr>
+                                        <td colspan="5" class="title-fly">
+                                            <div>
+                                                PERSETUJUAN PENGELUARAN UANG:
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="table-persetujuan">
+                                    <table>
+                                        <tr class="header">
+                                            <td>
+                                                Dibuat
+                                            </td>
+                                            <td>
+                                                Diperiksa
+                                            </td>
+                                            <td colspan="4">
+                                                Disetujui
+                                            </td>
+                                            <td>
+                                                Diterima oleh
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="signature">
+                                                    Staff Transaksi
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="signature">
+                                                    Manager. Treasury
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="signature">
+                                                    Ka. Dept. Keuangan
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="signature">
+                                                    FC
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="signature">
+                                                    CFO
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="signature">
+                                                    Direktur Utama
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="signature">
+                                                    <div>&nbsp;</div>
+                                                    <hr style="width: 100px;" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </mat-dialog-content>
+
+    <!-- ACTION -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="row"
+        fxLayoutAlign="end"
+    >
+        <!-- PRINT -->
+        <div fxFlex="1 1 auto">
+            <button
+                mat-raised-button
+                type="button"
+                color="primary"
+                (click)="Print()"
+                [disabled]="WaitPrint"
+            >
+                <mat-icon>print</mat-icon>
+                Print
+                <div *ngIf="WaitPrint">
+                    <mat-spinner
+                        strokeWidth="1"
+                        diameter="16"
+                        class="pull-left"
+                        style="margin-right: 10px;"
+                    ></mat-spinner>
+                    Mohon Tunggu...
+                </div>
+            </button>
+        </div>
+
+        <div>
+            <button type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+</div>

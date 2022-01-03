@@ -1,0 +1,193 @@
+<form ngNativeValidate (ngSubmit)="Simpan()" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off" aria-autocomplete="none" style="min-width: 500px; max-width: 800px;">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add_coa'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add_coa'">
+                {{ Com.title }}
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="column" class="p-16 pb-0 m-0">
+
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="10px">
+
+            <div fxFlex=" 1 auto" fxLayout="column">
+
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>Company</mat-label>
+                    <input matInput 
+                        type="text" 
+                        placeholder="Company" 
+                        name="company_nama" 
+                        [(ngModel)]="form.company_nama"
+                        required
+                        [matAutocomplete]="acCompany"
+                        (ngModelChange)="CompanyFilter()"
+                        [readonly]="CompanyLen == 1"
+                    >
+                    <button type="button" mat-button *ngIf="form.company" matSuffix mat-icon-button aria-label="Clear" (click)="CompanyRemove();" tabindex="-1">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete #acCompany="matAutocomplete">
+                        <mat-option *ngFor="let item of Company" [value]="item.nama" (onSelectionChange)="CompanySelect($event, item)">
+                            {{ item.nama }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+                
+                <ng-container *ngIf="form.company">
+                    <mat-form-field appearance="outline" class="small">
+                        <mat-label>Customer Account</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Customer Account"
+                            name="account"
+                            [(ngModel)]="form.account"
+                            [matAutocomplete]="acAccount"
+                            (ngModelChange)="AccountFilter(0)"
+                            (focus)="AccountFilter(0)"
+                            [readonly]="form.is_detail || form.coa_id"
+                            required
+                        />
+                        <button
+                            mat-button
+                            type="button"
+                            *ngIf="form.account && !form.is_detail"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="AccountOfRemove(0);"
+                            tabindex="-1"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete
+                            autoActiveFirstOption
+                            #acAccount="matAutocomplete"
+                            class="force-wrap ac-small"
+                        >
+                            <mat-option
+                                *ngFor="let item of Account"
+                                [value]="item.kode + ' - ' + item.nama"
+                                (onSelectionChange)="AccountSelect($event, item, 0)"
+                            >
+                            <sup><strong class="primary-fg">{{ item.kode }}</strong></sup> {{ item.nama }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="small">
+                        <mat-label>Customer Account Accrued</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Customer Account Accrued"
+                            name="account_accrued"
+                            [(ngModel)]="form.account_accrued"
+                            [matAutocomplete]="acAccountAccrued"
+                            (ngModelChange)="AccountFilter(1)"
+                            (focus)="AccountFilter(1)"
+                            [readonly]="form.is_detail || form.coa_id"
+                            required
+                        />
+                        <button
+                            mat-button
+                            type="button"
+                            *ngIf="form.account_accrued && !form.is_detail"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="AccountOfRemove(1);"
+                            tabindex="-1"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete
+                            autoActiveFirstOption
+                            #acAccountAccrued="matAutocomplete"
+                            class="force-wrap ac-small"
+                        >
+                            <mat-option
+                                *ngFor="let item of Account"
+                                [value]="item.kode + ' - ' + item.nama"
+                                (onSelectionChange)="AccountSelect($event, item, 1)"
+                            >
+                            <sup><strong class="primary-fg">{{ item.kode }}</strong></sup> {{ item.nama }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </ng-container>
+                
+            </div>
+            <!-- / END : Akun Form -->
+        </div>
+
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="
+                    !form.is_detail && 
+                    form.company
+                "
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    Busy
+                "
+            >
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail && 
+                    perm.edit && 
+                    form.company
+                "
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                {{ !form.id ? 'Create' : 'Edit' }}
+            </button>
+        </div>
+
+        <div>
+            <button
+                mat-button
+                type="button"
+                mat-dialog-close
+                *ngIf="!Busy"
+            >
+                Close
+            </button>
+        </div>
+
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+
+</form>

@@ -1,0 +1,263 @@
+<form ngNativeValidate fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off" style="min-width: 500px" (ngSubmit)="Simpan()">
+
+    <!-- TOOLBAR -->
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="!form.is_detail && form.id != 'add'">
+                Edit {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.is_detail">
+                DETAIL
+            </span>
+            <button mat-button type="button" class="mat-icon-button ml-24" mat-dialog-close aria-label="Close dialog"
+                tabindex="-1" *ngIf="!Busy">
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+    <!-- END : TOOLBAR -->
+
+    <div class="p-0 m-0" fxLayout="row">
+        <div fxLayout="column" fxFlex="1 1 auto">
+            <mat-dialog-content fxLayout="row" fxLayoutGap="10px" class="p-24 m-0">
+
+                <div fxLayout="column" fxFlex="1 1 auto">
+                    <mat-form-field fxFlex="1 1 auto" floatPlaceholder="always" appearance="outline" class="small">
+                        <mat-label>Tanggal</mat-label>
+                        <input matInput
+                            name="tanggal"
+                            placeholder="Please Select Date"
+                            [(ngModel)]="form.tanggal"
+                            [min]="minDate"
+                            [matDatepicker]="tanggal"
+                            (focus)="tanggal.open()"
+                            (click)="tanggal.open()"
+                            [disabled]="form.is_detail"
+                            style="
+                                font-size: 14px!important; 
+                                color: #000!important; 
+                                padding: 0px!important;
+                                text-align: center;
+                                font-weight: bold;
+                            "
+                            readonly
+                            required
+                        >
+                        <mat-datepicker #tanggal></mat-datepicker>
+                    </mat-form-field>
+
+                    <div class="text-bold">
+                        Waktu
+                    </div>
+                    <div fxLayout="row" fxLayoutGap="10px">
+                        <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                            <mat-label>Dari</mat-label>
+                            <input matInput 
+                                type="text" 
+                                placeholder="Dari" 
+                                name="waktu_start" 
+                                [(ngModel)]="form.waktu_start"
+                                (blur)="CheckValue('waktu_start')"
+                                (focus)="CheckValue('waktu_start')"
+                                [readonly]="form.is_detail"
+                                mask="00:00"
+                                required
+                            >
+                        </mat-form-field>
+
+                        <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                            <mat-label>Sampai</mat-label>
+                            <input matInput 
+                                type="text" 
+                                placeholder="Sampai" 
+                                name="waktu_end" 
+                                [(ngModel)]="form.waktu_end"
+                                [readonly]="form.is_detail"
+                                mask="00:00"
+                                required
+                            >
+                        </mat-form-field>
+                    </div>
+
+                    <div class="text-bold">
+                        Jarak Tempuh
+                    </div>
+                    <div fxLayout="row" fxLayoutGap="10px">
+                        <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                            <mat-label>Dari</mat-label>
+                            <input matInput 
+                                type="text" 
+                                placeholder="Dari" 
+                                name="jarak_start" 
+                                [(ngModel)]="form.jarak_start"
+                                (blur)="CheckValue('jarak_start')"
+                                (focus)="CheckValue('jarak_start')"
+                                [readonly]="form.is_detail"
+                                required
+                            >
+                        </mat-form-field>
+
+                        <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                            <mat-label>Sampai</mat-label>
+                            <input matInput 
+                                type="text" 
+                                placeholder="Sampai" 
+                                name="jarak_end" 
+                                [(ngModel)]="form.jarak_end"
+                                [readonly]="form.is_detail"
+                                required
+                            >
+                        </mat-form-field>
+                    </div>
+
+                    <mat-form-field appearance="outline" class="small">
+                        <mat-label>Akun</mat-label>
+                        <input matInput
+                            type="text"
+                            placeholder="Pilih Akun"
+                            name="coa_nama"
+                            [(ngModel)]="form.coa_nama"
+                            [matAutocomplete]="acCoa"
+                            (ngModelChange)="COAFilter(form.coa_nama)"
+                            [readonly]="form.is_detail || form.coa"
+                        >
+                        <button mat-button *ngIf="form.coa && !form.is_detail" matSuffix mat-icon-button aria-label="Clear" (click)="COARemove()">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete #acCoa="matAutocomplete">
+                            <mat-option *ngFor="let item of COA" [value]="item.nama" (onSelectionChange)="COASelect($event, item)">
+                                <small>{{ item.nama }}</small>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="column">
+
+                    <mat-form-field appearance="outline" class="small">
+                        <mat-label>Jenis Muatan</mat-label>
+                        <input matInput
+                            type="text"
+                            placeholder="Pilih Jenis Muatan"
+                            name="muatan_nama"
+                            [(ngModel)]="form.muatan_nama"
+                            [matAutocomplete]="acTipe"
+                            (ngModelChange)="TipeFilter(form.muatan_nama)"
+                            [readonly]="form.is_detail || form.muatan"
+                        >
+                        <button mat-button *ngIf="form.muatan && !form.is_detail" matSuffix mat-icon-button aria-label="Clear" (click)="TipeRemove()">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete #acTipe="matAutocomplete">
+                            <mat-option *ngFor="let item of TIPE" [value]="item.nama" (onSelectionChange)="TipeSelect($event, item)">
+                                <small>{{ item.nama }}</small>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <div fxLayout="row" fxLayoutGap="10px">
+                        <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                            <mat-label>QTY</mat-label>
+                            <input matInput 
+                                type="text" 
+                                placeholder="Masukkan QTY" 
+                                name="qty" 
+                                [(ngModel)]="form.qty"
+                                [readonly]="form.is_detail"
+                                required
+                            >
+                        </mat-form-field>
+
+                        <mat-form-field fxFlex="1 1 20%" appearance="outline" class="small">
+                            <mat-label>UOM</mat-label>
+                            <input matInput 
+                                type="text" 
+                                placeholder="UOM" 
+                                name="uom" 
+                                [(ngModel)]="form.uom"
+                                readonly
+                            >
+                        </mat-form-field>
+                    </div>
+
+                    <mat-form-field appearance="outline" class="small">
+                        <mat-label>Keterangan</mat-label>
+                        <textarea matInput
+                            type="text"
+                            placeholder="Masukkan Keterangan"
+                            name="keterangan"
+                            [(ngModel)]="form.keterangan"
+                            matTextareaAutosize 
+                            [matAutosizeMinRows]="3"
+                            [readonly]="form.is_detail"
+                        ></textarea>
+                    </mat-form-field>
+                </div> 
+
+            </mat-dialog-content>
+        </div>
+    </div>
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+
+        <div fxFlex="1 1 auto">
+            <button 
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="Busy">
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Simpan' }}
+            </button>
+
+            <div
+                *ngIf="
+                    form.is_detail &&
+                    form.approved != 1
+                "
+            >
+                <button
+                    *ngIf="perm.edit"
+                    type="button"
+                    mat-button
+                    (click)="Edit()">
+                    <mat-icon>create</mat-icon>
+                    Edit
+                </button>
+
+                <button
+                    *ngIf="perm.approve"
+                    type="button"
+                    mat-button
+                    color="primary"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Approve()"
+                >
+                    <mat-icon>check</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Approve' }}
+                </button>
+            </div
+            >
+        </div>
+
+        <div>
+            <button
+                mat-button
+                type="button"
+                mat-dialog-close
+                *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+
+    </mat-dialog-actions>
+    <!-- END : TOOLBAR -->
+
+</form>

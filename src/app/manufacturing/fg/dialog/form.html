@@ -1,0 +1,313 @@
+<form ngNativeValidate fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" style="min-width: 500px" autocomplete="off" (ngSubmit)="Simpan()">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                {{Com.title}} Form
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" fxLayoutGap="10px" class="m-0 p-24">
+
+        <!-- LEFT -->
+        <mat-dialog-content fxFlex="1 1 auto" fxLayout="column">
+
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Storeloc Name</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Storeloc Name" 
+                    name="storeloc_nama" 
+                    [(ngModel)]="form.storeloc_nama"
+                    required
+                    [matAutocomplete]="acStore"
+                    [readonly]="form.is_detail || form.storeloc"
+                >
+                <button type="button" 
+                    mat-button 
+                    *ngIf="!from_ap && form.storeloc && !form.is_detail" 
+                    matSuffix 
+                    mat-icon-button 
+                    aria-label="Clear" 
+                    (click)="ClearStore();" 
+                    tabindex="-1">
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete #acStore="matAutocomplete" class="force-wrap ac-small">
+                    <mat-option *ngFor="let item of Store" [value]="item.storeloc_nama" (onSelectionChange)="StoreSelect($event, item)">
+                        {{item.storeloc_kode}} - {{ item.storeloc_nama }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field *ngIf="form.storeloc" floatPlaceholder="always" appearance="outline" class="small">
+                <mat-label>Transfer Date</mat-label>
+                <input matInput
+                    name="tanggal"
+                    placeholder="Please Select Date"
+                    [(ngModel)]="form.tanggal"
+                    
+                    [max]="maxDate"
+                    (ngModelChange)="Focus()"
+                    required
+                    [matDatepicker]="tanggal"
+                    (focus)="tanggal.open()"
+                    (click)="tanggal.open()"
+                    [disabled]="form.is_detail"
+                    readonly
+                    style="font-size: 14px!important; color: #000!important; padding: 0px!important; text-align: center;"
+                >
+                <mat-datepicker #tanggal></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field *ngIf="form.tanggal" fxFlex="1 1 auto" appearance="outline" class="small">
+                <mat-label>Notes</mat-label>
+                <textarea matInput
+                    type="text"
+                    placeholder="Notes"
+                    name="note"
+                    [(ngModel)]="form.note"
+                    matTextareaAutosize 
+                    [matAutosizeMinRows]="2"
+                    [readonly]="form.is_detail || form.is_reception == 1"
+                ></textarea>
+            </mat-form-field>
+
+        </mat-dialog-content>
+        <!-- END LEFT -->
+
+        <!-- RIGHT -->
+        <mat-dialog-content *ngIf="form.storeloc && form.note" fxFlex="1 1 auto" fxLayout="column" >
+            <!-- OUTPUT -->
+            <div class="primary mb-0 p-4 text-center">
+                LIST TRANSFER
+            </div>
+            <div>
+                <table class="table table-responsive table-input table-input-small table-small table-striped table-hover table-border-top">
+                    <thead>
+                        <tr>
+                            <th width="10">
+                                No.
+                            </th>
+                            <th width="75">
+                                Code
+                            </th>
+                            <th width="300">
+                                Item Name
+                            </th>
+                            <th width="150" *ngIf="form.is_reception != 1">
+                                Stock
+                            </th>              
+                            <th width="150">
+                                Qty Send
+                            </th>
+                            <th width="50">
+                                UOM
+                            </th>   
+                        </tr>
+                    </thead>
+                    <tbody nopadding>
+                        <ng-container *ngFor="let item of Output; let i = index;">
+                            <tr>
+                                <td padding5 align="center">
+                                    {{ i+1 }}
+                                </td>
+                                <td padding5 style="white-space:nowrap!important;">
+                                    {{ item.kode }}
+                                </td>
+                                <td padding5 style="position: relative;">
+                                    {{ item.nama }}
+                                </td>
+                                <td>
+                                    <input 
+                                        [disabled]="!item.id"
+                                        type="text" 
+                                        autocomplete="off"
+                                        maxlength="23"
+                                        currencyMask
+                                        name="output-stock-{{i}}"
+                                        id="output-stock-{{i}}"
+                                        [(ngModel)]="item.stock"
+                                        required
+                                        [options]="
+                                        item.in_decimal == 1 ? {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        } : {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 0
+                                        }
+                                        "
+                                        readonly
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        [disabled]="!item.id"
+                                        type="text" 
+                                        autocomplete="off"
+                                        maxlength="23"
+                                        currencyMask
+                                        name="output-qty-send{{i}}"
+                                        id="output-qty-send{{i}}"
+                                        [(ngModel)]="item.qty_send"
+                                        (ngModelChange)="Calculate(item)"
+                                        [options]="
+                                        item.in_decimal == 1 ? {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        } : {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 0
+                                        }
+                                        "
+                                        [readonly] ="form.is_detail || item.storeloc"
+                                    >
+                                </td>
+                                <td padding5 class="text-center">
+                                    {{ item.satuan }}
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+            <!-- END OUTPUT -->
+        </mat-dialog-content>
+        <!-- END RIGHT -->
+    </mat-dialog-content>
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-button
+                color="primary"
+                [disabled] = "!ReadytoSave"
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="
+                    !ReadytoSave &&
+                    form.note &&
+                    !form.is_detail
+                "
+                color="warn"
+                type="button"
+                mat-button
+                (click)="FillAll();"
+            >
+                <mat-icon>done</mat-icon>
+                Fill All to Issued
+            </button>
+
+            <button
+                *ngIf="
+                    ReadytoSave == 1 &&
+                    form.note &&
+                    !form.is_detail && 
+                    form.verified != 1
+                "
+                color="warn"
+                type="button"
+                mat-button
+                (click)="EmptyAll();"
+            >
+                <mat-icon>cancel</mat-icon>
+                Empty All Qty Send
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail && 
+                    form.verified != 1 &&
+                    perm.verify
+                "
+                type="button"
+                mat-button
+                color="primary"
+                (click)="Verify();"
+            >
+                <mat-icon>check</mat-icon>
+                Verify
+            </button>
+
+            <div *ngIf="form.is_detail && perm.approve && form.verified == 1 && form.approved == 0">
+
+                <button
+                    type="button"
+                    mat-button
+                    color="primary"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Approve()"
+                >
+                    <mat-icon>check</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Approve' }}
+                </button>
+
+                <button
+                    type="button"
+                    mat-button
+                    color="warn"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Reject()"
+                >
+                    <mat-icon>close</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Reject' }}
+                </button>
+
+            </div>
+
+        </div>
+    
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+
+</form>

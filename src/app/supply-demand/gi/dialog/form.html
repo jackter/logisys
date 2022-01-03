@@ -1,0 +1,522 @@
+<form
+    ngNativeValidate
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    aria-autocomplete="none"
+    style="min-width: 500px;"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <div
+        fxLayout="row"
+        fxLayout.sm="column"
+        class="p-24 m-0"
+        fxLayoutGap="10px"
+    >
+        <!-- LEFT -->
+        <mat-dialog-content fxLayout="column" fxFlex="1 0 auto">
+            <mat-form-field
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Date</mat-label>
+                <input
+                    matInput
+                    name="tanggal"
+                    placeholder="Please Select Date"
+                    [(ngModel)]="form.tanggal"
+                    [min]="minDate"
+                    [max]="maxDate"
+                    required
+                    [matDatepicker]="tanggal"
+                    (focus)="tanggal.open()"
+                    (click)="tanggal.open()"
+                    readonly
+                    style="
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        padding: 0px !important;
+                        text-align: center;
+                    "
+                />
+                <mat-datepicker #tanggal></mat-datepicker>
+            </mat-form-field>
+
+            <table
+                class="table table-responsive table-input table-input-noborder"
+            >
+                <tr padding5>
+                    <td colspan="3">
+                        <div class="h3 text-bold">
+                            REQUEST DETAIL:
+                        </div>
+                    </td>
+                </tr>
+                <tr padding5>
+                    <td>
+                        Date Target
+                    </td>
+                    <td width="1">:</td>
+                    <td>
+                        {{ form.date_target }}
+                    </td>
+                </tr>
+                <tr padding5>
+                    <td>
+                        MR Code
+                    </td>
+                    <td>:</td>
+                    <td>
+                        {{ form.kode }}
+                    </td>
+                </tr>
+                <tr padding5>
+                    <td>
+                        Company
+                    </td>
+                    <td>:</td>
+                    <td>
+                        {{ form.company_abbr }} : {{ form.company_nama }}
+                    </td>
+                </tr>
+                <tr padding5>
+                    <td>
+                        Target Cost
+                    </td>
+                    <td>:</td>
+                    <td>
+                        {{ form.cost_nama }}
+                        <!-- <input
+                            type="text" 
+                            placeholder="Select Cost Center" 
+                            name="cost_nama" 
+                            [(ngModel)]="form.cost_nama"
+                            required
+                            [matAutocomplete]="acCost"
+                            (ngModelChange)="CostFilter(form.cost_nama)"
+                            (click)="CostFilter(form.cost_nama)"
+                        >
+                        <mat-autocomplete #acCost="matAutocomplete">
+                            <mat-option *ngFor="let item of Cost" [value]="item.nama" (onSelectionChange) = "CostSelect($event, item)">
+                                {{ item.nama }}
+                            </mat-option>
+                        </mat-autocomplete> -->
+                    </td>
+                </tr>
+                <tr padding5>
+                    <td>
+                        Note
+                    </td>
+                    <td>:</td>
+                    <td style="max-width: 200px;">
+                        {{ form.note }}
+                    </td>
+                </tr>
+            </table>
+
+            <!-- <div fxLayout="row" fxLayoutGap="10px">
+    
+                <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>Cost Center</mat-label>
+                    <input matInput 
+                        type="text" 
+                        placeholder="Select Cost Center" 
+                        name="cost_center_nama" 
+                        [(ngModel)]="form.cost_center_nama"
+                        required
+                        [matAutocomplete]="acCost"
+                        (ngModelChange)="CostFilter(form.cost_center_nama)"
+                        (focus)="CostFilter(form.cost_center_nama)"
+                        (click)="CostFilter(form.cost_center_nama)"
+                        [readonly]="form.cost_center"
+                    >
+                    <mat-autocomplete #acCost="matAutocomplete">
+                        <mat-option *ngFor="let item of Cost" [value]="item.nama" (onSelectionChange) = "CostSelect($event, item)">
+                            {{ item.nama }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+                
+                <mat-form-field fxFlex="1 0 50px" appearance="outline" class="small">
+                    <mat-label>Cost Center Code</mat-label>
+                    <input matInput 
+                        type="text" 
+                        placeholder="Cost Center Code" 
+                        name="cost_center_kode" 
+                        [(ngModel)]="form.cost_center_kode"
+                        [required]="!form.cost_center"                        
+                        [readonly]="form.cost_center"
+                    >
+                </mat-form-field>
+    
+            </div> -->
+
+            <mat-form-field
+                fxFlex="1 1 auto"
+                floatLabel="always"
+                class="mt-24 ml-4"
+                *ngIf="form.finish != 1"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Remarks Goods Issued</mat-label>
+                <textarea
+                    matInput
+                    type="text"
+                    placeholder="Remarks Goods Issued"
+                    name="remarks"
+                    [(ngModel)]="form.remarks"
+                    matTextareaAutosize
+                    [matAutosizeMinRows]="2"
+                    required
+                ></textarea>
+            </mat-form-field>
+            <!-- / END -->
+        </mat-dialog-content>
+        <!-- / LEFT -->
+
+        <!-- RIGHT -->
+        <mat-dialog-content
+            *ngIf="form.company && form.dept_abbr && form.note"
+            fxLayout="column"
+            fxFlex="1 1 auto"
+            fxLayoutAlign="start center"
+        >
+            <div>
+                <hr class="mt-0 mb-0" />
+                <table
+                    class="table table-responsive table-input table-small table-striped table-hover"
+                >
+                    <thead>
+                        <tr>
+                            <th width="10">
+                                No.
+                            </th>
+                            <th>
+                                Item
+                            </th>
+                            <th width="50">
+                                UOM
+                            </th>
+                            <th width="75">
+                                Qty. MR
+                            </th>
+                            <th width="75">
+                                Qty. Approved
+                            </th>
+                            <th width="75">
+                                Qty. Outstanding
+                            </th>
+                            <th *ngIf="form.finish != 1">
+                                Location
+                            </th>
+                            <th width="75" *ngIf="form.finish != 1">
+                                Stock
+                            </th>
+                            <th width="100" *ngIf="form.finish != 1">
+                                Qty. Issued
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of List; let i = index;">
+                            <td class="text-center">
+                                <div padding5>
+                                    {{ i+1 }}
+                                </div>
+                            </td>
+                            <td style="position: relative;">
+                                <input
+                                    type="text"
+                                    placeholder="Item Name"
+                                    id="nama-{{i}}"
+                                    name="nama-{{i}}"
+                                    [ngModel]="item.nama"
+                                    [required]="i == 0"
+                                    readonly
+                                    tabindex="-1"
+                                />
+                            </td>
+                            <td padding5 class="text-center">
+                                {{ item.satuan }}
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty-{{i}}"
+                                    id="qty-{{i}}"
+                                    tabindex="-1"
+                                    [ngModel]="item.qty"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                    tabindex="-1"
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_approved-{{i}}"
+                                    id="qty_approved-{{i}}"
+                                    [ngModel]="item.qty_approved"
+                                    [required]="i == 0 || (item.id && ReceiptState == 1)"
+                                    (ngModelChange)="CheckQty(i)"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                    tabindex="-1"
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_outstanding-{{i}}"
+                                    id="qty_outstanding-{{i}}"
+                                    [ngModel]="item.qty_outstanding"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                    tabindex="-1"
+                                    [class]="item.qty_outstanding > 0 ? 'mat-red-bg' : ''"
+                                />
+                            </td>
+                            <td
+                                nopadding
+                                style="position: relative;"
+                                *ngIf="form.finish != 1"
+                            >
+                                <input
+                                    type="text"
+                                    autocomplete="off"
+                                    name="item-storeloc-{{i}}"
+                                    id="item-storeloc-{{i}}"
+                                    [(ngModel)]="item.storeloc_kode"
+                                    [matAutocomplete]="acStoreloc"
+                                    (ngModelChange)="StorelocFilter(item.storeloc_kode, i)"
+                                    (focus)="StorelocFilter(item.storeloc_kode, i)"
+                                    [tabindex]="item.storeloc ? '-1' : ''"
+                                />
+                                <button
+                                    type="button"
+                                    style="position: absolute; right: 0px;"
+                                    mat-button
+                                    *ngIf="item.storeloc"
+                                    matSuffix
+                                    mat-icon-button
+                                    aria-label="Clear"
+                                    (click)="item.storeloc_kode = ''; StorelocFilter(item.storeloc_kode, i);"
+                                    tabindex="-1"
+                                >
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                                <mat-autocomplete
+                                    autoActiveFirstOption
+                                    #acStoreloc="matAutocomplete"
+                                    class="force-wrap ac-small"
+                                >
+                                    <mat-option
+                                        *ngFor="let store of Storeloc"
+                                        [value]="store.kode"
+                                        (onSelectionChange)="StorelocSelect($event, store, i)"
+                                    >
+                                        {{ store.kode }} : {{ store.nama }}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </td>
+                            <td *ngIf="form.finish != 1">
+                                <input
+                                    *ngIf="item.storeloc"
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="stock-{{i}}"
+                                    id="stock-{{i}}"
+                                    tabindex="-1"
+                                    [ngModel]="item.stock"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                    tabindex="-1"
+                                />
+                            </td>
+                            <td *ngIf="form.finish != 1">
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_gi-{{i}}"
+                                    id="qty_gi-{{i}}"
+                                    [(ngModel)]="item.qty_gi"
+                                    [required]="item.storeloc"
+                                    (ngModelChange)="CheckQty(item)"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    [readonly]="!item.storeloc || item.stock_def <= 0"
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </mat-dialog-content>
+        <!-- / RIGHT -->
+    </div>
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="form.is_gi && form.finish != 1"
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    Busy ||
+                    ReadyToSave <= 0 ||
+                    !form.remarks
+                "
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="form.is_gi && form.gi && form.gi.count > 0"
+                type="button"
+                mat-button
+                color="primary"
+                (click)="ShowHistory()"
+            >
+                <mat-icon>access_time</mat-icon>
+                History Goods Issued
+            </button>
+
+            <button
+                *ngIf="form.finish != 1 && perm.force_close"
+                type="button"
+                mat-button
+                color="warn"
+                (click)="ForceClose()"
+            >
+                <mat-icon>close</mat-icon>
+                Force Close ( Finish )
+            </button>
+        </div>
+
+        <div>
+            <button mat-button type="button" mat-dialog-close *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+</form>

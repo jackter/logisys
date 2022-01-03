@@ -1,0 +1,387 @@
+<form ngNativeValidate fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" style="min-width: 500px" autocomplete="off" (ngSubmit)="Simpan()">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Form {{Com.title}}
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" fxLayoutGap="10px" class="m-0 p-24">
+
+        <!-- LEFT FORM -->
+        <mat-dialog-content fxFlex="1 1 auto" fxLayout="column">
+
+            <!-- Company -->
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Company</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Company" 
+                    name="company_nama" 
+                    [(ngModel)]="form.company_nama"
+                    required
+                    [matAutocomplete]="acCompany"
+                    (ngModelChange)="CompanyFilter()"
+                    [readonly]="CompanyLen == 1 || form.is_detail || form.id != 'add' || form.company"
+                >
+                <button type="button" 
+                    mat-button 
+                    *ngIf="form.company && !form.is_detail && form.id == 'add'" 
+                    matSuffix 
+                    mat-icon-button 
+                    aria-label="Clear" 
+                    (click)="CompanyReset();" 
+                    tabindex="-1">
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete #acCompany="matAutocomplete" class="force-wrap ac-small">
+                    <mat-option *ngFor="let item of Company" [value]="item.nama" (onSelectionChange)="CompanySelect($event, item)">
+                        {{ item.nama }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <!-- / Company -->
+
+            <div *ngIf="form.company"  fxLayout="row" fxLayoutGap="10px">
+
+                <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>Month</mat-label>
+                    <input matInput 
+                        placeholder="Month" 
+                        name="month"
+                        type="text"
+                        [(ngModel)]="form.bulan"
+                        (ngModelChange) = "BulanFilter()"
+                        [matAutocomplete]="month"
+                        [readonly] = "form.is_detail || form.id != 'add' || form.month"
+                    >
+                    <button type="button" 
+                        mat-button 
+                        *ngIf="form.month && !form.is_detail && form.id == 'add'" 
+                        matSuffix 
+                        mat-icon-button 
+                        aria-label="Clear" 
+                        (click)="BulanReset();" 
+                        tabindex="-1">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete #month="matAutocomplete" class="force-wrap ac-small">
+                        <mat-option *ngFor="let item of ACBulan" [value]="item.bulan" (onSelectionChange)="BulanSelect($event, item)">
+                            {{ item.bulan }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+    
+                <mat-form-field *ngIf="form.month" fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>Year</mat-label>
+                    <input matInput 
+                        placeholder="Year"
+                        type="text"
+                        name="year"
+                        [(ngModel)]="form.year"   
+                        [matAutocomplete]="year"
+                        [readonly] = "form.is_detail || form.id != 'add'"
+                    >
+                    <mat-autocomplete #year="matAutocomplete">
+                        <mat-option *ngFor="let item of Tahun" [value]="item" (onSelectionChange)="TahunSelect($event, item)">
+                            {{ item }}
+                        </mat-option>
+                    </mat-autocomplete>
+                    
+                </mat-form-field>
+
+            </div>
+
+            <div *ngIf="form.year" fxLayout="column">
+
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>Lbour</mat-label>
+                    <input matInput 
+                        type="text" 
+                        placeholder="Labour" 
+                        name="labour" 
+                        [(ngModel)]="form.labour"
+                        required
+                        [readonly]="form.is_detail"
+                        currencyMask
+                        [options]="
+                        {
+                            prefix: 'Rp. ',
+                            allowNegative: false,
+                            thousands: '.',
+                            decimal: ',',
+                            precision: 4
+                        }
+                        "
+                    >
+                </mat-form-field>
+    
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>Maintenance</mat-label>
+                    <input matInput 
+                        type="text" 
+                        placeholder="Maintenance" 
+                        name="maintenance" 
+                        [(ngModel)]="form.maintenance"
+                        required
+                        [readonly]="form.is_detail"
+                        currencyMask
+                        [options]="
+                        {
+                            prefix: 'Rp. ',
+                            allowNegative: false,
+                            thousands: '.',
+                            decimal: ',',
+                            precision: 4
+                        }
+                        "
+                    >
+                </mat-form-field>
+    
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>Factory</mat-label>
+                    <input matInput 
+                        type="text" 
+                        placeholder="Factory" 
+                        name="factory" 
+                        [(ngModel)]="form.factory"
+                        required
+                        [readonly]="form.is_detail"
+                        currencyMask
+                        [options]="
+                        {
+                            prefix: 'Rp. ',
+                            allowNegative: false,
+                            thousands: '.',
+                            decimal: ',',
+                            precision: 4
+                        }
+                        "
+                    >
+                </mat-form-field>
+            </div>
+
+        </mat-dialog-content>
+        <!-- / LEFT -->
+
+        <!-- RIGHT FORM -->
+        <mat-dialog-content *ngIf="form.year" fxFlex="1 1 auto" fxLayout="column">
+            
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>General</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="General" 
+                    name="general" 
+                    [(ngModel)]="form.general"
+                    required
+                    [readonly]="form.is_detail"
+                    currencyMask
+                    [options]="
+                    {
+                        prefix: 'Rp. ',
+                        allowNegative: false,
+                        thousands: '.',
+                        decimal: ',',
+                        precision: 4
+                    }
+                    "
+                >
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Laboratory</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Laboratory" 
+                    name="laboratory" 
+                    [(ngModel)]="form.laboratory"
+                    required
+                    [readonly]="form.is_detail"
+                    currencyMask
+                    [options]="
+                    {
+                        prefix: 'Rp. ',
+                        allowNegative: false,
+                        thousands: '.',
+                        decimal: ',',
+                        precision: 4
+                    }
+                    "
+                >
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Engineering</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Rngineering" 
+                    name="engineering" 
+                    [(ngModel)]="form.engineering"
+                    required
+                    [readonly]="form.is_detail"
+                    currencyMask
+                    [options]="
+                    {
+                        prefix: 'Rp. ',
+                        allowNegative: false,
+                        thousands: '.',
+                        decimal: ',',
+                        precision: 4
+                    }
+                    "
+                >
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Effulent</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Effulent" 
+                    name="effulent" 
+                    [(ngModel)]="form.effulent"
+                    required
+                    [readonly]="form.is_detail"
+                    currencyMask
+                    [options]="
+                    {
+                        prefix: 'Rp. ',
+                        allowNegative: false,
+                        thousands: '.',
+                        decimal: ',',
+                        precision: 4
+                    }
+                    "
+                >
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Depreciation</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Depreciation" 
+                    name="depreciation" 
+                    [(ngModel)]="form.depreciation"
+                    required
+                    [readonly]="form.is_detail"
+                    currencyMask
+                    [options]="
+                    {
+                        prefix: 'Rp. ',
+                        allowNegative: false,
+                        thousands: '.',
+                        decimal: ',',
+                        precision: 4
+                    }
+                    "
+                >
+            </mat-form-field>
+
+        </mat-dialog-content>
+        <!-- / RIGHT -->
+
+    </mat-dialog-content>
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-button
+                color="primary"
+
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail &&
+                    form.verified != 1
+                "
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                Edit
+            </button>
+
+            <button
+                *ngIf="form.is_detail && perm.verify && form.verified == 0"
+                type="button"
+                mat-raised-button
+                color="accent"
+                [disabled]="
+                    Busy
+                "
+                (click)="Verify()"
+            >
+                {{ Busy ? 'Please Wait...' : 'Verify' }}
+            </button>
+
+            <div *ngIf="form.is_detail && perm.approve && form.verified == 1 && form.approved == 0">
+
+                <button
+                    type="button"
+                    mat-button
+                    color="primary"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Approve()"
+                >
+                    <mat-icon>check</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Approve' }}
+                </button>
+
+                <button
+                    type="button"
+                    mat-button
+                    color="warn"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Reject()"
+                >
+                    <mat-icon>close</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Reject' }}
+                </button>
+
+            </div>
+
+        </div>
+    
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+
+</form>

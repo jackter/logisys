@@ -1,0 +1,67 @@
+<form fxLayou="column" ngNativeValidate (ngSubmit)="Simpan()" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Form Group Permissions
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content class="p-24 m-0" fxLayout="column">
+
+        <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+            <mat-label>Nama</mat-label>
+            <input matInput 
+                placeholder="Nama" 
+                name="nama" 
+                id="nama" 
+                [(ngModel)]="form.nama" 
+                maxlength="100"
+                required 
+            >
+        </mat-form-field>
+
+        <mat-form-field fxFlex="1 1 auto" appearance='outline' class="small">
+            <mat-label>Keterangan</mat-label>
+            <textarea matInput 
+                    type="text" 
+                    placeholder="Keterangan"
+                    name="keterangan" 
+                    [(ngModel)]="form.keterangan" 
+                    maxlength="255" 
+                    required
+                    matTextareaAutosize 
+                    matAutosizeMinRows="2"
+                    >
+            </textarea>
+        </mat-form-field>
+
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="row" fxLayoutAlign="end">
+
+        <button
+            mat-raised-button
+            class="mat-primary-900-bg"
+            type="submit"
+            [disabled]="!form.nama || !form.keterangan"
+        >
+            Simpan
+        </button>
+
+    </mat-dialog-actions>
+
+</form>

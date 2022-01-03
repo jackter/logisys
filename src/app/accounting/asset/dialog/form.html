@@ -1,0 +1,565 @@
+<form ngNativeValidate fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" style="min-width: 500px" autocomplete="off" (ngSubmit)="Simpan()">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                {{Com.title}}
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" class="m-0 p-24" fxLayoutGap="10px">
+
+        <!-- LEFT FORM -->
+        <mat-dialog-content fxFlex="1 1 auto" fxLayout="column">
+
+            <mat-form-field floatPlaceholder="always" appearance="outline" class="small" *ngIf="this.form.id != 'add'">
+                <mat-label>Code</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Code" 
+                    name="code" 
+                    [(ngModel)]="form.kode"
+                    readonly
+                >
+            </mat-form-field>
+
+            <mat-form-field floatPlaceholder="always" appearance="outline" class="small">
+                <mat-label>Usage Date</mat-label>
+                <input matInput
+                    name="tanggal"
+                    placeholder="Please Select Date"
+                    [(ngModel)]="form.tanggal"
+                    (ngModelChange)="FocusCompany()"
+                    required
+                    [matDatepicker]="tanggal"
+                    (focus)="tanggal.open()"
+                    (click)="tanggal.open()"
+                    [disabled]="form.is_detail"
+                    readonly
+                    style="font-size: 14px!important; color: #000!important; padding: 0px!important;"
+                >
+                <mat-datepicker #tanggal></mat-datepicker>
+            </mat-form-field>
+
+            <!-- Company -->
+            <mat-form-field *ngIf="form.tanggal" appearance="outline" class="small">
+                <mat-label>Company</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Company" 
+                    name="company_nama" 
+                    [(ngModel)]="form.company_nama"
+                    required
+                    [matAutocomplete]="acCompany"
+                    (ngModelChange)="CompanyFilter()"
+                    [readonly]="CompanyLen == 1 || form.is_detail || form.id != 'add' || form.company"
+                >
+                <button type="button" 
+                    mat-button 
+                    *ngIf="!form.is_detail && form.company" 
+                    matSuffix 
+                    mat-icon-button 
+                    aria-label="Clear" 
+                    (click)="CompanyRemove()" 
+                    tabindex="-1">
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete autoActiveFirstOption #acCompany="matAutocomplete" class="force-wrap ac-small">
+                    <mat-option *ngFor="let item of Company" [value]="item.nama" (onSelectionChange)="CompanySelect($event, item)">
+                        {{ item.nama }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <!-- / Company -->
+
+            <!-- Asset Type -->
+            <mat-form-field *ngIf="form.company_nama" appearance="outline" class="small">
+                <mat-label>Asset Type</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Asset Type" 
+                    name="asset_type_nama" 
+                    [(ngModel)]="form.asset_type_nama"
+                    required
+                    [matAutocomplete]="acAssetType"
+                    (ngModelChange)="AssetTypeFilter()"
+                    [readonly]="CompanyLen == 1 || form.is_detail || form.id != 'add' || form.asset_type"
+                >
+                <button type="button" 
+                    mat-button 
+                    *ngIf="form.asset_type_nama && !form.is_detail && form.id == 'add'" 
+                    matSuffix 
+                    mat-icon-button 
+                    aria-label="Clear" 
+                    (click)="AssetTypeRemove();" 
+                    tabindex="-1">
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete autoActiveFirstOption #acAssetType="matAutocomplete" class="force-wrap ac-small">
+                    <mat-option *ngFor="let item of AssetType" [value]="item.nama" (onSelectionChange)="AssetTypeSelect($event, item)">
+                        {{ item.nama }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <!-- / Asset Type -->
+
+            <!-- / Asset Usage -->
+            <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                <mat-label>Asset Usage</mat-label>
+                <mat-select
+                    [disabled]="form.is_detail"
+                    name="asset_usage" 
+                    placeholder="Asset Usage" 
+                    [(ngModel)]="form.asset_usage" 
+                    (ngModelChange)="assetUsage()"
+                    required
+                >
+                    <mat-option [value]="0">Fixed Asset</mat-option>
+                    <mat-option [value]="1">WBS</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <!-- / Asset Usage -->
+
+            <!-- Asset Code -->
+            <mat-form-field *ngIf="form.asset_kode" appearance="outline" class="small">
+                <mat-label>Asset Code</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Asset Code" 
+                    name="asset_kode" 
+                    [(ngModel)]="form.asset_kode"
+                    readonly
+                >
+            </mat-form-field>
+            <!-- / Asset Code -->
+
+            <div *ngIf="form.company && form.asset_type_nama && form.tanggal" fxLayout="column">
+    
+                <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>Asset Description</mat-label>
+                    <textarea matInput
+                        type="text"
+                        placeholder="Asset Description"
+                        name="remarks"
+                        [(ngModel)]="form.remarks"
+                        matTextareaAutosize 
+                        [matAutosizeMinRows]="2"
+                        [readonly]="form.is_detail"
+                    ></textarea>
+                </mat-form-field>
+
+                <mat-checkbox 
+                    class="mb-24" 
+                    name="is_po"
+                    [(ngModel)]="form.is_po"
+                    [checked]="form.is_po"
+                    [disabled]="form.is_detail"
+                    *ngIf="form.asset_usage == 0"
+                >
+                    Select Purchase Order
+                </mat-checkbox>
+    
+            </div>
+        
+        </mat-dialog-content>
+        <!-- LEFT FORM -->
+
+        <!-- CENTER FORM -->
+        <mat-dialog-content fxFlex="1 1 auto" fxLayoit="column" *ngIf="form.tanggal && form.company && form.asset_type && form.remarks && form.is_po  && form.asset_usage == 0">
+            <div class="m-0">
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>PO Code</mat-label>
+                    <input matInput 
+                        type="text" 
+                        placeholder="Please Define PO Code to Continue" 
+                        name="po_kode"
+                        [(ngModel)]="form.po_kode"
+                        required
+                        [matAutocomplete]="acPOCode"
+                        (ngModelChange)="POCodeFilter(form.po_kode)"
+                        (focus)="POCodeFilter(form.po_kode)"
+                        (click)="POCodeFilter(form.po_kode)"
+                        [readonly]="form.is_detail || form.po"
+                        [tabindex]="form.id != 'add' ? '-1' : ''"
+                    >
+                    <button type="button" 
+                        mat-button 
+                        *ngIf="form.po_kode && !form.is_detail" 
+                        matSuffix 
+                        mat-icon-button 
+                        aria-label="Clear" 
+                        (click)="POCodeRemove();" 
+                        tabindex="-1">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete autoActiveFirstOption #acPOCode="matAutocomplete" class="force-wrap ac-small">
+                        <mat-option *ngFor="let item of POCode" [value]="item.kode" (onSelectionChange)="POCodeSelect($event, item)">
+                            <small>{{ item.kode }} ( {{ item.nama }} ) <mat-divider></mat-divider></small>
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
+            <div class="m-0">
+                <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>Item Description</mat-label>
+                    <textarea matInput
+                        type="text"
+                        placeholder="Item Description"
+                        name="item_nama"
+                        [(ngModel)]="form.item_nama"
+                        matTextareaAutosize 
+                        [matAutosizeMinRows]="2"
+                        readonly
+                    ></textarea>
+                </mat-form-field>
+            </div>
+
+            <div class="m-0">
+                <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>Supplier</mat-label>
+                    <textarea matInput
+                        type="text"
+                        placeholder="Supplier"
+                        name="supplier_nama"
+                        [(ngModel)]="form.supplier_nama"
+                        matTextareaAutosize 
+                        [matAutosizeMinRows]="2"
+                        readonly
+                    ></textarea>
+                </mat-form-field>
+            </div>
+
+            <div class="m-0">
+                <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>GR Code</mat-label>
+                    <textarea matInput
+                        type="text"
+                        placeholder="GR Code"
+                        name="gr_kode"
+                        [(ngModel)]="form.gr_kode"
+                        matTextareaAutosize 
+                        [matAutosizeMinRows]="2"
+                        readonly
+                    ></textarea>
+                </mat-form-field>
+            </div>
+
+        </mat-dialog-content>
+
+        <!-- RIGHT FORM -->
+        <mat-dialog-content fxFlex="1 1 auto" fxLayoit="column" *ngIf="(form.tanggal && form.company && form.asset_type_nama && form.remarks && form.asset_usage == 0) || form.prog_cip_post_asset == 1">
+
+            <div class="m-0">
+                <mat-form-field appearance="outline" class="small" fxFlex="1 1 auto">
+                    <mat-label>Estimate Life Year</mat-label>
+                    <input matInput 
+                        type="number" 
+                        placeholder="Year" 
+                        name="est_year"
+                        [min]="0"
+                        [(ngModel)]="form.est_year"
+                        [readonly]="form.is_detail"
+                    >
+                </mat-form-field>
+    
+                <mat-form-field appearance="outline" class="small ml-8" fxFlex="1 1 30%">
+                    <mat-label>Est. Life Month</mat-label>
+                    <input matInput 
+                        type="number" 
+                        placeholder="Month" 
+                        name="est_month" 
+                        [min]="0"
+                        [(ngModel)]="form.est_month"
+                        [readonly]="form.is_detail"
+                    >
+                </mat-form-field>
+            </div>
+
+            <div class="m-0">
+                <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>Depreciation Method</mat-label>
+                    <mat-select
+                        [disabled]="form.is_detail"
+                        name="depreciation_method" 
+                        placeholder="Depreciation Method" 
+                        [(ngModel)]="form.depreciation_method" 
+                        required
+                    >
+                        <mat-option [value]="0">Non Depreciable</mat-option>
+                        <mat-option [value]="1">Straight Line Method</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="m-0" *ngIf="form.depreciation_method >= 0">
+                <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>Expenditures Account</mat-label>
+                    <input matInput
+                        type="text"
+                        placeholder="Expenditures Account"
+                        name="coa_expenditure"
+                        required
+                        [(ngModel)]="form.coa_expenditure_input"
+                        [matAutocomplete]="acCoaExpenditure"
+                        (ngModelChange)="COAFilter('coa_expenditure')"
+                        [readonly] = "form.is_detail"
+                    >
+                    <button mat-button *ngIf="form.coa_expenditure && !form.is_detail" matSuffix mat-icon-button aria-label="Clear" (click)="ClearInput('coa_expenditure')">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete autoActiveFirstOption #acCoaExpenditure="matAutocomplete">
+                        <mat-option *ngFor="let item of COA" [value]="item.kode + ' - ' + item.nama" (onSelectionChange)="COASelect($event, item, 'coa_expenditure')" style="font-size: 8pt">
+                            <sup><strong class="primary-fg">{{ item.kode }}</strong></sup> 
+                                {{ item.nama }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="small ml-8" fxFlex="1 1 30%">
+                    <input matInput
+                        type="text" 
+                        autocomplete="off"
+                        maxlength="23"
+                        placeholder="Amount"
+                        currencyMask
+                        name="acquisition_value"
+                        id="acquisition_value"
+                        [(ngModel)]="form.acquisition_value"
+                        [options]="{
+                            prefix: '',
+                            allowNegative: false,
+                            thousands: '.',
+                            decimal: ',',
+                            precision: 2
+                        }
+                        "
+                        required
+                        [readonly] = "form.is_detail || form.po_kode || form.cip_post_asset"
+                    >
+                </mat-form-field>
+            </div>
+
+            <div class="m-0" *ngIf="form.depreciation_method >= 0">
+                <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>Asset Account</mat-label>
+                    <input matInput
+                        type="text"
+                        placeholder="Asset Account"
+                        name="coa_asset"
+                        required
+                        [(ngModel)]="form.coa_asset_input"
+                        [matAutocomplete]="acCoaAsset"
+                        (ngModelChange)="COAFilter('coa_asset')"
+                        [readonly]="form.is_detail"
+                    >
+                    <button mat-button *ngIf="form.coa_asset && !form.is_detail" matSuffix mat-icon-button aria-label="Clear" (click)="ClearInput('coa_asset')">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete autoActiveFirstOption #acCoaAsset="matAutocomplete">
+                        <mat-option *ngFor="let item of COA" [value]="item.kode + ' - ' + item.nama" (onSelectionChange)="COASelect($event, item, 'coa_asset')" style="font-size: 8pt">
+                            <sup><strong class="primary-fg">{{ item.kode }}</strong></sup> 
+                                {{ item.nama }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
+            <div class="m-0" *ngIf="form.depreciation_method >= 1">
+                <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>Depreciation Account</mat-label>
+                    <input matInput
+                        type="text"
+                        placeholder="Depreciation Account"
+                        name="coa_depreciation"
+                        required
+                        [(ngModel)]="form.coa_depreciation_input"
+                        [matAutocomplete]="acCoaDepreciation"
+                        (ngModelChange)="COAFilter('coa_depreciation')"
+                        [readonly]="form.is_detail"
+                    >
+                    <button mat-button *ngIf="form.coa_depreciation && !form.is_detail" matSuffix mat-icon-button aria-label="Clear" (click)="ClearInput('coa_depreciation')" style="font-size: 8pt">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete autoActiveFirstOption #acCoaDepreciation="matAutocomplete">
+                        <mat-option *ngFor="let item of COA" [value]="item.kode + ' - ' + item.nama" (onSelectionChange)="COASelect($event, item, 'coa_depreciation')" style="font-size: 8pt">
+                            <sup><strong class="primary-fg">{{ item.kode }}</strong></sup> 
+                                {{ item.nama }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
+            <div class="m-0" *ngIf="form.depreciation_method >= 1">
+                <mat-form-field fxFlex="1 1 auto" appearance="outline" class="small">
+                    <mat-label>Accumulated Depreciation Account</mat-label>
+                    <input matInput
+                        type="text"
+                        placeholder="Accumulated Depreciation Account"
+                        name="coa_accumulated_depreciation"
+                        required
+                        [(ngModel)]="form.coa_accumulated_depreciation_input"
+                        [matAutocomplete]="acCoaAccumulatedDepreciation"
+                        (ngModelChange)="COAFilter('coa_accumulated_depreciation')"
+                        [readonly]="form.is_detail"
+                    >
+                    <button mat-button *ngIf="form.coa_accumulated_depreciation && !form.is_detail" matSuffix mat-icon-button aria-label="Clear" (click)="ClearInput('coa_accumulated_depreciation')">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete autoActiveFirstOption #acCoaAccumulatedDepreciation="matAutocomplete">
+                        <mat-option *ngFor="let item of COA" [value]="item.kode + ' - ' + item.nama" (onSelectionChange)="COASelect($event, item, 'coa_accumulated_depreciation')" style="font-size: 8pt">
+                            <sup><strong class="primary-fg">{{ item.kode }}</strong></sup> 
+                                {{ item.nama }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+
+        </mat-dialog-content>
+
+        <mat-dialog-content fxFlex="1 1 auto" fxLayoit="column" *ngIf="form.asset_usage == 1 && form.prog_cip_post_asset != 1">
+            <div>
+                <table class="table table-responsive table-input table-small table-striped table-hover table-border-top">
+                    <thead>
+                        <tr>
+                            <th width="10">
+                                <div>
+                                    No.
+                                </div>
+                            </th>
+                            <th width="50">
+                                Year
+                            </th>
+                            <th width="50">
+                                Month
+                            </th>
+                            <th width="50">
+                                Job
+                            </th>
+                            <th width="100">
+                                Job Desc
+                            </th>
+                            <th width="100">
+                                Doc Reff
+                            </th>
+                            <th width="150">
+                                Reff Code
+                            </th>
+                            <th width="100">
+                                Amount
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of List; let i = index;">
+                            <td class="text-center">
+                                <div padding5>
+                                    {{ i+1 }}
+                                </div>
+                            </td>
+                            <td padding5 class="text-center">
+                                {{ item.year }}
+                            </td>
+                            <td padding5 class="text-center">
+                                {{ item.month }}
+                            </td>
+                            <td padding5>
+                                {{ item.coa_kode_cip }}
+                            </td>
+                            <td padding5>
+                                {{ item.coa_nama_cip }}
+                            </td>
+                            <td padding5 class="text-center">
+                                {{ item.doc_nama }}
+                            </td>
+                            <td padding5 class="text-center">
+                                {{ item.ref_kode }}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ item.amount | number:'1.2-2' }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </mat-dialog-content>
+
+    </mat-dialog-content>
+    <!-- / RIGHT FORM -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-button
+                color="primary"
+                [disabled] = "!form.remarks || !form.asset_usage_empty"
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail && 
+                    form.verified == 0
+                "
+                type="button"
+                mat-raised-button
+                color = "accent"
+                [disabled] = "Busy"
+                (click)= 'Verify()'
+            >
+                {{ Busy ? 'Please Wait...' : 'Verify'}}
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail && 
+                    form.verified == 1 &&
+                    form.asset_usage == 1 &&
+                    form.cip_post_asset == 0
+                "
+                type="button"
+                mat-raised-button
+                color = "accent"
+                [disabled] = "Busy"
+                (click)= 'postedToAsset()'
+            >
+                {{ Busy ? 'Please Wait...' : 'Posted to Asset'}}
+            </button>
+
+        </div>
+    
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+
+</form>

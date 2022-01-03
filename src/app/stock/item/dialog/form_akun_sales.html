@@ -1,0 +1,195 @@
+<form ngNativeValidate (ngSubmit)="Simpan()" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off" aria-autocomplete="none" style="min-width: 500px; max-width: 800px;">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="formCOA.id == 'add_coa'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add_coa'">
+                {{ Com.title }}
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="column" class="p-16 pb-0 m-0">
+
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="10px">
+
+            <div fxFlex=" 1 auto" fxLayout="column">
+
+                <mat-form-field appearance="outline" class="small">
+                    <mat-label>Company</mat-label>
+                    <input matInput 
+                        type="text" 
+                        placeholder="Company" 
+                        name="company_nama" 
+                        [(ngModel)]="formCOA.company_nama"
+                        required
+                        [matAutocomplete]="acCompany"
+                        (ngModelChange)="CompanyFilter()"
+                        [readonly]="CompanyLen == 1"
+                    >
+                    <button type="button" mat-button *ngIf="formCOA.company" matSuffix mat-icon-button aria-label="Clear" (click)="CompanyRemove();" tabindex="-1">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete autoActiveFirstOption #acCompany="matAutocomplete">
+                        <mat-option *ngFor="let item of Company" [value]="item.nama" (onSelectionChange)="CompanySelect($event, item)">
+                            {{ item.nama }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+                
+                <ng-container *ngIf="formCOA.company">
+                    <mat-form-field appearance="outline" class="small">
+                        <mat-label>Akun Persediaan</mat-label>
+                        <input matInput
+                            type="text"
+                            placeholder="Akun Persediaan"
+                            name="coa_persediaan"
+                            [(ngModel)]="formCOA.coa_persediaan_input"
+                            [matAutocomplete]="acCoaPersediaan"
+                            (ngModelChange)="COAFilter('coa_persediaan')"
+                            [readonly]="formCOA.is_detail"
+                        >
+                        <button mat-button *ngIf="formCOA.coa_persediaan_input && !formCOA.is_detail" matSuffix mat-icon-button aria-label="Clear" (click)="ClearInput('coa_persediaan')">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete autoActiveFirstOption #acCoaPersediaan="matAutocomplete">
+                            <mat-option *ngFor="let item of COA" [value]="item.kode + ' - ' + item.nama" (onSelectionChange)="COASelect($event, item, 'coa_persediaan')">
+                                <small><sup><strong class="primary-fg">{{ item.kode }}</strong></sup> {{ item.nama }}</small>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+    
+                    <mat-form-field appearance="outline" class="small">
+                        <mat-label>Akun Penjualan</mat-label>
+                        <input matInput
+                            type="text"
+                            placeholder="Akun Penjualan"
+                            name="coa_penjualan"
+                            [(ngModel)]="formCOA.coa_penjualan_input"
+                            [matAutocomplete]="acCoaPenjualan"
+                            (ngModelChange)="COAFilter('coa_penjualan')"
+                            [readonly]="formCOA.is_detail"
+                        >
+                        <button mat-button *ngIf="formCOA.coa_penjualan_input && !formCOA.is_detail" matSuffix mat-icon-button aria-label="Clear" (click)="ClearInput('coa_penjualan')">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete autoActiveFirstOption #acCoaPenjualan="matAutocomplete">
+                            <mat-option *ngFor="let item of COA" [value]="item.kode + ' - ' + item.nama" (onSelectionChange)="COASelect($event, item, 'coa_penjualan')">
+                                <small><sup><strong class="primary-fg">{{ item.kode }}</strong></sup> {{ item.nama }}</small>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="small">
+                        <mat-label>Akun Penjualan Accrued</mat-label>
+                        <input matInput
+                            type="text"
+                            placeholder="Akun Penjualan Accrued"
+                            name="coa_accrued"
+                            [(ngModel)]="formCOA.coa_accrued_input"
+                            [matAutocomplete]="acCoaAccrued"
+                            (ngModelChange)="COAFilter('coa_accrued')"
+                            [readonly]="formCOA.is_detail"
+                        >
+                        <button mat-button *ngIf="formCOA.coa_accrued_input && !formCOA.is_detail" matSuffix mat-icon-button aria-label="Clear" (click)="ClearInput('coa_accrued')">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete autoActiveFirstOption #acCoaAccrued="matAutocomplete">
+                            <mat-option *ngFor="let item of COA" [value]="item.kode + ' - ' + item.nama" (onSelectionChange)="COASelect($event, item, 'coa_accrued')">
+                                <small><sup><strong class="primary-fg">{{ item.kode }}</strong></sup> {{ item.nama }}</small>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+    
+                    <mat-form-field appearance="outline" class="small">
+                        <mat-label>Akun COGS</mat-label>
+                        <input matInput
+                            type="text"
+                            placeholder="Akun COGS"
+                            name="coa_cogs"
+                            [(ngModel)]="formCOA.coa_cogs_input"
+                            [matAutocomplete]="acCoaCogs"
+                            (ngModelChange)="COAFilter('coa_cogs')"
+                            [readonly]="formCOA.is_detail"
+                        >
+                        <button mat-button *ngIf="formCOA.coa_cogs_input && !formCOA.is_detail" matSuffix mat-icon-button aria-label="Clear" (click)="ClearInput('coa_cogs')">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete autoActiveFirstOption #acCoaCogs="matAutocomplete">
+                            <mat-option *ngFor="let item of COA" [value]="item.kode + ' - ' + item.nama" (onSelectionChange)="COASelect($event, item, 'coa_cogs')">
+                                <small><sup><strong class="primary-fg">{{ item.kode }}</strong></sup> {{ item.nama }}</small>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </ng-container>
+                
+            </div>
+            <!-- / END : Akun Form -->
+        </div>
+
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="
+                    !formCOA.is_detail && 
+                    formCOA.company
+                "
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    Busy
+                "
+            >
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="
+                    formCOA.is_detail && 
+                    perm.edit && 
+                    formCOA.company
+                "
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                {{ !formCOA.id ? 'Create' : 'Edit' }}
+            </button>
+        </div>
+
+        <div>
+            <button
+                mat-button
+                type="button"
+                mat-dialog-close
+                *ngIf="!Busy"
+            >
+                Close
+            </button>
+        </div>
+
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+
+</form>

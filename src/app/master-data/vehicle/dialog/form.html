@@ -1,0 +1,327 @@
+<form
+    ngNativeValidate
+    fxLayout="column"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    style="min-width: 500px;"
+    (ngSubmit)="Simpan()"
+>
+    <!-- TOOLBAR -->
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span
+                class="title dialog-title"
+                *ngIf="!form.is_detail && form.id != 'add'"
+            >
+                Edit {{ Com.name }}
+            </span>
+            <span
+                class="title dialog-title"
+                *ngIf="form.is_detail && form.id != 'add'"
+            >
+                DETAIL : {{ form.kode }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+    <!-- END : TOOLBAR -->
+
+    <div class="p-0 m-0" fxLayout="row">
+        <div fxLayout="column" fxFlex="1 1 auto">
+            <mat-dialog-content
+                fxLayout="row"
+                fxLayoutGap="10px"
+                class="p-24 m-0"
+            >
+                <div fxLayout="column">
+                    <mat-form-field appearance="outline" class="small">
+                        <mat-label>Company</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Company"
+                            name="company_nama"
+                            [(ngModel)]="form.company_nama"
+                            [matAutocomplete]="acCompany"
+                            (ngModelChange)="CompanyFilter()"
+                            [readonly]="CompanyLen == 1 || form.is_detail || form.company"
+                            required
+                        />
+                        <button
+                            mat-button
+                            type="button"
+                            *ngIf="form.company && !form.is_detail && CompanyLen != 1"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="CompanyRemove();"
+                            tabindex="-1"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete
+                            autoActiveFirstOption
+                            #acCompany="matAutocomplete"
+                            class="force-wrap ac-small"
+                        >
+                            <mat-option
+                                *ngFor="let item of Company"
+                                [value]="item.nama"
+                                (onSelectionChange)="CompanySelect($event, item)"
+                            >
+                                {{ item.nama }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="small">
+                        <mat-label>Tipe Kendaraan</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Tipe"
+                            name="vgrup_nama"
+                            [(ngModel)]="form.vgrup_nama"
+                            [matAutocomplete]="acVehicle"
+                            (ngModelChange)="VehicleFilter(form.vgrup_nama)"
+                            (focus)="VehicleFilter(form.vgrup_nama)"
+                            [readonly]="form.is_detail || form.vgrup"
+                            required
+                        />
+                        <button
+                            mat-button
+                            type="button"
+                            *ngIf="form.vgrup && !form.is_detail"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="VehicleRemove();"
+                            tabindex="-1"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                        <mat-autocomplete
+                            autoActiveFirstOption
+                            #acVehicle="matAutocomplete"
+                            class="force-wrap ac-small"
+                        >
+                            <mat-option
+                                *ngFor="let item of Vehicle"
+                                [value]="item.nama"
+                                (onSelectionChange)="VehicleSelect($event, item)"
+                            >
+                                {{ item.nama }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field
+                        floatPlaceholder="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Deskripsi</mat-label>
+                        <textarea
+                            matInput
+                            type="text"
+                            placeholder="Deskripsi"
+                            name="keterangan"
+                            [(ngModel)]="form.keterangan"
+                            matTextareaAutosize
+                            [matAutosizeMinRows]="3"
+                            [readonly]="form.is_detail"
+                        ></textarea>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="column">
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        floatPlaceholder="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>No. Kendaraan</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="No. Kendaraan"
+                            name="nopol"
+                            [(ngModel)]="form.nopol"
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        floatPlaceholder="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Tahun Pembuatan</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Tahun Pembuatan"
+                            name="tahun_pembuatan"
+                            [(ngModel)]="form.tahun_pembuatan"
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        floatPlaceholder="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Tahun Pemakaian</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Tahun Pemakaian"
+                            name="tahun_pemakaian"
+                            [(ngModel)]="form.tahun_pemakaian"
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        floatPlaceholder="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Model</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Model"
+                            name="model"
+                            [(ngModel)]="form.model"
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="column">
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        floatPlaceholder="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>No. Mesin</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="No. Mesin"
+                            name="no_mesin"
+                            [(ngModel)]="form.no_mesin"
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        floatPlaceholder="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>No. Chasis</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Tahun Pembuatan"
+                            name="no_chasis"
+                            [(ngModel)]="form.no_chasis"
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        floatPlaceholder="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>No. KIR</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="No. KIR"
+                            name="no_kir"
+                            [(ngModel)]="form.no_kir"
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+
+                    <mat-form-field
+                        fxFlex="1 1 auto"
+                        floatPlaceholder="always"
+                        appearance="outline"
+                        class="small"
+                    >
+                        <mat-label>Ijin Operasional</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            placeholder="Ijin Operasional"
+                            name="permissions"
+                            [(ngModel)]="form.permissions"
+                            [readonly]="form.is_detail"
+                        />
+                    </mat-form-field>
+                </div>
+            </mat-dialog-content>
+        </div>
+    </div>
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="Busy"
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Simpan' }}
+            </button>
+
+            <button
+                *ngIf="form.is_detail && perm.edit"
+                type="button"
+                mat-button
+                (click)="Edit()"
+            >
+                <mat-icon>create</mat-icon>
+                Edit
+            </button>
+        </div>
+
+        <div>
+            <button mat-button type="button" mat-dialog-close *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- END : TOOLBAR -->
+</form>

@@ -1,0 +1,264 @@
+<form
+    ngNativeValidate
+    fxLayout="column"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    style="min-width: 500px;"
+    autocomplete="off"
+    (ngSubmit)="Simpan()"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Form {{Com.title}}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="column" fxLayout.sm="column" class="p-24 m-0">
+        <div fxLayout="row" fxLayoutGap="10px">
+            <mat-form-field
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+                fxFlex="1 1 auto"
+            >
+                <mat-label>Start Date</mat-label>
+                <input
+                    matInput
+                    name="start_date"
+                    placeholder="Please Select Date"
+                    [(ngModel)]="form.start_date"
+                    [max]="maxDate"
+                    (ngModelChange)="FillTime()"
+                    [matDatepicker]="start_date"
+                    (focus)="start_date.open()"
+                    (click)="start_date.open()"
+                    [disabled]="form.is_detail"
+                    style="
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        padding: 0px !important;
+                    "
+                    readonly
+                    required
+                />
+                <mat-datepicker #start_date></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field
+                floatPlaceholder="always"
+                fxFlex="0 1 100px"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Start Time</mat-label>
+                <input
+                    matInput
+                    name="start_time"
+                    type="text"
+                    placeholder="00:00"
+                    mask="00:00"
+                    [(ngModel)]="form.start_time"
+                    style="
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        padding: 0px !important;
+                    "
+                    [disabled]="form.is_detail"
+                />
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxLayoutGap="10px" *ngIf="form.start_date">
+            <mat-form-field
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+                fxFlex="1 1 auto"
+            >
+                <mat-label>End Date</mat-label>
+                <input
+                    matInput
+                    name="end_date"
+                    placeholder="Please Select Date"
+                    [(ngModel)]="form.end_date"
+                    [max]="maxDate"
+                    (ngModelChange)="FocusPKS()"
+                    [matDatepicker]="end_date"
+                    (focus)="end_date.open()"
+                    (click)="end_date.open()"
+                    [disabled]="form.is_detail"
+                    style="
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        padding: 0px !important;
+                    "
+                    readonly
+                    required
+                />
+                <mat-datepicker #end_date></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field
+                floatPlaceholder="always"
+                fxFlex="0 1 100px"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>End Time</mat-label>
+                <input
+                    matInput
+                    name="end_time"
+                    type="text"
+                    placeholder="00:00"
+                    mask="00:00"
+                    [(ngModel)]="form.end_time"
+                    style="
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        padding: 0px !important;
+                    "
+                    [disabled]="form.is_detail"
+                />
+            </mat-form-field>
+        </div>
+
+        <!-- PKS -->
+        <mat-form-field
+            *ngIf="form.end_date"
+            appearance="outline"
+            class="small"
+        >
+            <mat-label>Select PKS</mat-label>
+            <input
+                matInput
+                type="text"
+                placeholder="PKS"
+                name="pks_nama"
+                [(ngModel)]="form.pks_nama"
+                [matAutocomplete]="acPKS"
+                (ngModelChange)="PKSFilter()"
+                [readonly]="PKSLen == 1 || form.is_detail || form.id != 'add' || form.pks"
+                required
+            />
+            <button
+                mat-button
+                type="button"
+                *ngIf="form.pks && !form.is_detail"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="PKSReset()"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete
+                autoActiveFirstOption
+                #acPKS="matAutocomplete"
+                class="force-wrap ac-small"
+            >
+                <mat-option
+                    *ngFor="let item of PKS"
+                    [value]="item.pks"
+                    (onSelectionChange)="PKSSelect($event, item)"
+                >
+                    {{ item.pks }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+        <!-- / END : PKS -->
+
+        <mat-form-field
+            *ngIf="form.pks"
+            fxFlex="1 1 auto"
+            appearance="outline"
+            [color]="form.dobi < form.dobi ? 'warn' : ''"
+        >
+            <mat-label>Dobi</mat-label>
+            <input
+                matInput
+                type="text"
+                name="dobi"
+                [(ngModel)]="form.dobi"
+                placeholder="0,00"
+                currencyMask
+                required
+                [options]="{
+                    prefix: '',
+                    allowNegative: false,
+                    thousands: '.',
+                    decimal: ',',
+                    precision: 2
+                }"
+                [ngStyle]="{'color': form.dobi < form.dobi ? 'red' : ''}"
+                [readonly]="form.is_detail"
+            />
+        </mat-form-field>
+    </mat-dialog-content>
+    <!-- / END : CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="end"
+        fxLayoutGap="10px"
+    >
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <div class="ml-8">
+                <button
+                    type="submit"
+                    mat-button
+                    color="primary"
+                    *ngIf="!form.is_detail"
+                    [disabled]="
+                        Busy ||
+                        !form.start_date || 
+                        !form.start_time || 
+                        !form.end_date ||
+                        !form.end_time || 
+                        !form.pks ||
+                        !form.dobi || 
+                        form.dobi == 0
+                    "
+                >
+                    <mat-icon>print</mat-icon>
+                    Save
+                </button>
+
+                <button
+                    type="button"
+                    mat-button
+                    color="primary"
+                    *ngIf="form.is_detail"
+                    (click)="Edit()"
+                >
+                    <mat-icon>edit</mat-icon>
+                    Edit
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+</form>

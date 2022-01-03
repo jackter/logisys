@@ -1,0 +1,30 @@
+###################################################################
+#Error DOCUMENT
+#404 NOT FOUND
+
+#ErrorDocument 400 http://119.47.91.68/error/400
+#ErrorDocument 401 http://119.47.91.68/error/401
+#ErrorDocument 403 http://119.47.91.68/error/403
+#ErrorDocument 404 http://119.47.91.68/error/404
+#ErrorDocument 500 http://119.47.91.68/error/500
+
+Options +FollowSymlinks
+RewriteEngine on
+
+#IGNORE LIST
+#Options +Indexes
+# or #
+IndexIgnore *
+#IndexOptions +FancyIndexing
+#END IGNORE LIST
+
+RewriteRule ^e/(.*)/?/?$ ./exec.php [QSA,L]
+RewriteRule ^eq/(.*)/?/?$ ./execq.php [QSA,L]
+
+RewriteRule ^config/?/?$ ./state.php [QSA,L]
+RewriteRule ^server/?/?$ ./activate.php [QSA,L]
+RewriteRule ^login/?/?$ ./login.php [QSA,L]
+RewriteRule ^broadcast/?/?$ ./emit.online.php [QSA,L]
+RewriteRule ^ping/?/?$ ./ping.php [QSA,L]
+
+RewriteRule ^helper/(.*)/?/?$ ./helper.php?f=$1 [QSA,L]

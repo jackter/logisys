@@ -1,0 +1,180 @@
+<div class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Print Preview
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+    <!-- CONTENT HEADER -->
+
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" class="m-0 p-24">
+        <div id="excel-area" class="print-area">
+            <div fxLayout="column">
+                <table class="table table-input table-input-noborder" *ngIf="!WaitDownload">
+                    <tr>
+                        <td width="75" class="text-center" rowspan="4" style="vertical-align: middle!important;">
+                            <img src="/assets/logo/{{ filter.company_abbr }}.png">
+                        </td>
+                        <td class="text-center" style="vertical-align: middle!important;">
+                            <div class="h3 text-bold">
+                                General Ledger Detail
+                            </div>
+                            <div class="h2 text-bold">
+                                {{ filter.company_nama | uppercase }}
+                            </div>
+                            {{ date_indo(filter.fdari) }} s/d {{ date_indo(filter.fhingga) }}
+                        </td>
+                        <td width="75"></td>
+                    </tr>
+                </table>
+                
+                <table class="table table-input table-input-noborder" *ngIf="WaitDownload">
+                    <tr>
+                        <td class="text-center h3 text-bold" colspan="8">General Ledger Detail</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center h2 text-bold" colspan="8">
+                            {{ filter.company_nama | uppercase }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center" colspan="8">
+                            {{ date_indo(filter.fdari) }} s/d {{ date_indo(filter.fhingga) }}
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="table table-input table-input-border table-small table-responsive table-border-top">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" width="100">Date</th>
+                            <th colspan="2">Account</th>
+                            <th rowspan="2" width="200">Source</th>
+                            <th rowspan="2" width="300">Description</th>
+                            <th rowspan="2" width="150">Debit</th>
+                            <th rowspan="2" width="150">Credit</th>
+                            <th rowspan="2" width="150">Balance</th>
+                        </tr>
+                        <tr>
+                            <th width="100">Code</th>
+                            <th width="200">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let item of Data">
+                        <tr *ngIf="item.no_val">
+                            <td [attr.colspan]="item.colspan">
+                                &nbsp;
+                            </td>
+                        </tr>
+                        <tr *ngIf="item.is_header" class="text-bold">
+                            <td padding5 [attr.colspan]="item.colspan">
+                                {{ item.tanggal }}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ item.balance | number : '1.2-2' }}
+                            </td>
+                        </tr>
+                        <tr *ngIf="item.is_detail">
+                            <td padding5 [attr.colspan]="item.colspan">
+                                {{ date_indo(item.tanggal) }}
+                            </td>
+                            <td padding5>
+                                {{ item.coa_kode }}
+                            </td>
+                            <td padding5>
+                                {{ item.coa_nama }}
+                            </td>
+                            <td padding5>
+                                {{ item.ref_kode }}
+                            </td>
+                            <td padding5>
+                                {{ item.keterangan }}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ item.debit | number : '1.2-2' }}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ item.credit | number : '1.2-2' }}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ item.balance | number : '1.2-2' }}
+                            </td>
+                        </tr>
+                        <tr *ngIf="item.is_total" class="text-bold">
+                            <td padding5 [attr.colspan]="item.colspan" class="text-center">
+                                TOTAL
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ item.debit | number : '1.2-2' }}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ item.credit | number : '1.2-2' }}
+                            </td>
+                            <td padding5 class="text-right">
+                                {{ item.balance | number : '1.2-2' }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </mat-dialog-content>
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="end"
+        fxLayoutGap="10px"
+    >
+        <div fxFlex="1 1 auto">
+            <button
+                type="button"
+                mat-button
+                color="primary"
+                [disabled]="
+                    WaitPrint
+                "
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                Print
+            </button>
+            <button 
+                type="button" 
+                mat-button 
+                color="primary" 
+                [disabled]="
+                    WaitDownload || 
+                    Busy
+                " 
+                (click)="ExportExcel()"
+            >
+                <mat-icon>print</mat-icon>
+                Download Excel
+            </button>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- END : ACTIONS -->
+
+</div>

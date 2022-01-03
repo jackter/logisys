@@ -1,0 +1,316 @@
+<form fxLayou="column" ngNativeValidate (ngSubmit)="Simpan()" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off" style="min-width: 500px;">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Form User
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content class="p-24 m-0" fxLayout="column" fxLayoutGap="10px">
+
+        <mat-form-field appearance="outline" class="small">
+            <mat-label>Nama</mat-label>
+            <input matInput 
+                placeholder="Nama User" 
+                name="nama" 
+                [(ngModel)]="form.nama" 
+                maxlength="50"
+                required 
+            >
+        </mat-form-field>
+
+        <div fxLayout="row" fxLayoutGap="10px">
+
+            <div fxLayout="column" fxFlex="1 1 auto">
+        
+                <mat-form-field appearance="outline" fxFlex="0 1 auto" class="small">
+                    <mat-label>Username</mat-label>
+                    <input matInput 
+                        placeholder="Username" 
+                        name="username" 
+                        [(ngModel)]="form.username" 
+                        [disabled]="form.id != 'add'"
+                        maxlength="50"
+                        required 
+                    >
+                </mat-form-field>
+        
+                <mat-form-field appearance="outline" fxFlex="1 1 auto" class="small">
+                    <mat-label>Password</mat-label>
+                    <input matInput 
+                        placeholder="Password" 
+                        name="password" 
+                        [(ngModel)]="form.password" 
+                        maxlength="50"
+                        [required]="form.id == 'add'"
+                    >
+                    <div *ngIf="form.id != 'add'" class="mt-8">
+                        <small>
+                            <em class="grey-fg">
+                                Silahkan isi password jika Anda ingin <strong>mengganti</strong> password user.
+                            </em>
+                        </small>
+                    </div>
+                </mat-form-field>
+        
+                <mat-form-field appearance="outline" fxFlex="1 1 auto" class="small">
+                    <mat-label>Group Permissions</mat-label>
+                    <mat-select
+                        placeholder="Select Group Permissions"
+                        multiple
+                        name="grup" 
+                        [(ngModel)]="form.grup"
+                    >
+                        <mat-option *ngFor="let item of Group;" [value]="item.id">
+                            {{ item.nama }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+            </div>
+
+            <div fxLayout="column" fxFlex="1 1 auto">
+
+                <mat-form-field appearance="outline" fxFlex="0 1 auto" class="small">
+                    <mat-label>Perm Company</mat-label>
+                    <mat-select
+                        placeholder="Perm Perusahaan"
+                        name="perusahaan" 
+                        required
+                        [(ngModel)]="form.perusahaan"
+                    >   
+                        <mat-option *ngFor="let item of Perusahaan" [value]="item.val">
+                            {{ item.nama }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" fxFlex="0 1 auto" *ngIf="form.perusahaan && form.perusahaan != 'X'" class="small">
+                    <mat-chip-list #companySelected fxFlex="1 1 auto">
+                        <mat-chip
+                            *ngFor="let item of CompanySelected"
+                            [selectable]="selectable"
+                            [removable]="removable"
+                            (removed)="remove(item)">
+                            {{ item.nama }}
+                            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                        </mat-chip>
+                        <mat-label>Company</mat-label>
+                        <input
+                            type="text"
+                            name="company_nama"
+                            placeholder="Company"
+                            [(ngModel)]="form.company_nama"
+                            [matAutocomplete]="acCompany"
+                            (ngModelChange)="CompanyFilter(form.company_nama)"
+                            (focus)="CompanyFilter(form.company_nama)"
+
+                            [matChipInputFor]="companySelected"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            [matChipInputAddOnBlur]="false"
+                            (matChipInputTokenEnd)="add($event)"
+                        >
+                        <mat-autocomplete #acCompany="matAutocomplete" class="force-wrap ac-small">
+                            <mat-option *ngFor="let item of Company" [value]="item.nama" (onSelectionChange)="CompanySelect($event, item)">
+                                <small>{{ item.nama }}</small>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-chip-list>
+                </mat-form-field>
+
+            </div>
+
+            <div fxLayout="column" fxFlex="1 1 auto">
+                <!-- Dept -->
+                <mat-form-field appearance="outline" fxFlex="0 1 auto" class="small">
+                    <mat-label>Department</mat-label>
+                    <mat-select
+                        placeholder="Department"
+                        name="department" 
+                        required
+                        [(ngModel)]="form.view_dept"
+                    >   
+                        <mat-option *ngFor="let item of ViewDept" [value]="item.val">
+                            {{ item.nama }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" fxFlex="0 1 auto" *ngIf="form.view_dept && form.view_dept != 'X'" class="small">
+                    <mat-chip-list #deptSelected fxFlex="1 1 auto">
+                        <mat-chip
+                            *ngFor="let item of DeptSelected"
+                            [selectable]="selectable"
+                            [removable]="removable"
+                            (removed)="DeptRemove(item)">
+                            {{ item.nama }}
+                            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                        </mat-chip>
+                        <mat-label>Departments</mat-label>
+                        <input
+                            type="text"
+                            name="dept_nama"
+                            placeholder="Departments"
+                            [(ngModel)]="form.dept_nama"
+                            [matAutocomplete]="acDept"
+                            (ngModelChange)="DeptFilter(form.dept_nama)"
+                            (focus)="DeptFilter(form.dept_nama)"
+
+                            [matChipInputFor]="deptSelected"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            [matChipInputAddOnBlur]="false"
+                            (matChipInputTokenEnd)="DeptAdd($event)"
+                        >
+                        <mat-autocomplete #acDept="matAutocomplete" class="force-wrap ac-small">
+                            <mat-option *ngFor="let item of Dept" [value]="item.company_abbr + ' - ' + item.nama" (onSelectionChange)="DeptSelect($event, item)">
+                                <strong>{{ item.company_abbr }}</strong> -
+                                {{ item.nama }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-chip-list>
+                </mat-form-field>
+                <!-- / Dept -->
+            </div>
+
+            <div fxLayout="column" fxFlex="1 1 auto">
+
+                <mat-form-field appearance="outline" fxFlex="0 1 auto" class="small">
+                    <mat-label>Cost Center</mat-label>
+                    <mat-select
+                        placeholder="Cost Center"
+                        name="costcenter" 
+                        required
+                        [(ngModel)]="form.view_cost_center"
+                    >   
+                        <mat-option *ngFor="let item of ViewCostCenter" [value]="item.val">
+                            {{ item.nama }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" fxFlex="0 1 auto" *ngIf="form.view_cost_center && form.view_cost_center != 'X'" class="small">
+                    <mat-chip-list #costcenterSelected fxFlex="1 1 auto">
+
+                        <mat-chip
+                            *ngFor="let item of CostCenterSelected"
+                            [selectable]="selectable"
+                            [removable]="removable"
+                            (removed)="CostCenterRemove(item)">
+                            {{ item.nama }}
+                            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                        </mat-chip>
+
+                        <mat-label>Cost Center</mat-label>
+                        <input
+                            type="text"
+                            name="cost_center_nama"
+                            placeholder="Cost Center"
+                            [(ngModel)]="form.cost_center_nama"
+                            [matAutocomplete]="acCostCenter"
+                            (ngModelChange)="CostCenterFilter(form.cost_center_nama)"
+                            (focus)="CostCenterFilter(form.cost_center_nama)"
+
+                            [matChipInputFor]="costcenterSelected"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            [matChipInputAddOnBlur]="false"
+                            (matChipInputTokenEnd)="CostCenterAdd($event)"
+                        >
+                        <mat-autocomplete #acCostCenter="matAutocomplete" class="force-wrap ac-small">
+                            <mat-option *ngFor="let item of CostCenter" [value]="item.company_abbr + ' - ' + item.nama" (onSelectionChange)="CostCenterSelect($event, item)">
+                                <strong>{{ item.company_abbr }}</strong> -
+                                {{ item.nama }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-chip-list>
+                </mat-form-field>
+            </div>
+
+            <div fxLayout="column" fxFlex="1 1 auto">
+
+                <!-- USERS -->
+                <mat-form-field appearance="outline" fxFlex="0 1 auto" class="small">
+                    <mat-label>User View</mat-label>
+                    <mat-select
+                        placeholder="User View"
+                        name="users" 
+                        [(ngModel)]="form.view_user"
+                    >   
+                        <mat-option *ngFor="let item of ViewUser" [value]="item.val">
+                            {{ item.nama }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" fxFlex="0 1 auto" *ngIf="form.view_user && form.view_user != 'X'" class="small">
+                    <mat-chip-list #userSelected fxFlex="1 1 auto">
+                        <mat-chip
+                            *ngFor="let item of UserSelected"
+                            [selectable]="selectable"
+                            [removable]="removable"
+                            (removed)="UserRemove(item)">
+                            {{ item.nama }}
+                            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                        </mat-chip>
+                        <mat-label>User</mat-label>
+                        <input
+                            type="text"
+                            name="user_nama"
+                            placeholder="User"
+                            [(ngModel)]="form.user_nama"
+                            [matAutocomplete]="acUser"
+                            (ngModelChange)="UserFilter(form.user_nama)"
+                            (focus)="UserFilter(form.user_nama)"
+
+                            [matChipInputFor]="userSelected"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            [matChipInputAddOnBlur]="false"
+                            (matChipInputTokenEnd)="UserAdd($event)"
+                        >
+                        <mat-autocomplete #acUser="matAutocomplete" class="force-wrap ac-small">
+                            <mat-option *ngFor="let item of User" [value]="item.nama" (onSelectionChange)="UserSelect($event, item)">
+                                {{ item.username }} - {{ item.nama }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-chip-list>
+                </mat-form-field>
+                <!-- USERS -->
+
+            </div>
+
+        </div>
+
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="row" fxLayoutAlign="end">
+
+        <button
+            mat-raised-button
+            class="mat-primary-900-bg"
+            type="submit"
+            [disabled]="
+                !form.nama || 
+                !form.username || 
+                !form.grup || 
+                !form.perusahaan
+            "
+        >
+            Simpan
+        </button>
+
+    </mat-dialog-actions>
+
+</form>

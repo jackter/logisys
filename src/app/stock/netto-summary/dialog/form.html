@@ -1,0 +1,266 @@
+<form
+    ngNativeValidate
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    aria-autocomplete="none"
+    style="min-width: 500px;"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <div
+        fxLayout="column"
+        fxLayout.sm="column"
+        class="p-24 m-0"
+        fxLayoutGap="10px"
+    >
+
+        <!-- Company -->
+        <mat-form-field appearance="outline" class="small">
+            <mat-label>Company</mat-label>
+            <input
+                matInput
+                type="text"
+                placeholder="Company"
+                name="company_nama"
+                id="company_nama"
+                [(ngModel)]="form.company_nama"
+                [matAutocomplete]="acCompany"
+                (ngModelChange)="CompanyFilter()"
+                [tabindex]="form.id != 'add' || CompanyLen == 1 ? '-1' : ''"
+                [readonly]="CompanyLen == 1 || form.is_detail || form.id != 'add' || form.company"
+                required
+            />
+            <button
+                mat-button
+                type="button"
+                *ngIf="form.company && form.id == 'add'"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="CompanyRemove();"
+                tabindex="-1"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete
+                autoActiveFirstOption
+                #acCompany="matAutocomplete"
+                class="force-wrap ac-small"
+            >
+                <mat-option
+                    *ngFor="let item of Company"
+                    [value]="item.nama"
+                    (onSelectionChange)="CompanySelect($event, item)"
+                >
+                    {{ item.nama }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+        <!-- / Company -->
+
+        <mat-form-field
+            appearance="outline"
+            fxFlex="1 1 auto"
+            class="small"
+        >
+            <mat-label>Date</mat-label>
+            <input
+                matInput
+                name="tanggal"
+                placeholder="Please set Transfer Date"
+                [(ngModel)]="form.tanggal"
+                required
+                [matDatepicker]="tanggal"
+                [min]="minDate"
+                [max]="maxDate"
+                (focus)="tanggal.open()"
+                (click)="tanggal.open()"
+                [disabled]="form.is_detail"
+                readonly
+                style="
+                    font-size: 14px !important;
+                    color: #000 !important;
+                    padding: 0px !important;
+                "
+            />
+            <mat-datepicker #tanggal></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="0 1 auto" appearance="outline" class="small">
+            <mat-label>Produk</mat-label>
+            <mat-select
+                name="item_nama"
+                [(ngModel)]="form.item_nama"
+                placeholder="Pilih Produk"
+                [disabled]="form.is_detail"
+                required
+            >
+
+                <mat-option
+                    *ngFor="let item of Produk"
+                    [value]="item.item_nama"
+                    (onSelectionChange)="ProdukSelect($event, item)"
+                >
+                    {{ item.item_nama }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="small">
+            <mat-label>Start Ticket</mat-label>
+            <input
+                matInput
+                type="text"
+                placeholder="Start Ticket"
+                name="tiket_start_kode"
+                id="tiket_start_kode"
+                [(ngModel)]="form.tiket_start_kode"
+                required
+                readonly
+            />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="small">
+            <mat-label>End Ticket</mat-label>
+            <input
+                matInput
+                type="text"
+                placeholder="End Ticket"
+                name="tiket_end_kode"
+                id="tiket_end_kode"
+                [(ngModel)]="form.tiket_end_kode"
+                [matAutocomplete]="acEndTiket"
+                (ngModelChange)="TiketFilter()"
+                (focus)="TiketFilter()"
+                [readonly]="form.is_detail || form.tiket_end"
+                required
+            />
+            <button
+                mat-button
+                type="button"
+                *ngIf="form.tiket_end && !form.is_detail"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="TiketRemove();"
+                tabindex="-1"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete
+                autoActiveFirstOption
+                #acEndTiket="matAutocomplete"
+                class="force-wrap ac-small"
+            >
+                <mat-option
+                    *ngFor="let item of Tiket; let i = index;"
+                    [value]="item.tiket_kode"
+                    (onSelectionChange)="TiketSelect($event, item, i)"
+                >
+                    {{ item.tiket_kode }} - Netto : {{ item.netto }} {{item.item_satuan}}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="small" *ngIf="form.tiket_end">
+            <mat-label>Total Netto *{{form.item_satuan}}</mat-label>
+            <input
+                matInput
+                type="text"
+                placeholder="Start Ticket"
+                name="total_netto"
+                id="total_netto"
+                [(ngModel)]="form.total_netto"
+                currencyMask
+                [options]="{
+                    prefix: '',
+                    suffix: '',
+                    allowNegative: false,
+                    thousands: '.',
+                    decimal: ',',
+                    precision: 0
+                }"
+                required
+                readonly
+            />
+        </mat-form-field>
+       
+    </div>
+    <!-- / END : CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    Busy
+                "
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail
+                "
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                Edit
+            </button>
+
+            <button
+                *ngIf="
+                    form.is_detail &&
+                    form.approved != 1
+                "
+                type="button"
+                mat-button
+                color="primary"
+                (click)="Approve();"
+            >
+                <mat-icon>check</mat-icon>
+                Approve
+            </button>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / END : ACTION -->
+</form>

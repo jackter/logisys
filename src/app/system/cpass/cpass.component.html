@@ -1,0 +1,104 @@
+<div class="page-layout simple fullwidth">
+
+    <!-- HEADER -->
+    <div class="header dx-header primary-bg p-24" fxLayout="column" fxLayoutAlign="center center">
+
+        <div fxLayout="row" fxLayoutGap="10px">
+            <div class="logo" fxLayout="row" fxLayoutAlign="center center" style="position: relative;">
+                <mat-icon class="logo-icon mr-16" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    lock
+                </mat-icon>
+                <span class="logo-text h1 mr-16" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    Ganti Password
+                </span>
+            </div>
+        </div>
+        <div>
+            <div style="margin-left: 24px;" class="h4" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'100ms',scale:'0.2'}}">
+                Silahkan Ganti Password Anda
+            </div>
+        </div>
+
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content p-24 m-24 dxh" fusePerfectScrollbar>
+
+        <form 
+            ngNativeValidate
+            (ngSubmit)="Cpass()"
+            fxLayout="column"
+            fxLayoutAlign="center center"
+            class="mt-16"
+            fxFlex="1 0 auto"
+        >
+
+            <mat-form-field floatPlaceholder="always" style="width: 300px;" appearance="outline" class="small">
+                <mat-label>Password Lama</mat-label>
+                <input
+                    matInput
+                    type="password"
+                    placeholder="Masukkan Password Lama Anda"
+                    name="current"
+                    [(ngModel)]="form.current"
+                >
+            </mat-form-field>
+
+            <div>
+                <h4>
+                    - Password Baru -
+                </h4>
+            </div>
+
+            <mat-form-field floatPlaceholder="always" style="width: 300px;" appearance="outline" class="small">
+                <mat-label>Password Baru</mat-label>
+                <input
+                    matInput
+                    type="password"
+                    placeholder="Password Baru"
+                    name="new"
+                    [(ngModel)]="form.new"
+                    [disabled]="!form.current"
+                >
+            </mat-form-field>
+
+            <mat-form-field floatPlaceholder="always" style="width: 300px;" appearance="outline" class="small">
+                <mat-label>Konfirmasi Password Baru</mat-label>
+                <input
+                    matInput
+                    type="password"
+                    placeholder="Konfirmasi Password Baru"
+                    name="new_confirm"
+                    [(ngModel)]="form.new_confirm"
+                    [disabled]="!form.current"
+                >
+            </mat-form-field>
+
+            <div *ngIf="form.new !== form.new_confirm && form.new != form.current" class="primary-fg mb-16">
+                <mat-icon class="red-800-fg" style="margin-top: 12px;">warning</mat-icon> 
+                Password Baru dan Konfirm harus Sama!
+            </div>
+            <div *ngIf="form.new == form.current && form.current" class="red-fg mb-16">
+                Password baru tidak boleh sama dengan password sekarang
+            </div>
+
+            <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="
+                    form.new !== form.new_confirm || 
+                    form.new == form.current
+                "
+            >
+                <mat-icon>lock</mat-icon>
+                Ganti Password
+            </button>
+
+        </form>
+
+    </div>
+    <!-- / CONTENT -->
+
+</div>

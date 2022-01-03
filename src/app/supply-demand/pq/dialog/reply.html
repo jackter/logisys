@@ -1,0 +1,909 @@
+<form ngNativeValidate fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off" (ngSubmit)="Simpan()">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary ma-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Supplier Reply
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                (click)="CloseDialog(form.quoted)"
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <div class="h3 pl-24 pr-24 m-0">
+        QUOTATION FROM {{ data.jenis | uppercase }} {{ data.nama | uppercase }}
+    </div>
+
+    <!-- CONTENT -->
+    <mat-dialog-content class="p-24 m-0" fxLayout="column">
+
+        <div>
+            <table class="table table-border-top table-list table-responsive table-input table-small">
+                <thead>
+                    <tr>
+                        <th width="10" rowspan="2">
+                            No.
+                        </th>
+                        <th rowspan="2">
+                            Name
+                        </th>
+                        <th width="100" rowspan="2">
+                            Qty. Request
+                        </th>
+                        <th width="100" rowspan="2">
+                            Qty.
+                        </th>
+                        <th width="50" rowspan="2">
+                            Unit
+                        </th>
+                        <th colspan="2">
+                            Unit Price
+                        </th>
+                        <!--<th colspan="2">
+                            Discount %
+                        </th>-->
+                        <th rowspan="2">
+                            PPh
+                        </th>
+                        <th rowspan="2">
+                            Origin / Quality
+                        </th>
+                        <th rowspan="2">
+                            Remarks
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="100">
+                            Cash
+                        </th>
+                        <th width="100">
+                            Credit
+                        </th>
+                        <!--<th width="100">
+                            Cash
+                        </th>
+                        <th width="100">
+                            Credit
+                        </th>-->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of form.list; let i = index;">
+                        <td align="center" padding5>
+                            {{ i+1 }}
+                        </td>
+                        <td padding5>
+                            <!--<input
+                            placeholder="Material Name"
+                            type="text"
+                            autocomplete="off"
+                            name="item-name-{{i}}"
+                            [ngModel]="item.nama"
+                            disabled
+                            >-->
+                            {{ item.nama }}
+                        </td>
+                        <td nopadding>
+                            <input 
+                                    placeholder="Qty. Request"
+                                    type="text" 
+                                    autocomplete="off"
+                                    name="item-qty-{{i}}" 
+                                    id="item-qty-{{i}}" 
+                                    [ngModel]="item.qty_purchase"
+                                    maxlength="20"
+                                    disabled
+                                    currencyMask
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }"
+                                    >
+                        </td>
+                        <td nopadding>
+                            <input 
+                            placeholder="Qty"
+                            type="text" 
+                            autocomplete="off"
+                            name="item-qty_supplier-{{i}}" 
+                            id="item-qty_supplier-{{i}}" 
+                            [(ngModel)]="item.qty_supplier"
+                            [disabled]="!item.id"
+                            
+                            maxlength="20"
+                            currencyMask
+                            [options]="item.in_decimal == 1 ? {
+                                prefix: '',
+                                allowNegative: false,
+                                thousands: '.',
+                                decimal: ',',
+                                precision: 2
+                            } : {
+                                prefix: '',
+                                allowNegative: false,
+                                thousands: '.',
+                                decimal: ',',
+                                precision: 0
+                            }"
+                            >
+                        </td>
+                        <td class="text-center" padding5>
+                            {{ item.satuan }}
+                        </td>
+                        <td>
+                            <input 
+                            placeholder="Cash Price"
+                            type="text" 
+                            autocomplete="off"
+                            name="item-prc_cash-{{i}}" 
+                            id="item-prc_cash-{{i}}" 
+                            [(ngModel)]="item.prc_cash"
+                            [disabled]="!item.id"
+                            
+                            maxlength="20"
+                            currencyMask
+                            [options]="{
+                                prefix: '',
+                                allowNegative: false,
+                                thousands: '.',
+                                decimal: ',',
+                                precision: 2
+                            }"
+                            >
+                        </td>
+                        <td>
+                            <input 
+                            placeholder="Credit Price"
+                            type="text" 
+                            autocomplete="off"
+                            name="item-prc_credit-{{i}}" 
+                            id="item-prc_credit-{{i}}" 
+                            [(ngModel)]="item.prc_credit"
+                            [disabled]="!item.id"
+                            
+                            maxlength="20"
+                            currencyMask
+                            [options]="{
+                                prefix: '',
+                                allowNegative: false,
+                                thousands: '.',
+                                decimal: ',',
+                                precision: 2
+                            }"
+                            >
+                        </td>
+                        <!--<td>
+                            <input 
+                            placeholder="Disc. Cash"
+                            type="text" 
+                            autocomplete="off"
+                            name="item-disc_cash-{{i}}" 
+                            id="item-disc_cash-{{i}}" 
+                            [(ngModel)]="item.disc_cash"
+                            [disabled]="!item.id"
+                            
+                            maxlength="20"
+                            currencyMask
+                            [options]="
+                                        {
+                                        prefix: '',
+                                        suffix: ' %',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                        }
+                                        "
+                            >
+                        </td>
+                        <td>
+                            <input 
+                            placeholder="Disc. Credit"
+                            type="text" 
+                            autocomplete="off"
+                            name="item-disc_credit-{{i}}" 
+                            id="item-disc_credit-{{i}}" 
+                            [(ngModel)]="item.disc_credit"
+                            [disabled]="!item.id"
+                            
+                            maxlength="20"
+                            currencyMask
+                            [options]="
+                                        {
+                                        prefix: '',
+                                        suffix: ' %',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                        }
+                                        "
+                            >
+                        </td>-->
+                        <td nopadding class="text-center">
+                            <mat-checkbox 
+                                [(ngModel)]="item.pph"
+                                [checked]="item.pph == 1"
+                                name="pph-{{i}}"
+                                color="primary"
+                            >
+                            </mat-checkbox>
+                        </td>
+                        <td>
+                            <input 
+                            placeholder="Origin"
+                            type="text" 
+                            autocomplete="off"
+                            name="item-origin-{{i}}" 
+                            id="item-origin-{{i}}" 
+                            [(ngModel)]="item.origin"
+                            [disabled]="!item.id"
+                            maxlength="50"
+                            >
+                        </td>
+                        <td>
+                            <input 
+                            placeholder="Remarks"
+                            type="text" 
+                            autocomplete="off"
+                            name="item-note-{{i}}" 
+                            id="item-note-{{i}}" 
+                            [(ngModel)]="item.remarks"
+                            [disabled]="!item.id"
+                            maxlength="150"
+                            >
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div fxFlex="1 1 auto">
+
+            <table class="table table-small table-noborder">
+                <tr nopadding>
+                    <td style="padding-right: 20px!important;">
+    
+                        <mat-form-field fxFlex="1 1 auto" floatLabel="always">
+                            <input 
+                            matInput
+                            placeholder="Supplier Reference Number"
+                            type="text" 
+                            name="supplier_ref"
+                            autocomplete="off"
+                            [(ngModel)]="form.supplier_ref"
+                            maxlength="150"
+                            >
+                        </mat-form-field>
+
+                    </td>
+                    <td width="250">
+                        
+                        <table class="table table-input table-input-border table-input-noborder">
+                            <tr>
+                                <td width="100">Currency</td>
+                                <td width="1">:</td>
+                                <td>
+                                    <select
+                                        name="currency"
+                                        [(ngModel)]="form.currency"
+                                        
+                                        required
+                                        tabindex="-1"
+                                    >
+                                        <option
+                                            *ngFor="let item of Cur"
+                                            [value]="item.kode"> {{ item.kode }}
+                                        </option>
+                                        
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr *ngIf="data.company == 3">
+                                <td width="100">Customs (KaBer)</td>
+                                <td width="1">:</td>
+                                <td>
+                                    <select
+                                        name="customs"
+                                        [(ngModel)]="form.customs"
+                                        
+                                        required
+                                        tabindex="-1"
+                                    >
+                                        <option value="1">Yes</option>
+                                        <option value="2">No</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>DP (%)</td>
+                                <td>:</td>
+                                <td>
+                                    <input 
+                                    placeholder="Down Payment in %"
+                                    type="text" 
+                                    name="dp"
+                                    autocomplete="off"
+                                    [(ngModel)]="form.dp"
+                                    
+                                    maxlength="8"
+                                    currencyMask
+                                    required
+                                    [options]="
+                                        {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2,
+                                            suffix: ' %'
+                                        }
+                                    "
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>PPN (%)</td>
+                                <td>:</td>
+                                <td>
+                                    <select
+                                        name="ppn"
+                                        [(ngModel)]="form.ppn"
+                                        tabindex="-1"
+                                    >
+                                        <option [value]=0>
+                                            -
+                                        </option>
+                                        <option [value]=1>
+                                            1 %
+                                        </option>
+                                        <option [value]=10>
+                                            10 %
+                                        </option>
+                                    </select>
+                                </td>
+                                <!-- <td>
+                                    <input 
+                                    placeholder="PPN (%)"
+                                    type="text" 
+                                    name="ppn"
+                                    autocomplete="off"
+                                    [(ngModel)]="form.ppn"
+                                    
+                                    maxlength="5"
+                                    currencyMask
+                                    required
+                                    tabindex="-1"
+                                    [options]="
+                                                {
+                                                prefix: '',
+                                                allowNegative: false,
+                                                thousands: '.',
+                                                decimal: ',',
+                                                precision: 0,
+                                                suffix: ' %'
+                                                }
+                                                "
+                                    >
+                                </td> -->
+                            </tr>
+                            <tr *ngIf="form.ppn == 10">
+                                <td>Inclusive</td>
+                                <td>:</td>
+                                <td>
+                                    <select
+                                        name="inclusive_ppn"
+                                        [(ngModel)]="form.inclusive_ppn"
+                                        tabindex="-1"
+                                    >
+                                        <option [value]=1>
+                                            Yes
+                                        </option>
+                                        <option [value]=0>
+                                            No
+                                        </option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>PPh Code</td>
+                                <td>:</td>
+                                <td>
+                                    <select
+                                        name="pph_code"
+                                        [(ngModel)]="form.pph_code"
+                                        (ngModelChange)="SetPPh()"
+                                        tabindex="-1"
+                                    >
+                                        <option value="">
+                                            -
+                                        </option>
+                                        <option *ngFor="let item of RowPPh" [value]="item.code">
+                                            {{ item.code }}
+                                        </option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr *ngIf="form.pph_code">
+                                <td>{{ form.pph_code }}</td>
+                                <td>:</td>
+                                <td>
+                                    <input 
+                                    [placeholder]="form.pph_code"
+                                    type="text" 
+                                    name="pph"
+                                    autocomplete="off"
+                                    [(ngModel)]="form.pph"
+                                    readonly
+                                    maxlength="5"
+                                    currencyMask
+                                    tabindex="-1"
+                                    [options]="{
+                                        prefix: '',
+                                        allowNegative: true,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2,
+                                        suffix: ' %'
+                                    }"
+                                    >
+                                </td>
+                            </tr>
+                            <!-- <tr>
+                                <td>PPh 23 (%)</td>
+                                <td>:</td>
+                                <td>
+                                    <input 
+                                    placeholder="PPh 23 (%)"
+                                    type="text" 
+                                    name="pph23"
+                                    autocomplete="off"
+                                    [(ngModel)]="form.pph23"
+                                    
+                                    maxlength="5"
+                                    currencyMask
+                                    tabindex="-1"
+                                    [options]="
+                                                {
+                                                prefix: '',
+                                                allowNegative: false,
+                                                thousands: '.',
+                                                decimal: ',',
+                                                precision: 0,
+                                                suffix: ' %'
+                                                }
+                                                "
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>PPh 4 (2) (%)</td>
+                                <td>:</td>
+                                <td>
+                                    <input 
+                                    placeholder="PPh 4 (2) (%)"
+                                    type="text" 
+                                    name="pph4"
+                                    autocomplete="off"
+                                    [(ngModel)]="form.pph4"
+                                    
+                                    maxlength="5"
+                                    currencyMask
+                                    tabindex="-1"
+                                    [options]="
+                                                {
+                                                prefix: '',
+                                                allowNegative: false,
+                                                thousands: '.',
+                                                decimal: ',',
+                                                precision: 0,
+                                                suffix: ' %'
+                                                }
+                                                "
+                                    >
+                                </td>
+                            </tr> -->
+                            <!--<tr>
+                                <td>Trans. Costs</td>
+                                <td>:</td>
+                                <td>
+                                    <div class="underline">&nbsp;</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Trans. Tax (%)</td>
+                                <td>:</td>
+                                <td>
+                                    <div class="underline">&nbsp;</div>
+                                </td>
+                            </tr>-->
+                            <tr>
+                                <td>Disc. Cash</td>
+                                <td>:</td>
+                                <td>
+                                    <input 
+                                    placeholder="Discount Cash (%)"
+                                    type="text" 
+                                    name="disc_cash"
+                                    autocomplete="off"
+                                    [(ngModel)]="form.disc_cash"
+                                    (ngModelChange)="DishChange('cash', 'pct')"
+                                    maxlength="14"
+                                    currencyMask
+                                    [options]="
+                                        {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2,
+                                            suffix: ' %'
+                                        }
+                                    "
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Disc. Cash Amt</td>
+                                <td>:</td>
+                                <td>
+                                    <input 
+                                    placeholder="Discount Cash (Amt)"
+                                    type="text" 
+                                    name="disc_cash_amt"
+                                    autocomplete="off"
+                                    [(ngModel)]="form.disc_cash_amt"
+                                    (ngModelChange)="DishChange('cash', 'amt')"
+                                    maxlength="14"
+                                    currencyMask
+                                    [options]="
+                                        {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        }
+                                    "
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Disc. Credit</td>
+                                <td>:</td>
+                                <td>
+                                    <input 
+                                    placeholder="Discount Credit (%)"
+                                    type="text" 
+                                    name="disc_credit"
+                                    autocomplete="off"
+                                    [(ngModel)]="form.disc_credit"
+                                    (ngModelChange)="DishChange('credit', 'pct')"
+                                    maxlength="14"
+                                    currencyMask
+                                    [options]="
+                                        {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2,
+                                            suffix: ' %'
+                                        }
+                                    "
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Disc. Credit Amt</td>
+                                <td>:</td>
+                                <td>
+                                    <input 
+                                    placeholder="Discount Credit (Amt)"
+                                    type="text" 
+                                    name="disc_credit_amt"
+                                    autocomplete="off"
+                                    [(ngModel)]="form.disc_credit_amt"
+                                    (ngModelChange)="DishChange('credit', 'amt')"
+                                    maxlength="14"
+                                    currencyMask
+                                    [options]="
+                                        {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        }
+                                    "
+                                    >
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                    <td width="300">
+
+                        <table class="table table-input table-input-border table-input-noborder table-noborder">
+                            <tr>
+                                <td width="150">Other Costs</td>
+                                <td width="1">:</td>
+                                <td>
+                                    <input 
+                                    placeholder="Other Costs"
+                                    type="text" 
+                                    name="other_costs"
+                                    autocomplete="off"
+                                    [(ngModel)]="form.other_cost"
+                                    
+                                    maxlength="20"
+                                    currencyMask
+                                    [options]="
+                                                {
+                                                prefix: '',
+                                                allowNegative: true,
+                                                thousands: '.',
+                                                decimal: ',',
+                                                precision: 2
+                                                }
+                                                "
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="150">PPBKB</td>
+                                <td width="1">:</td>
+                                <td>
+                                    <input 
+                                    placeholder="PPBKB"
+                                    type="text" 
+                                    name="ppbkb"
+                                    autocomplete="off"
+                                    [(ngModel)]="form.ppbkb"
+                                    
+                                    maxlength="20"
+                                    currencyMask
+                                    [options]="
+                                                {
+                                                prefix: '',
+                                                allowNegative: false,
+                                                thousands: '.',
+                                                decimal: ',',
+                                                precision: 2
+                                                }
+                                                "
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Delivery Plan</td>
+                                <td>:</td>
+                                <td>
+                                    <input  
+                                    placeholder="Delivery Plan in Days"
+                                    [(ngModel)]="form.delivery_plan" 
+                                    
+                                    name="delivery_plan" 
+                                    required
+                                    maxlength="8"
+                                    currencyMask
+                                    [options]="
+                                                {
+                                                prefix: '',
+                                                allowNegative: false,
+                                                thousands: '.',
+                                                decimal: ',',
+                                                precision: 0,
+                                                suffix: form.delivery_plan > 1 ? ' days' : ' day',
+                                                align: 'left'
+                                                }
+                                                "
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Payment Terms</td>
+                                <td>:</td>
+                                <td>
+                                    <input  
+                                    type="tel"
+                                    name="payment_term" 
+                                    placeholder="in days"
+                                    [(ngModel)]="form.payment_term" 
+                                    
+                                    required
+                                    maxlength="8"
+                                    currencyMask
+                                    [options]="
+                                                {
+                                                prefix: '',
+                                                allowNegative: false,
+                                                thousands: '.',
+                                                decimal: ',',
+                                                precision: 0,
+                                                suffix: form.payment_term > 1 ? ' days' : ' day',
+                                                align: 'left'
+                                                }
+                                                "
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Price Expire</td>
+                                <td>:</td>
+                                <td>
+                                    <!-- <input  
+                                        type="text"
+                                        placeholder="Price Expire Date"
+                                        [(ngModel)]="form.price_expire" 
+                                        
+                                        name="price_expire" 
+                                        required
+                                        [dpDayPicker]="
+                                        {
+                                            locale : 'en',
+                                            format : 'DD/MM/YYYY',
+                                            drops: 'down',
+                                            appendTo: 'body',
+                                            disabled: true
+                                        }
+                                        " 
+                                        theme="dp-material"
+                                        readonly
+                                    > -->
+                                    <input 
+                                        name="price_expire" 
+                                        placeholder="Price Expire Date"
+                                        [(ngModel)]="form.price_expire" 
+                                        [min]="minDate"
+                                        required
+                                        [matDatepicker]="price_expire"
+                                        (focus)="price_expire.open()"
+                                        (click)="price_expire.open()"
+                                        readonly
+                                    >
+                                    <mat-datepicker #price_expire></mat-datepicker>
+                                </td>
+                            </tr>
+                            <!-- <mat-form-field appearance="outline" floatLabel="always">
+                                <mat-label>Tanggal GRN Kembali</mat-label>
+                                <input matInput 
+                                    name="grn_back_tgl" 
+                                    [(ngModel)]="form.grn_back_tgl" 
+                                    maxlength="50"
+                                    [required]="!form.special_edit" 
+                                    [matDatepicker]="grn_back_tgl"
+                                    (focus)="grn_back_tgl.open()"
+                                    (click)="grn_back_tgl.open()"
+                                    readonly
+                                    [disabled]="!perm.grn_back || form.grn_back_confirm == 1 || form.is_detail"
+                                    [max]="today"
+                                >
+                                <mat-datepicker #grn_back_tgl></mat-datepicker>
+                            </mat-form-field> -->
+                            <tr>
+                                <td>Delivery Term</td>
+                                <td>:</td>
+                                <td>
+                                    <select
+                                        name="delivery_term"
+                                        [(ngModel)]="form.delivery_term"
+                                        
+                                        required
+                                    >
+                                        <option value="1">Supplier</option>
+                                        <option value="2">Buyer</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100">Delivery Location</td>
+                                <td width="1">:</td>
+                                <td>
+                                    <select
+                                        name="storeloc"
+                                        [(ngModel)]="form.storeloc"
+                                        required
+                                        tabindex="-1"
+                                    >
+                                        <option
+                                            [value]="-1"
+                                        >
+                                            LOCO
+                                        </option>
+                                        <option
+                                            *ngFor="let item of Storeloc"
+                                            [value]="item.id"
+                                        > 
+                                            {{ item.nama }}
+                                        </option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <!-- <tr>
+                                <td>Weight Base</td>
+                                <td>:</td>
+                                <td>
+                                    <select
+                                        name="weight_base"
+                                        [(ngModel)]="form.weight_base"
+                                        (ngModelChange)="alertWeightBase()"
+                                    >
+                                        <option value="0">Buyer</option>
+                                        <option value="1">Supplier</option>
+                                    </select>
+                                </td>
+                            </tr> -->
+                            <!-- Matikan dulu sebelum timbangan clear -->
+                            <!-- <tr>
+                                <td>PO Contract</td>
+                                <td>:</td>
+                                <td>
+                                    <select
+                                        name="po_contract"
+                                        [(ngModel)]="form.po_contract"
+                                        (ngModelChange)="alertPOContract()"
+                                    >
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </td>
+                            </tr> -->
+                        </table>
+
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button 
+                type="submit" 
+                mat-button 
+                color="primary" 
+                [disabled]="
+                    Busy
+                " 
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save Supplier Reply' }}
+            </button> 
+        </div>
+    
+        <div>
+            <button type="button" mat-button (click)="CloseDialog(form.quoted)">
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    
+    </mat-dialog-actions>
+    <!-- / ACTIONS -->
+
+</form>

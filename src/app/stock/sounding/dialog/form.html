@@ -1,0 +1,374 @@
+<form
+    ngNativeValidate
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    aria-autocomplete="none"
+    style="min-width: 500px;"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <div fxLayout="row" fxLayout.sm="column" class="p-24 m-0">
+        <!-- LEFT -->
+        <mat-dialog-content fxLayout="column" fxFlex="1 1 auto">
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Company</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Company"
+                    name="company_nama"
+                    [(ngModel)]="form.company_nama"
+                    [matAutocomplete]="acCompany"
+                    (ngModelChange)="CompanyFilter(form.company_nama)"
+                    (click)="CompanyFilter(form.company_nama)"
+                    [readonly]="CompanyLen == 1 || form.is_detail || form.company"
+                    class="uppercase"
+                    required
+                />
+                <button
+                    mat-button
+                    type="button"
+                    *ngIf="CompanyLen > 1 && form.company && !form.is_detail"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="CompanyRemove()"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acCompany="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of Company"
+                        [value]="item.nama"
+                        (onSelectionChange)="CompanySelect($event, item)"
+                    >
+                        {{ item.nama | uppercase }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Date</mat-label>
+                <input
+                    matInput
+                    name="tanggal"
+                    placeholder="Please Select Date"
+                    [(ngModel)]="form.tanggal"
+                    (ngModelChange)="focusToRemarks()"
+                    required
+                    readonly
+                    [matDatepicker]="tanggal"
+                    (click)="tanggal.open()"
+                    style="
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        padding: 0px !important;
+                        text-align: center;
+                    "
+                    [disabled]="form.is_detail || form.id != 'add'"
+                    [min]="minDate"
+                    [max]="maxDate"
+                />
+                <mat-datepicker #tanggal></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field
+                fxFlex="0 1 auto"
+                floatLabel="always"
+                class="mt-24 ml-4"
+                *ngIf="form.finish != 1"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Remarks Sounding</mat-label>
+                <textarea
+                    matInput
+                    type="text"
+                    placeholder="Remarks Sounding"
+                    name="remarks"
+                    [(ngModel)]="form.remarks"
+                    matTextareaAutosize
+                    [matAutosizeMinRows]="2"
+                    [readonly]="form.is_detail"
+                    required
+                ></textarea>
+            </mat-form-field>
+            <!-- / END -->
+        </mat-dialog-content>
+        <!-- / LEFT -->
+
+        <!-- RIGHT -->
+        <mat-dialog-content
+            *ngIf="form.company && form.tanggal && form.remarks"
+            fxLayout="row"
+            fxFlex="1 1 auto"
+            class="ml-4"
+        >
+            <table
+                class="table table-responsive table-input table-striped table-hover table-border-top"
+            >
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Storage Tank</th>
+                        <th>Kapasitas</th>
+                        <th>Meja Ukur</th>
+                        <th>Jenis Minyak</th>
+                        <th>Tabel</th>
+                        <th>Faktor Koreksi</th>
+                        <th>Level / Tinggi</th>
+                        <th>Suhu</th>
+                        <th>Tinggi + Meja Ukur</th>
+                        <th>Fraksi</th>
+                        <th>Density</th>
+                        <th>Volume (Ltr)</th>
+                        <th>Hasil Sounding (Kg)</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of List; let i = index;">
+                        <td class="text-center" width="50">
+                            <div padding5>
+                                {{ i+1 }}
+                            </div>
+                        </td>
+                        <td
+                            style="position: relative;"
+                            style="min-width: 150px;"
+                        >
+                            <input
+                                type="text"
+                                placeholder="Item Name"
+                                id="nama-{{i}}"
+                                name="nama-{{i}}"
+                                [ngModel]="item.nama"
+                                [required]="i == 0"
+                                readonly
+                                tabindex="-1"
+                            />
+                        </td>
+                        <td padding5 class="text-right" width="100">
+                            {{ rupiah(item.kapasitas) }} MT
+                        </td>
+                        <td padding5 class="text-right" width="100">
+                            {{ rupiah(item.meja_ukur, 1, true) }}
+                        </td>
+                        <td padding5 class="text-center" width="100">
+                            {{ item.produk }}
+                        </td>
+                        <td padding5 class="text-right" width="100">
+                            {{ rupiah(item.tabel) }}
+                        </td>
+                        <td padding5 class="text-right" width="100">
+                            {{ rupiah(item.faktor_koreksi, 7, true) }}
+                        </td>
+                        <td nopadding style="width: 100px;">
+                            <input
+                                [disabled]="!item.id"
+                                type="text"
+                                autocomplete="off"
+                                maxlength="23"
+                                currencyMask
+                                name="tinggi-{{i}}"
+                                id="tinggi-{{i}}"
+                                [(ngModel)]="item.tinggi"
+                                (ngModelChange)="calcLevel(item)"
+                                [options]="{
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 1
+                                    }
+                                    "
+                                [readonly]="form.is_detail"
+                            />
+                        </td>
+                        <td nopadding style="width: 100px;">
+                            <input
+                                [disabled]="!item.id"
+                                type="text"
+                                autocomplete="off"
+                                maxlength="23"
+                                currencyMask
+                                name="temp-{{i}}"
+                                id="temp-{{i}}"
+                                [(ngModel)]="item.temp"
+                                (ngModelChange)="calcDensity(item)"
+                                [options]="{
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                [readonly]="form.is_detail"
+                            />
+                        </td>
+                        <td padding5 class="text-right" width="100">
+                            {{ rupiah(item.tinggi_meja, 1, true) }}
+                            <!-- <input
+                                [disabled]="!item.id"
+                                type="text"
+                                autocomplete="off"
+                                maxlength="23"
+                                currencyMask
+                                name="tinggi_meja-{{i}}"
+                                id="tinggi_meja-{{i}}"
+                                [(ngModel)]="item.tinggi_meja"
+                                (ngModelChange)="calcTinggi(item)"
+                                [options]="{
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 1
+                                    }
+                                    "
+                                [readonly]="form.is_detail"
+                            /> -->
+                        </td>
+                        <td padding5 class="text-right" width="100">
+                            {{ rupiah(item.fraksi, 0, true)}}
+                        </td>
+                        <td padding5 class="text-right" width="100">
+                            {{ rupiah(item.density, 4, true)}}
+                        </td>
+                        <td padding5 class="text-right" width="100">
+                            {{ rupiah(item.volume) }}
+                        </td>
+                        <td padding5 class="text-right text-bold" width="100">
+                            {{ rupiah(item.weight) }}
+                        </td>
+                        <td
+                            *ngIf="!form.is_detail"
+                            padding5
+                            style="min-width: 250px;"
+                        >
+                            <input
+                                type="text"
+                                placeholder="Remarks"
+                                id="remarks-{{i}}"
+                                name="remarks-{{i}}"
+                                [(ngModel)]="item.remarks"
+                                [readonly]="form.is_detail"
+                                [tabindex]="item.id ? '-1' : null"
+                            />
+                        </td>
+                        <td
+                            *ngIf="form.is_detail"
+                            padding5
+                            style="min-width: 250px;"
+                        >
+                            {{ item.remarks }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </mat-dialog-content>
+        <!-- / RIGHT -->
+    </div>
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-button
+                color="primary"
+            >
+                <mat-icon>save</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Save' }}
+            </button>
+
+            <div
+                *ngIf="
+                        form.is_detail &&
+                        form.approved != 1
+                    "
+            >
+                <button
+                    *ngIf="perm.edit"
+                    type="button"
+                    mat-button
+                    (click)="Edit()"
+                >
+                    <mat-icon>create</mat-icon>
+                    Edit
+                </button>
+
+                <button
+                    *ngIf="perm.approve"
+                    type="button"
+                    mat-button
+                    color="primary"
+                    [disabled]="
+                            Busy
+                        "
+                    (click)="Approve()"
+                >
+                    <mat-icon>check</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Approve' }}
+                </button>
+            </div>
+
+            <button
+                *ngIf="form.is_detail"
+                type="button"
+                mat-button
+                color="primary"
+                [disabled]="
+                        Busy
+                    "
+                (click)="ShowPrintDialog()"
+            >
+                <mat-icon>print</mat-icon>
+                {{ WaitPrint ? 'Please Wait...' : 'Print Preview'}}
+            </button>
+
+        </div>
+
+        <div>
+            <button mat-button type="button" mat-dialog-close *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+</form>

@@ -1,0 +1,569 @@
+<form
+    ngNativeValidate
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    aria-autocomplete="none"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="grey-100-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <div
+        fxLayout="row"
+        fxLayout.sm="column"
+        class="p-24 m-0"
+        fxLayoutGap="10px"
+    >
+        <!-- RIGHT -->
+        <mat-dialog-content
+            fxLayout="column"
+            fxFlex="1 1 auto"
+            fxLayoutAlign="start top"
+        >
+            <div *ngIf="form.from_pq" class="mb-32">
+                <div fxLayoutAlign="start top" class="mb-12 h3">
+                    List Materials to Purchase
+                </div>
+
+                <table
+                    class="table table-responsive table-input table-small table-striped table-hover table-border-top"
+                >
+                    <thead>
+                        <tr>
+                            <th width="10">
+                                <div>
+                                    No.
+                                </div>
+                            </th>
+                            <th width="300">
+                                Item
+                            </th>
+                            <th width="50">
+                                UOM
+                            </th>
+                            <th width="100">
+                                Approved MR
+                            </th>
+                            <th width="100">
+                                Qty. Purchase
+                            </th>
+                            <th width="100">
+                                Est. Price / Unit
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of List; let i = index;">
+                            <td class="text-center">
+                                <div padding5>
+                                    {{ i+1 }}
+                                </div>
+                            </td>
+                            <td style="position: relative;">
+                                <input
+                                    type="text"
+                                    placeholder="Item Name"
+                                    name="nama-{{i}}"
+                                    [ngModel]="item.nama"
+                                    [required]="i == 0"
+                                    readonly
+                                    tabindex="-1"
+                                />
+                            </td>
+                            <td padding5 class="text-center">
+                                {{ item.satuan }}
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_approved-{{i}}"
+                                    tabindex="-1"
+                                    [ngModel]="item.qty"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_purchase-{{i}}"
+                                    [ngModel]="item.qty_purchase"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="25"
+                                    currencyMask
+                                    name="est_price-{{i}}"
+                                    [ngModel]="item.est_price"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    reaonly
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div fxLayoutAlign="start top" *ngIf="!form.from_pq" class="h3">
+                Please select Suppliers to Create Quotations for this Purchase
+                Request &nbsp;<strong>{{ form.pr_kode }}</strong>
+            </div>
+
+            <div fxLayoutAlign="start top" *ngIf="form.from_pq" class="h3">
+                Selected Suppliers for Purchase Request &nbsp;<strong
+                    >{{ form.pr_kode }}</strong
+                >
+            </div>
+
+            <div class="mt-12">
+                <table
+                    class="table table-responsive table-input table-small table-striped table-hover table-border-top"
+                >
+                    <thead class="primary-bg">
+                        <tr>
+                            <th width="10">
+                                <div *ngIf="!form.is_detail || form.from_pq">
+                                    <mat-icon color="warn">delete</mat-icon>
+                                </div>
+                                <div *ngIf="form.is_detail && !form.from_pq">
+                                    No.
+                                </div>
+                            </th>
+                            <th style="min-width: 400px;">
+                                Name
+                            </th>
+                            <th>
+                                Code
+                            </th>
+                            <th>
+                                Remarks
+                            </th>
+                            <th *ngIf="form.is_void != 1">
+                                <mat-icon>print</mat-icon>
+                            </th>
+                            <th
+                                *ngIf="form.from_pq && form.is_detail && form.verified != 1 && form.is_void != 1"
+                                colspan="2"
+                            >
+                                Quotations
+                            </th>
+                            <th
+                                *ngIf="form.from_pq && form.is_detail && form.finish == 1 && form.is_void != 1"
+                            >
+                                Purchasing Order
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of SupplierList; let i = index;">
+                            <td class="text-center">
+                                <div *ngIf="!form.from_pq && !form.is_detail">
+                                    <button
+                                        type="button"
+                                        mat-icon-button
+                                        (click)="DeleteSupplierList(i)"
+                                        tabindex="-1"
+                                        *ngIf="
+                                                SupplierList?.length > 1 &&
+                                                item.id
+                                            "
+                                    >
+                                        <mat-icon class="red-fg"
+                                            >close</mat-icon
+                                        >
+                                    </button>
+                                </div>
+                                <div
+                                    *ngIf="!form.is_detail && form.verified != 1"
+                                >
+                                    <button
+                                        type="button"
+                                        mat-icon-button
+                                        (click)="DeleteSupplierList(i)"
+                                        *ngIf="
+                                                SupplierList?.length > 1 && 
+                                                item.id && 
+                                                (
+                                                    item.count <= 0 || 
+                                                    !item.count
+                                                )
+                                            "
+                                        tabindex="-1"
+                                    >
+                                        <mat-icon class="red-fg"
+                                            >close</mat-icon
+                                        >
+                                    </button>
+                                </div>
+                                <div
+                                    *ngIf="
+                                    (
+                                        form.is_detail && 
+                                        form.from_pq
+                                    ) || 
+                                    form.verified == 1 && 
+                                    !form.is_detail
+                                "
+                                    padding5
+                                >
+                                    {{ i+1 }}
+                                </div>
+                            </td>
+                            <td style="position: relative; right: 0;">
+                                <input
+                                    type="text"
+                                    placeholder="Supplier Name"
+                                    id="sup_nama-{{i}}"
+                                    name="sup_nama-{{i}}"
+                                    [(ngModel)]="item.nama_full"
+                                    [required]="i == 0"
+                                    [matAutocomplete]="acSupplier"
+                                    (ngModelChange)="SupplierFilter(item.nama_full, i)"
+                                    [readonly]="form.from_pq && (form.is_detail || item.id)"
+                                    [tabindex]="item.id ? '-1' : null"
+                                />
+                                <mat-autocomplete
+                                    autoActiveFirstOption
+                                    #acSupplier="matAutocomplete"
+                                    class="force-wrap ac-small"
+                                >
+                                    <mat-option
+                                        *ngFor="let item of Supplier"
+                                        (onSelectionChange)="SupplierSelect($event, item, i)"
+                                        >
+                                        {{ item.jenis ? item.jenis + ' ' : '' }} {{ item.nama }}
+                                    </mat-option>
+                                </mat-autocomplete>
+                                <div
+                                    *ngIf="WaitSupplier[i]"
+                                    style="
+                                        position: absolute;
+                                        right: 0px;
+                                        top: 0px;
+                                    "
+                                >
+                                    <mat-spinner
+                                        diameter="20"
+                                        strokeWidth="2"
+                                        color="error"
+                                        style="margin-top: 5px;"
+                                    ></mat-spinner>
+                                </div>
+                            </td>
+                            <td padding5 class="text-left">
+                                {{ item.kode }}
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    name="sup_remarks-{{i}}"
+                                    id="sup_remarks-{{i}}"
+                                    [(ngModel)]="item.remarks"
+                                    [readonly]="(form.verified == 1 && form.from_pq) || form.is_detail"
+                                />
+                            </td>
+                            <td
+                                nopadding
+                                class="text-center"
+                                *ngIf="form.is_void != 1"
+                            >
+                                <mat-checkbox
+                                    [(ngModel)]="item.print"
+                                    [checked]="item.print == 1"
+                                    [disabled]="
+                                        !item.quoted || 
+                                        item.quoted <= 0 || 
+                                        BusyPrint[i]
+                                    "
+                                    name="print-{{i}}"
+                                    color="primary"
+                                    (ngModelChange)="UpdatePrint(item, i)"
+                                >
+                                </mat-checkbox>
+                            </td>
+                            <td
+                                padding5
+                                [class]="
+                                    item.count > 0 ? 
+                                    'text-center grey-200-bg' : 
+                                    'text-center primary-bg'
+                                "
+                                *ngIf="form.from_pq && form.is_detail && form.verified != 1 && form.is_void != 1"
+                            >
+                                <a
+                                    href="javascript:void(0)"
+                                    [class]="
+                                        item.count > 0 ? 
+                                        'primary-fg' : 
+                                        'grey-100-fg'
+                                    "
+                                    (click)="ShowGenerate(item)"
+                                >
+                                    <i
+                                        *ngIf="item.count <= 0"
+                                        class="fa fa-external-link-square"
+                                        style="
+                                            width: 11px;
+                                            height: 11px;
+                                            min-width: 11px;
+                                            min-height: 11px;
+                                        "
+                                    ></i>
+                                    Generate Quotation {{ item.count > 0 ?
+                                    item.count + 'x' : '' }}
+                                </a>
+                            </td>
+                            <td
+                                *ngIf="
+                                    item.count > 0 && 
+                                    form.verified != 1 && 
+                                    (
+                                        form.from_pq && 
+                                        form.is_detail
+                                    )
+                                    && form.is_void != 1
+                                    "
+                                padding5
+                                [class]="item.quoted > 0 ? 'primary-bg' : 'red-900-bg'"
+                            >
+                                <a
+                                    href="javascript:void(0)"
+                                    (click)="ShowReply(item)"
+                                    class="grey-100-fg"
+                                >
+                                    <i
+                                        class="fa fa-pencil grey-100-fg"
+                                        style="
+                                            width: 11px;
+                                            height: 11px;
+                                            min-width: 11px;
+                                            min-height: 11px;
+                                        "
+                                    ></i>
+                                    Supplier Reply
+                                </a>
+                            </td>
+                            <td
+                                padding5
+                                *ngIf="form.from_pq && form.is_detail && form.finish == 1 && form.is_void != 1 && form.is_void != 1"
+                                [class]="
+                                    item.qty_po > 0 ? 
+                                        item.po ? 'primary-bg' : 'orange-bg' : ''
+                                "
+                            >
+                                <a
+                                    *ngIf="item.qty_po > 0"
+                                    href="javascript:void(0)"
+                                    class="grey-100-fg"
+                                    (click)="ShowPO(item)"
+                                >
+                                    <div *ngIf="!item.po">
+                                        <i
+                                            class="fa fa-file-text-o grey-100-fg"
+                                            style="
+                                                width: 11px;
+                                                height: 11px;
+                                                min-width: 11px;
+                                                min-height: 11px;
+                                            "
+                                        ></i>
+                                        Create Purchasing Order
+                                    </div>
+                                    <div *ngIf="item.po">
+                                        <i
+                                            class="fa fa-external-link grey-100-fg"
+                                            style="
+                                                width: 11px;
+                                                height: 11px;
+                                                min-width: 11px;
+                                                min-height: 11px;
+                                            "
+                                        ></i>
+                                        Show PO
+                                    </div>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </mat-dialog-content>
+        <!-- / RIGHT -->
+    </div>
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+        <div fxLayout="row" fxFlex="1 1 auto">
+            <button
+                type="submit"
+                mat-button
+                color="warn"
+                [disabled]="
+                    Busy
+                "
+                *ngIf="
+                    !form.from_pq && 
+                    SupplierList[0].id 
+                "
+            >
+                <mat-icon>description</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Create Purchase Quotations' }}
+            </button>
+
+            <div *ngIf="form.from_pq && !form.is_detail">
+                <button
+                    type="submit"
+                    mat-raised-button
+                    color="primary"
+                    [disabled]="
+                        Busy
+                    "
+                >
+                    <mat-icon>save</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Save' }}
+                </button>
+            </div>
+
+            <div
+                *ngIf="form.from_pq && form.is_detail && perm.edit && form.verified != 1"
+            >
+                <button
+                    type="button"
+                    mat-button
+                    class="green-fg"
+                    [disabled]="
+                        Busy
+                    "
+                    *ngIf="form.is_void != 1"
+                    (click)="Edit()"
+                >
+                    <mat-icon>edit</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Edit' }}
+                </button>
+            </div>
+
+            <div *ngIf="form.from_pq && form.is_detail">
+                <button
+                    type="button"
+                    mat-button
+                    class="deep-orange-fg"
+                    [disabled]="
+                        Busy
+                    "
+                    *ngIf="form.quoted != 0 && form.is_void != 1"
+                    (click)="ShowCompare(1)"
+                >
+                    <mat-icon>compare_arrows</mat-icon>
+                    View Price Comparisons
+                </button>
+            </div>
+
+            <div *ngIf="form.from_pq && form.is_detail && form.jumlah_purchase != form.jumlah_outsd && form.jumlah_outsd > 0">
+                <button
+                    type="button"
+                    mat-button
+                    class="deep-orange-fg"
+                    [disabled]="
+                        Busy
+                    "
+                    *ngIf="form.quoted != 0 && form.is_void != 1"
+                    (click)="ShowCompare(2)"
+                >
+                    <mat-icon>compare_arrows</mat-icon>
+                    View Price Comparisons OS
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <button mat-button type="button" mat-dialog-close *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+</form>

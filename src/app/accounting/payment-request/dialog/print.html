@@ -1,0 +1,589 @@
+<!-- <div ngNativeValidate fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane"> -->
+    <div fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+        <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary ma-0">
+            <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+                <span class="title dialog-title">
+                    Print Preview
+                </span>
+                <button 
+                    mat-button 
+                    type="button"
+                    class="mat-icon-button ml-24"
+                    mat-dialog-close
+                    aria-label="Close dialog"
+                    tabindex="-1"
+                    *ngIf="!Busy"
+                >
+                    <mat-icon class="white-fg">close</mat-icon>
+                </button>
+            </div>
+        </mat-toolbar>
+    
+        <!-- CONTENT -->
+        <mat-dialog-content fxLayout="row" fxLayoutGap="10px" class="p-24 m-0">
+    
+            <!-- PRINT AREA -->
+            <div class="print-area">
+    
+                <!-- HEADER -->
+                <table class="table table-bordered table-input table-input-border">
+                    <thead class="no-bg" padding5>
+                        <tr>
+                            <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important;">
+                                <div>
+                                    <img src="/assets/logo/{{ formSP3.company_abbr }}.png">
+                                </div>
+                            </td>
+                            <td class="text-center" colspan="3">
+                                <div class="h5">
+                                    {{ formSP3.business_unit | uppercase }}
+                                </div>
+                            </td>
+                            <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important; padding: 2px!important;">
+                                <qr-code 
+                                    style="
+                                        margin: 0px!important;
+                                    "
+                                    [value]="formSP3.kode" 
+                                    [size]="150"
+                                ></qr-code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3" class="text-center" style="vertical-align: middle!important;">
+                                <div class="h5 text-bold">
+                                    PERMOHONAN PERSETUJUAN PEMBAYARAN / REIMBURSEMENT
+                                </div>
+                            </td>
+                            <td width="30">
+                                NO
+                            </td>
+                            <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                                00
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                REVISION
+                            </td>
+                            <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                                00
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                EFFECTIVE
+                            </td>
+                            <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                                01-06-2018
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+                <!-- / END : HEADER -->
+                <div >
+    
+                </div>
+                <!-- SUBHEADER -->
+                <table align="center">
+                    <tr>
+                        <td width="120">
+                            Kelompok Usaha
+                        </td>
+                        <td width="5">
+                            :
+                        </td>
+                        <td class="border-line">
+                            {{ formSP3.grup_nama }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Nomor
+                        </td>
+                        <td>
+                            :
+                        </td>
+                        <td class="border-line">
+                            {{ formSP3.kode }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Tanggal
+                        </td>
+                        <td>
+                            :
+                        </td>
+                        <td class="border-line">
+                            {{ formSP3.tanggal }}
+                        </td>
+                    </tr>
+                </table>
+                <!-- / END :SUBHEADER -->
+    
+                <!-- CONTENT -->
+                <table class="table table-input table-input-noborder print-po print-po-noborder sp3">
+                    <tr class="content">
+                        <td colspan="3">
+                            <div class="title">
+                                A. MOHON PERSETUJUAN PEMBAYARAN ATAS SPK/PO/KONTRAK TERLAMPIR:
+    
+                                <div class="table-content">
+                                    <table>
+                                        <tr>
+                                            <td width="150">
+                                                Nomor
+                                                <sub>(SPK/PO/KONTRAK)</sub>
+                                            </td>
+                                            <td width="1">:</td>
+                                            <td class="border-line">
+                                                {{ formSP3.po_no }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Tanggal
+                                                <sub>(SPK/PO/KONTRAK)</sub>
+                                            </td>
+                                            <td>:</td>
+                                            <td class="border-line">
+                                                {{ formSP3.po_tgl }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Nama Penerima
+                                            </td>
+                                            <td>:</td>
+                                            <td class="border-line">
+                                                {{ formSP3.penerima_nama }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Jumlah
+                                            </td>
+                                            <td>:</td>
+                                            <td class="text-bold border-line">
+                                                <span style="margin-right: 25px;">
+                                                    {{ formSP3.currency }}
+                                                </span>
+                                                {{ rupiah(formSP3.total) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Terbilang
+                                            </td>
+                                            <td>:</td>
+                                            <td class="border-line">
+                                                <em>
+                                                    {{ formSP3.terbilang | titlecase }}
+                                                </em>
+                                            </td>
+                                        </tr>
+                                    </table>
+    
+                                    <div>&nbsp;</div>
+    
+                                    <table class="uraian">
+                                        <tr>
+                                            <td colspan="4" class="subtitle">
+                                                Keterangan Jenis Pekerjaan / Pembayaran:
+                                            </td>
+                                        </tr>
+                                        <tr class="border-line">
+                                            <td colspan="4">
+                                                {{ formSP3.ref_kode }} {{ formSP3.keterangan_bayar }}
+                                            </td>
+                                        </tr>
+                                        <tr class="border-line" *ngFor="let item of formSP3.list; let i = index;">
+                                            <td width="5">
+                                                {{ i+1 }}).
+                                            </td>
+                                            <td colspan="2">
+                                                {{ item.uraian }}
+                                            </td>
+                                            <td class="text-right" width="100">
+                                                {{ rupiah(item.jumlah) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="width: 300px">
+                                                Beban : PT. {{ formSP3.company_abbr }}
+                                            </td>
+                                            <td class="text-center">
+                                                <strong>
+                                                    TOTAL
+                                                </strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <strong>
+                                                    {{ rupiah(formSP3.total) }}
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    </table>
+    
+                                </div>
+    
+                            </div>
+    
+                            <div class="table-content">
+                                <table>
+                                    <tr>
+                                        <td width="150">
+                                            Kode Lokasi / Cost Center
+                                        </td>
+                                        <td width="1">:</td>
+                                        <td>
+                                            <div class="pull-left">
+                                                {{ formSP3.cost_center_kode }}
+                                            </div>
+                                            <div class="pull-right">
+                                                <div class="box-container">
+                                                    <div class="box"></div>
+                                                    Budgeted
+                                                </div>
+                                                <div class="box-container">
+                                                    <div class="box"></div>
+                                                    Non Budgeted
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="content">
+                        <td colspan="3">
+                            <div class="title">
+                                B. PERSETUJUAN PEMBAYARAN
+                            </div>
+                            <div class="table-persetujuan">
+                                <table>
+                                    <tr class="header">
+                                        <td>
+                                            Dibuat
+                                        </td>
+                                        <td colspan="2">
+                                            Diperiksa
+                                        </td>
+                                        <td colspan="3">
+                                            Disetujui
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="signature">
+                                                Staff Proses<br>Pembayaran
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="signature">
+                                                Ka. Dept Terkait
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="signature">
+                                                Head Terkait
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="signature">
+                                                Dir. Terkait
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="signature">
+                                                Dir. Keuangan / FC
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="signature">
+                                                Direktur Utama
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+    
+                            <div class="table-catatan">
+                                <table>
+                                    <tr>
+                                        <td colspan="2">
+                                            <u>Catatan:</u>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="20">
+                                            1)
+                                        </td>
+                                        <td>
+                                            Diisi Oleh Unit Kerja / Department Pemohon / Unit Pemroses Pembayaran di Kantor Pusat
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            2)
+                                        </td>
+                                        <td>
+                                            Dalam hal pejabat yang berwenang berhalangan, maka persetujuan penandatangan akan diambil alih oleh pejabat yang lebih tinggi.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            3)
+                                        </td>
+                                        <td>
+                                            <div>
+                                                Untuk transaksi Personalia dan Umum, T&D, Direktur terkait adalah Direktur Personalia & Umum.
+                                            </div>
+                                            <div>
+                                                Untuk transaksi Logistik, Pengadaan, Komersial, Direktur terkait adalah Direktur Komersial.
+                                            </div>
+                                            <div>
+                                                Untuk transaksi Perkebunan & Upstream, Direktur terkait adalah Direktur Operasional Perkebunan.
+                                            </div>
+                                            <div>
+                                                Untuk transaksi IT, Keuangan, Akt. & Pajak, Budget & Control, Direktur terkait adalah Direktur Keuangan / Financial Controller.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            4)
+                                        </td>
+                                        <td>
+                                            <div>
+                                                Transaksi hingga Rp. 10 jt : Ka. Dept. terkait, Head terkait; Transaksi Rp. 10 jt s/d Rp. 1 Milyar : Ka. Dept. terkait, Head terkait, Direktur terkait.
+                                            </div>
+                                            <div>
+                                                Transaksi diatas Rp. 1 Milyar s/d Rp. 3 Milyar : Ka. Dept. terkait, Head Terkait, Direktur terkait, Direktur Keuangan / Financial Controller.
+                                            </div>
+                                            <div>
+                                                Transaksi diatas Rp. 3 Milyar : Ka. Dept. terkait, Head terkait, Direktur terkait, Direktur Keuangan / Financial Controller, Direktur Utama.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+    
+                        </td>
+                    </tr>
+                    <tr class="content">
+                        <td colspan="3">
+                            <div class="title">
+                                C: DIISI OLEH DEPARTMENT AKUNTING
+                            </div>
+                            <div class="table-akunting">
+    
+                                <table>
+                                    <tr class="header">
+                                        <td width="150">Staff Akunting</td>
+                                        <td width="150">Ka. Dept. Akunting</td>
+                                        <td width="150">Account Number</td>
+                                        <td>Keterangan</td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="6"></td>
+                                        <td rowspan="6"></td>
+                                        <td><span *ngIf="formSP3.jurnal && this.formSP3.jurnal.length > 0" [class]="formSP3.jurnal['0']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['0']['coa_kode']}}</span></td>
+                                        <td><span *ngIf="formSP3.jurnal && this.formSP3.jurnal.length > 0" [class]="formSP3.jurnal['0']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['0']['coa_nama']}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span *ngIf="this.formSP3.jurnal && this.formSP3.jurnal.length > 1" [class]="formSP3.jurnal['1']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['1']['coa_kode']}}</span></td>
+                                        <td><span *ngIf="this.formSP3.jurnal && this.formSP3.jurnal.length > 1" [class]="formSP3.jurnal['1']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['1']['coa_nama']}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span *ngIf="this.formSP3.jurnal && this.formSP3.jurnal.length > 2" [class]="formSP3.jurnal['2']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['2']['coa_kode']}}</span></td>
+                                        <td><span *ngIf="this.formSP3.jurnal && this.formSP3.jurnal.length > 2" [class]="formSP3.jurnal['2']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['2']['coa_nama']}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span *ngIf="this.formSP3.jurnal && this.formSP3.jurnal.length > 3" [class]="formSP3.jurnal['3']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['3']['coa_kode']}}</span></td>
+                                        <td><span *ngIf="this.formSP3.jurnal && this.formSP3.jurnal.length > 3" [class]="formSP3.jurnal['3']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['3']['coa_nama']}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span *ngIf="this.formSP3.jurnal && this.formSP3.jurnal.length > 4" [class]="formSP3.jurnal['4']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['4']['coa_kode']}}</span></td>
+                                        <td><span *ngIf="this.formSP3.jurnal && this.formSP3.jurnal.length > 4" [class]="formSP3.jurnal['4']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['4']['coa_nama']}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span *ngIf="this.formSP3.jurnal && this.formSP3.jurnal.length > 5" [class]="formSP3.jurnal['5']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['5']['coa_kode']}}</span></td>
+                                        <td><span *ngIf="this.formSP3.jurnal && this.formSP3.jurnal.length > 5" [class]="formSP3.jurnal['5']['tipe'] == 'K' ? 'td-kredit' : ''">{{formSP3.jurnal['5']['coa_nama']}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" rowspan="4" style="text-align: left; vertical-align: top; padding: 5px; font-size: 10px;">Catatan:</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+    
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="content">
+                        <td colspan="3">
+                            <div class="title">
+                                D: DIISI OLEH BAGIAN ACCOUNT PAYABLE DAN DEPT. PAJAK
+                            </div>
+                            <div class="table-pajak">
+    
+                                <ul>
+                                    <li>
+                                        <div class="pull-left" style="margin-right: 20px;">
+                                            Dokumen Pendukung Lengkap dan Sah?
+                                        </div>
+                                        <div class="box-container">
+                                            <div class="box"></div>
+                                            Ya
+                                        </div>
+                                        <div class="box-container">
+                                            <div class="box"></div>
+                                            Tidak
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="pull-left" style="margin-right: 20px;">
+                                            Kewenangan persetujuan pembayaran sesuai nominal pembayaran?
+                                        </div>
+                                        <div class="box-container">
+                                            <div class="box"></div>
+                                            Ya
+                                        </div>
+                                        <div class="box-container">
+                                            <div class="box"></div>
+                                            Tidak
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <table>
+                                            <tr>
+                                                <td width="100">Rekomendasi:</td>
+                                                <td>
+                                                    <div class="box-container">
+                                                        <div class="box"></div>
+                                                        Dapat Diproses Selanjutnya Untuk Pembayaran
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td>
+                                                    <div class="box-container">
+                                                        <div class="box"></div>
+                                                        Dikembalikan ke Unit Kerja / Departemen Pemohon Untuk Dilengkapi dan Diperbaiki
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </li>
+                                </ul>
+    
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- <tr class="content">
+                        <td colspan="3">
+                            <table class="table-signature">
+                                <tr>
+                                    <td width="50%">
+                                        <span>
+                                            Ka.Sie. Account Payable
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>
+                                            Ka. Dept Pajak
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr> -->
+                </table>
+                <!-- CONTENT -->
+    
+                <!-- SIGNATURE -->
+                <div class="mt-48">
+                <table class="table table-noborder">
+                    <tr>
+                        <td width="50%" style="padding-left: 75px;">
+                            <div style="width: 200px;" class="text-center">
+                                <div style="height: 10px;"></div>
+                                <hr>
+                                <div>
+                                    Ka.Sie. Account Payable
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding-right: 75px;">
+                            <div style="width: 200px; float: right;" class="text-center">
+    
+                                <div style="height: 10px;"></div>
+                                <hr>
+                                <div>
+                                    Ka. Dept Pajak
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- SIGNATURE -->
+    
+    
+            </div>
+            <!-- END : PRINT AREA -->
+    
+        </mat-dialog-content>
+        <!-- END : CONTENT -->
+    
+        <!-- ACTIONS -->
+        <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+    
+            <div fxFlex="1 1 auto">
+                <button 
+                    type="button" 
+                    mat-button 
+                    color="primary" 
+                    [disabled]="
+                        WaitPrint
+                    " 
+                    (click)="PrintSP3()"
+                >
+                    <mat-icon>print</mat-icon>
+                    {{ WaitPrint ? 'Please Wait...' : 'Print SP3'}}
+                </button>
+            </div>
+    
+            <div>
+                <button 
+                    *ngIf="!Busy"
+                    type="button" 
+                    mat-button 
+                    mat-dialog-close
+                >
+                    <mat-icon>close</mat-icon>
+                    Close
+                </button>
+            </div>
+        
+        </mat-dialog-actions>
+        <!-- END : ACTIONS -->
+        
+    </div>

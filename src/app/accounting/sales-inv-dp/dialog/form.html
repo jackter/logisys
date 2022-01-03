@@ -1,0 +1,408 @@
+<form
+    ngNativeValidate
+    fxLayout="column"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    style="min-width: 500px;"
+    (ngSubmit)="Submit()"
+>
+    <!-- TOOLBAR -->
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+    <!-- END : TOOLBAR -->
+
+    <!-- CONTENT -->
+    <mat-dialog-content
+        fxLayout="row"
+        fxLayout.lt-sm="column"
+        fxLayoutGap="10px"
+        class="p-24 m-0"
+    >
+        <mat-dialog-content fxFlex="1 1 auto" fxLayout="column">
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>Company</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Company"
+                    name="company_nama"
+                    [(ngModel)]="form.company_nama"
+                    required
+                    [matAutocomplete]="acCompany"
+                    (focus)="CustomerFilter(form.company_nama)"
+                    (click)="CustomerFilter(form.company_nama)"
+                    (ngModelChange)="CompanyFilter()"
+                    [readonly]="CompanyLen == 1 || form.is_detail || form.company"
+                />
+                <button
+                    type="button"
+                    mat-button
+                    *ngIf="form.company && form.id == 'add'"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="CompanyRemove();"
+                    tabindex="-1"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acCompany="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of Company"
+                        [value]="item.nama"
+                        (onSelectionChange)="CompanySelect($event, item)"
+                    >
+                        {{ item.nama }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <ng-container *ngIf="form.company">
+                <!-- <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Invoice Type</mat-label>
+                    <mat-select
+                        [disabled]="form.is_detail"
+                        name="other_invoice_type"
+                        placeholder="Invoice Type"
+                        [(ngModel)]="form.other_invoice_type"
+                        (ngModelChange)="InvoiceTypeChange()"
+                        required
+                    >
+                        <mat-option [value]="1">Down Payment</mat-option>
+                        <mat-option [value]="2">Invoice Sales Accrued</mat-option
+                        >
+                    </mat-select>
+                </mat-form-field> -->
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Customer</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Please Select Customer"
+                        name="cust_nama"
+                        id="cust_nama"
+                        [(ngModel)]="form.cust_nama"
+                        (ngModelChange)="CustomerFilter(form.cust_nama)"
+                        [matAutocomplete]="acCustomer"
+                        (focus)="CustomerFilter(form.cust_nama)"
+                        (click)="CustomerFilter(form.cust_nama)"
+                        [readonly]="form.is_detail || form.cust"
+                    />
+                    <button
+                        type="button"
+                        mat-button
+                        *ngIf="form.cust && form.id == 'add'"
+                        matSuffix
+                        mat-icon-button
+                        aria-label="Clear"
+                        (click)="CustomerRemove();"
+                        tabindex="-1"
+                    >
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete
+                        autoActiveFirstOption
+                        #acCustomer="matAutocomplete"
+                        class="force-wrap ac-small"
+                    >
+                        <mat-option
+                            *ngFor="let item of Customer"
+                            [value]="item.cust_nama"
+                            (onSelectionChange)="CustomerSelect($event, item)"
+                        >
+                            {{ item.cust_nama }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field
+                    appearance="outline"
+                    class="small"
+                    *ngIf="form.cust"
+                >
+                    <mat-label>SC Code</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Please Define Sales Contract Code to Continue"
+                        name="sc_kode"
+                        id="sc_kode"
+                        [(ngModel)]="form.sc_kode"
+                        required
+                        [matAutocomplete]="acSCCode"
+                        (ngModelChange)="SCCodeFilter(form.sc_kode)"
+                        (focus)="SCCodeFilter(form.sc_kode)"
+                        (click)="SCCodeFilter(form.sc_kode)"
+                        [readonly]="form.is_detail || form.sc"
+                        [tabindex]="form.id != 'add' ? '-1' : ''"
+                    />
+                    <button
+                        type="button"
+                        mat-button
+                        *ngIf="form.sc && form.id == 'add'"
+                        matSuffix
+                        mat-icon-button
+                        aria-label="Clear"
+                        (click)="SCCodeRemove();"
+                        tabindex="-1"
+                    >
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-autocomplete
+                        autoActiveFirstOption
+                        #acSCCode="matAutocomplete"
+                        class="force-wrap ac-small"
+                    >
+                        <mat-option
+                            *ngFor="let item of SCCode"
+                            [value]="item.kode"
+                            (onSelectionChange)="SCCodeSelect($event, item)"
+                        >
+                            <small
+                                >{{ item.kode }} ( {{ item.cust_nama }}
+                                )</small
+                            >
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </ng-container>
+
+            <ng-container *ngIf="form.company && form.cust && form.sc">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Inv Date</mat-label>
+                    <input
+                        matInput
+                        name="inv_tgl"
+                        placeholder="Please Select Inv Date"
+                        [(ngModel)]="form.inv_tgl"
+                        [max]="maxDate"
+                        [min]="minDate"
+                        required
+                        [matDatepicker]="inv_tgl"
+                        (focus)="inv_tgl.open()"
+                        (click)="inv_tgl.open()"
+                        [disabled]="form.is_detail"
+                        readonly
+                        style="
+                            font-size: 14px !important;
+                            color: #000 !important;
+                            padding: 0px !important;
+                        "
+                    />
+                    <mat-datepicker #inv_tgl></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Notes</mat-label>
+                    <textarea
+                        matInput
+                        type="text"
+                        placeholder="Notes"
+                        name="note"
+                        [(ngModel)]="form.note"
+                        matTextareaAutosize
+                        [matAutosizeMinRows]="4"
+                        [readonly]="form.is_detail"
+                    ></textarea>
+                </mat-form-field>
+            </ng-container>
+        </mat-dialog-content>
+
+        <!-- LIST ITEM -->
+        <mat-dialog-content
+            class="p-0 m-0 ml-8 mt-8"
+            fxLayout="column"
+            *ngIf="form.sc_kode && form.inv_tgl"
+        >
+            <table
+                class="table table-border-top table-list table-responsive table-input table-small"
+            >
+                <thead>
+                    <tr>
+                        <th>
+                            No.
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th width="100">
+                            Qty
+                        </th>
+                        <th width="50">
+                            Unit
+                        </th>
+                        <th>
+                            Sold Price
+                        </th>
+                        <th>
+                            Total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of form.list; let i = index;">
+                        <td padding5 align="center">
+                            {{ i + 1 }}
+                        </td>
+                        <td padding5>
+                            {{ item.nama }}
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(item.qty) }}
+                        </td>
+                        <td padding5 class="text-center">
+                            {{ item.satuan }}
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(item.price) }}
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(item.qty * item.price) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="background: #f7f7f7;">
+                            <div style="height: 5px;"></div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td padding5 colspan="5" class="text-right">
+                            Subtotal
+                        </td>
+                        <td
+                            padding5
+                            class="text-right"
+                        >
+                            {{ rupiah(form.subtotal) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td padding5 colspan="5" class="text-right">
+                            Tax Base {{ rupiah(form.dp) }}%
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ rupiah(form.tax_base) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td padding5 colspan="5" class="text-right">
+                            PPN
+                            <span *ngIf="form.ppn > 0">
+                                {{ rupiah(form.ppn) }}%
+                            </span>
+
+                            <span *ngIf="form.inclusive_ppn == 1">
+                                Inclusive Tax
+                            </span>
+                        </td>
+                        <td
+                            padding5
+                            class="text-right"
+                        >
+                            {{ rupiah(form.ppn_amount) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td padding5 colspan="5" class="text-right text-bold">
+                            GRAND TOTAL
+                        </td>
+                        <td padding5 class="text-right text-bold">
+                            {{ rupiah(form.grand_total) }}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </mat-dialog-content>
+        <!-- END : LIST ITEM -->
+    </mat-dialog-content>
+    <!-- END : CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="end"
+        fxLayoutGap="10px"
+    >
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button
+                type="submit"
+                *ngIf="!form.is_detail"
+                mat-button
+                color="primary"
+                [disabled]="
+                    !form.inv_tgl ||
+                    !form?.sc_kode ||
+                    Busy
+                "
+                (click)="Submit()"
+            >
+                <mat-icon>save</mat-icon>
+                Save
+            </button>
+            <button
+                *ngIf="
+                    form.is_detail
+                "
+                type="button"
+                mat-button
+                (click)="Edit();"
+            >
+                <mat-icon>create</mat-icon>
+                Edit
+            </button>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- END : ACTIONS -->
+</form>

@@ -1,0 +1,578 @@
+<form
+    ngNativeValidate
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    aria-autocomplete="none"
+    style="min-width: 500px;"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Add New {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <div
+        fxLayout="row"
+        fxLayout.sm="column"
+        class="p-24 m-0"
+        fxLayoutGap="10px"
+    >
+        <!-- LEFT -->
+        <div fxLayout="column" fxFlex="1 0 auto">
+            <mat-form-field
+                floatPlaceholder="always"
+                fxFlex="1 1 auto"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Date Target</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    name="date_target"
+                    placeholder="Date Target"
+                    [(ngModel)]="form.date_target"
+                    required
+                    mask="00/00/0000"
+                    [dpDayPicker]="{
+                        locale : 'en',
+                        format : 'DD/MM/YYYY',
+                        min: minDate,
+                        appendTo: 'body',
+                        showMultipleYearsNavigation: true,
+                        disabled: true
+                    }"
+                    theme="dp-material"
+                    [disabled]="form.is_detail"
+                    readonly
+                />
+            </mat-form-field>
+
+            <!-- MR Kode -->
+            <mat-form-field
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+            >
+                <mat-label>Material Request Code</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Material Request Code"
+                    name="kode"
+                    [(ngModel)]="form.kode"
+                    required
+                    readonly
+                />
+            </mat-form-field>
+            <!-- / MR Kode -->
+
+            <!-- Company -->
+            <mat-form-field
+                floatPlaceholder="always"
+                appearance="outline"
+                class="small"
+                *ngIf="form.date_target"
+            >
+                <mat-label>Company</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Company"
+                    name="company_nama"
+                    [(ngModel)]="form.company_nama"
+                    required
+                    [matAutocomplete]="acCompany"
+                    (ngModelChange)="CompanyFilter()"
+                    [readonly]="CompanyLen == 1 || form.is_detail || form.id != 'add'"
+                />
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acCompany="matAutocomplete"
+                >
+                    <mat-option
+                        *ngFor="let item of Company"
+                        [value]="item.nama"
+                        (onSelectionChange)="CompanySelect($event, item)"
+                    >
+                        {{ item.nama }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <!-- / Company -->
+
+            <!-- Dept -->
+            <div fxLayout="row" fxLayoutAlign="start top" fxLayoutGap="10px">
+                <mat-form-field
+                    *ngIf="form.company"
+                    fxFlex="1 1 auto"
+                    floatPlaceholder="always"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Department</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        [placeholder]="
+                            form.company && 
+                            DeptReady &&
+                            !form.dept 
+                            ? 
+                            'Department (Create New)' 
+                            :
+                            'Department'
+                        "
+                        name="dept_nama"
+                        [(ngModel)]="form.dept_nama"
+                        required
+                        [matAutocomplete]="acDept"
+                        (ngModelChange)="DeptFilter();"
+                        (keyup)="form.dept_nama = $event.target.value.toUpperCase();"
+                        [readonly]="DeptLen == 1 || form.is_detail || form.id != 'add'"
+                    />
+                    <mat-autocomplete
+                        autoActiveFirstOption
+                        #acDept="matAutocomplete"
+                    >
+                        <mat-option
+                            *ngFor="let item of Dept"
+                            [value]="item.nama"
+                            (onSelectionChange)="DeptSelect($event, item)"
+                        >
+                            {{ item.nama }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+                <mat-form-field
+                    *ngIf="form.company && DeptReady"
+                    fxFlex="0 0 100px"
+                    floatPlaceholder="always"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Abbr</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        placeholder="Abbr"
+                        name="dept_abbr"
+                        [(ngModel)]="form.dept_abbr"
+                        [required]="form.company && DeptReady && !form.dept"
+                        (keyup)="form.dept_abbr = $event.target.value.toUpperCase();"
+                        [readonly]="form.is_detail || form.id != 'add' || form.dept"
+                        maxlength="5"
+                    />
+                </mat-form-field>
+            </div>
+            <!-- / Dept -->
+
+            <!-- After Company -->
+            <div *ngIf="form.company && form.dept_abbr" fxLayout="column">
+                <mat-form-field
+                    fxFlex="1 1 auto"
+                    floatPlaceholder="always"
+                    appearance="outline"
+                    class="small"
+                >
+                    <mat-label>Note</mat-label>
+                    <textarea
+                        matInput
+                        type="text"
+                        placeholder="Note"
+                        name="note"
+                        [(ngModel)]="form.note"
+                        matTextareaAutosize
+                        [matAutosizeMinRows]="2"
+                        [readonly]="
+                            form.is_detail && 
+                            ReceiptState != 1 && 
+                            processed != 1
+                        "
+                    ></textarea>
+                </mat-form-field>
+            </div>
+            <!-- / After Company -->
+        </div>
+        <!-- / LEFT -->
+
+        <!-- RIGHT -->
+        <mat-dialog-content
+            *ngIf="form.company && form.dept_abbr && form.note"
+            fxLayout="column"
+            fxFlex="1 1 auto"
+            fxLayoutAlign="start center"
+        >
+            <div>
+                <hr class="mt-0 mb-0" />
+                <table
+                    class="table table-responsive table-input table-small table-striped table-hover"
+                >
+                    <thead>
+                        <tr>
+                            <th width="10">
+                                <div *ngIf="!form.is_detail">
+                                    <mat-icon color="warn">delete</mat-icon>
+                                </div>
+                                <div *ngIf="form.is_detail">
+                                    No.
+                                </div>
+                            </th>
+                            <th width="300">
+                                Item
+                            </th>
+                            <th width="50">
+                                UOM
+                            </th>
+                            <th width="100">
+                                Qty. MR
+                            </th>
+                            <th width="100">
+                                Stock
+                            </th>
+                            <th width="100">
+                                Qty. Approved
+                            </th>
+                            <th width="100">
+                                Outstanding
+                            </th>
+                            <th>
+                                Remarks
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of List; let i = index;">
+                            <td class="text-center">
+                                <div *ngIf="!form.is_detail">
+                                    <button
+                                        type="button"
+                                        mat-icon-button
+                                        (click)="DeleteList(i)"
+                                        *ngIf="
+                                                List?.length > 1 && 
+                                                item.id
+                                            "
+                                        tabindex="-1"
+                                    >
+                                        <mat-icon class="red-fg"
+                                            >close</mat-icon
+                                        >
+                                    </button>
+                                </div>
+                                <div *ngIf="form.is_detail" padding5>
+                                    {{ i+1 }}
+                                </div>
+                            </td>
+                            <td style="position: relative;">
+                                <input
+                                    type="text"
+                                    placeholder="Item Name"
+                                    id="nama-{{i}}"
+                                    name="nama-{{i}}"
+                                    [(ngModel)]="item.nama"
+                                    [required]="i == 0"
+                                    [matAutocomplete]="acItem"
+                                    (ngModelChange)="ItemFilter(item.nama, i)"
+                                    [readonly]="form.is_detail || item.id"
+                                    [tabindex]="item.id ? '-1' : null"
+                                />
+                                <mat-autocomplete
+                                    autoActiveFirstOption
+                                    #acItem="matAutocomplete"
+                                    class="force-wrap ac-small"
+                                >
+                                    <mat-option
+                                        *ngFor="let item of Item"
+                                        (onSelectionChange)="ItemSelect($event, item, i)"
+                                        >{{ item.nama }}</mat-option
+                                    >
+                                </mat-autocomplete>
+                                <div
+                                    *ngIf="WaitItem[i]"
+                                    style="
+                                        position: absolute;
+                                        right: 0px;
+                                        top: 0px;
+                                    "
+                                >
+                                    <mat-spinner
+                                        diameter="20"
+                                        strokeWidth="2"
+                                        color="error"
+                                        style="margin-top: 5px;"
+                                    ></mat-spinner>
+                                </div>
+                            </td>
+                            <td padding5 class="text-center">
+                                {{ item.satuan }}
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty-{{i}}"
+                                    id="qty-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="item.qty"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    [readonly]="form.is_detail"
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="stock-{{i}}"
+                                    id="stock-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="item.stock"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_approved-{{i}}"
+                                    id="qty_approved-{{i}}"
+                                    [(ngModel)]="item.qty_approved"
+                                    [required]="i == 0 || (item.id && ReceiptState == 1)"
+                                    (ngModelChange)="CheckQty(i)"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    [readonly]="ReceiptState != 1"
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    [disabled]="!item.id"
+                                    type="text"
+                                    autocomplete="off"
+                                    maxlength="23"
+                                    currencyMask
+                                    name="qty_outstanding_def-{{i}}"
+                                    id="qty_outstanding_def-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="item.qty_outstanding_def"
+                                    [required]="i == 0 || item.id"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                />
+                            </td>
+                            <!-- <td padding5>
+                                <textarea
+                                    type="text"
+                                    placeholder="Remarks"
+                                    id="remarks-{{i}}"
+                                    name="remarks-{{i}}"
+                                    [(ngModel)]="item.remarks"
+                                    [readonly]="
+                                        form.is_detail && 
+                                        ReceiptState != 1 && 
+                                        processed != 1
+                                    "
+                                    [tabindex]="item.id ? '-1' : null"
+                                ></textarea>
+                            </td> -->
+                            <td padding5>
+                                {{ item.remarks }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div
+                *ngIf="form.is_detail && perm.receipt && form.processed == 1 && perm.gi && form.purchased != 1 && form.gi_ready <= 0 && form.finish != 1"
+                class="orange-fg mt-32 h3"
+            >
+                <i class="fa fa-warning orange-fg"></i>
+                Some material stock is not enough
+            </div>
+
+            <div
+                *ngIf="form.is_detail && perm.receipt && form.processed == 1 && form.finish != 1 && form.outstanding > 0"
+                fxLayoutGap="10px"
+                class="mt-24"
+            >
+                <button
+                    *ngIf="perm.gi"
+                    type="button"
+                    mat-raised-button
+                    color="primary"
+                    [disabled]="
+                        Busy || 
+                        form.gi_ready <= 0 || 
+                        form.outstanding <= 0
+                    "
+                    (click)="ShowGIDialog()"
+                >
+                    <mat-icon>local_shipping</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Goods Issued' }}
+                </button>
+
+                <button
+                    *ngIf="perm.pr"
+                    type="button"
+                    mat-raised-button
+                    color="warn"
+                    [disabled]="
+                        Busy || 
+                        form.purchased == 1
+                    "
+                    (click)="ShowPRDialog()"
+                >
+                    <mat-icon>local_mall</mat-icon>
+                    {{ Busy ? 'Please Wait...' : form.purchased == 1 ?
+                    'Purchased - ' + form.purchase_kode : 'Purchase Request' }}
+                </button>
+            </div>
+        </mat-dialog-content>
+        <!-- / RIGHT -->
+    </div>
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="form.is_detail && perm.receipt && form.processed != 1 && ReceiptState != 1"
+                type="button"
+                mat-raised-button
+                color="primary"
+                (click)="ChangeReceiptState()"
+                [disabled]="
+                    Busy || 
+                    !form.company || 
+                    !form.company_abbr || 
+                    !form.note || 
+                    !List[0].id
+                "
+            >
+                {{ Busy ? 'Please Wait...' : 'Process' }}
+            </button>
+
+            <div
+                *ngIf="form.is_detail && perm.receipt && form.processed != 1 && ReceiptState == 1"
+            >
+                <button
+                    type="submit"
+                    mat-button
+                    color="warn"
+                    [disabled]="
+                        Busy
+                    "
+                >
+                    <mat-icon>check</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Submit Material Request' }}
+                </button>
+
+                <button
+                    type="button"
+                    mat-button
+                    class="grey-fg"
+                    (click)="ResetQty();"
+                >
+                    <mat-icon>close</mat-icon>
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <button mat-button type="button" mat-dialog-close *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+</form>

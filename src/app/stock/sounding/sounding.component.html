@@ -1,0 +1,222 @@
+<div class="page-layout simple" fusePerfectScrollbar>
+
+    <!-- CONTENT HEADER -->
+    <div class="header dx-header primary-bg primary p-12" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *fuseIfOnDom>
+
+        <div fxFlex="1 1 auto" fxLayout="row" fxLayoutGap="10px">
+            <div class="logo" fxLayout="row" fxLayoutAlign="start center" style="position: relative;">
+                <mat-icon *ngIf="Com.icon_type != 'fa'" class="logo-icon mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    {{ Com.icon }}
+                </mat-icon>
+                <span *ngIf="Com.icon_type == 'fa'" class="mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <i [class]="Com.icon"></i>
+                </span>
+                <span class="logo-text h3" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    {{ Com.title }}
+                </span>
+            </div>
+
+            <button
+                mat-button
+                color="accent"
+                (click) = "Reload()"
+                [@animate]="{value:'*',params:{delay:'550ms',x:'35px'}}"
+            >
+                <mat-icon>refresh</mat-icon>
+                Refresh Data
+            </button>
+        </div>
+
+        <!-- BUTTON ADD -->
+        <div fxFlex="0 0 auto">
+            <button 
+                mat-raised-button
+                class="accent-bg" 
+                (click)="OpenForm('add')" 
+                [@animate]="{value:'*',params:{delay:'150ms',y:'35px'}}"
+                *ngIf="perm.add"
+            >
+                <mat-icon class="accent-bg">add</mat-icon>
+                Add New {{ Com.name }}
+            </button>
+        </div>
+        <!-- / BUTTON ADD -->
+
+    </div>
+    <!-- CONTENT HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content" style="height: 100%;" fxLayout="row" fxLayout.sm="column" *ngIf="SoundingReady">
+
+        <div fxLayout="row wrap" fxFlex="1 1 370px" class="tangki-container">
+            
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[0].styleHeight}"></div>
+                <div class="label">T01</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[0].styleBot}">{{HasilSounding[0].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[1].styleHeight}"></div>
+                <div class="label">T02</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[1].styleBot}">{{HasilSounding[1].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[2].styleHeight}"></div>
+                <div class="label">T03</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[2].styleBot}">{{HasilSounding[2].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[3].styleHeight}"></div>
+                <div class="label">T04</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[3].styleBot}">{{HasilSounding[3].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[4].styleHeight}"></div>
+                <div class="label">T05</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[4].styleBot}">{{HasilSounding[4].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[5].styleHeight}"></div>
+                <div class="label">T06</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[5].styleBot}">{{HasilSounding[5].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[6].styleHeight}"></div>
+                <div class="label">T07</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[6].styleBot}">{{HasilSounding[6].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[7].styleHeight}"></div>
+                <div class="label">T08</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[7].styleBot}">{{HasilSounding[7].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[8].styleHeight}"></div>
+                <div class="label">T09</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[1].styleBot}">{{HasilSounding[8].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[9].styleHeight}"></div>
+                <div class="label">T10</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[9].styleBot}">{{HasilSounding[9].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[10].styleHeight}"></div>
+                <div class="label">T11</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[10].styleBot}">{{HasilSounding[10].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[11].styleHeight}"></div>
+                <div class="label">T12</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[11].styleBot}">{{HasilSounding[11].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[12].styleHeight}"></div>
+                <div class="label">T13</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[12].styleBot}">{{HasilSounding[12].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[13].styleHeight}"></div>
+                <div class="label">T14</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[13].styleBot}">{{HasilSounding[13].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[14].styleHeight}"></div>
+                <div class="label">T15</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[14].styleBot}">{{HasilSounding[14].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[15].styleHeight}"></div>
+                <div class="label">T16</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[15].styleBot}">{{HasilSounding[15].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[16].styleHeight}"></div>
+                <div class="label">T17</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[16].styleBot}">{{HasilSounding[16].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[17].styleHeight}"></div>
+                <div class="label">T18</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[17].styleBot}">{{HasilSounding[17].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[18].styleHeight}"></div>
+                <div class="label">T19</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[18].styleBot}">{{HasilSounding[18].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[19].styleHeight}"></div>
+                <div class="label">T20</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[19].styleBot}">{{HasilSounding[19].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[20].styleHeight}"></div>
+                <div class="label">T21</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[20].styleBot}">{{HasilSounding[20].persentase}}%</div>
+            </div>
+
+            <div class="tangki">
+                <div class="isi" [ngStyle]="{'height' : HasilSounding[21].styleHeight}"></div>
+                <div class="label">T22</div>
+                <div class="label-isi" [ngStyle]="{'bottom' : HasilSounding[21].styleBot}">{{HasilSounding[21].persentase}}%</div>
+            </div>
+
+        </div>
+
+        <div fxFlex="1 1 auto">
+            <ag-grid-angular
+                style="width: 100%; height: 100%; min-height: 300px;"
+                class="ag-theme-balham"
+                
+                [defaultColDef]="gridOptions.defaultColDef"
+                [columnDefs]="TableCol"
+                [context]="gridOptions.context"
+                [enableFilter]="gridOptions.enableFilter"
+                [floatingFilter]="gridOptions.floatingFilter"
+                [animateRows]="gridOptions.animateRows"
+                [enableColResize]="gridOptions.enableColResize"
+                [allowContextMenuWithControlKey]="gridOptions.allowContextMenuWithControlKey"
+                [getContextMenuItems]="getContextMenuItems"
+
+                [rowModelType]="gridOptions.rowModelType"
+                [rowBuffer]="gridOptions.rowBuffer"
+                [debug]="gridOptions.debug"
+                [rowSelection]="gridOptions.rowSelection"
+                [rowDeselection]="gridOptions.rowDeselection"
+                [cacheOverflowSize]="gridOptions.cacheOverflowSize"
+                [maxConcurrentDatasourceRequests]="gridOptions.maxConcurrentDatasourceRequests"
+                [infiniteInitialRowCount]="gridOptions.infiniteInitialRowCount"
+                [cacheBlockSize]="gridOptions.cacheBlockSize"
+                [maxBlocksInCache]="gridOptions.maxBlocksInCache"
+
+                (gridReady)="onGridReady($event)"
+                (filterChanged)="FilterChanged($event)"
+                (cellDoubleClicked)="onDoubleClick($event)"
+            ></ag-grid-angular>
+        </div>
+
+    </div>
+    <!-- / CONTENT -->
+
+</div>

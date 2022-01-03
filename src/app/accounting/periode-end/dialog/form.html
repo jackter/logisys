@@ -1,0 +1,173 @@
+<form
+    ngNativeValidate
+    (ngSubmit)="Simpan()"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    aria-autocomplete="none"
+    style="min-width: 500px;"
+>
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title" *ngIf="form.id == 'add'">
+                Process {{ Com.name }}
+            </span>
+            <span class="title dialog-title" *ngIf="form.id != 'add'">
+                {{ Com.title }}
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="column" class="p-24 m-0">
+        <div style="text-align: center;" *ngIf="Busy && time">
+            <h1>{{ time.hours }}:{{ time.minutes }}:{{ time.seconds }}</h1>
+        </div>
+        <!-- Company -->
+        <mat-form-field appearance="outline" class="small">
+            <mat-label>Company</mat-label>
+            <input
+                matInput
+                type="text"
+                placeholder="Find company name"
+                name="company_nama"
+                [(ngModel)]="form.company_nama"
+                required
+                [matAutocomplete]="acCompany"
+                (ngModelChange)="CompanyFilter()"
+                [readonly]="CompanyLen == 1 || form.is_detail || form.id != 'add' || form.company"
+            />
+            <button
+                type="button"
+                mat-button
+                *ngIf="form.company"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="CompanyRemove();"
+                tabindex="-1"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete
+                autoActiveFirstOption
+                #acCompany="matAutocomplete"
+                class="force-wrap ac-small"
+            >
+                <mat-option
+                    *ngFor="let item of Company"
+                    [value]="item.nama"
+                    (onSelectionChange)="CompanySelect($event, item)"
+                >
+                    {{ item.nama }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+        <!-- / Company -->
+
+        <!-- After Company -->
+        <div *ngIf="form.company" fxLayout="column">
+            <mat-form-field fxFlex="1 1 auto" appearance="outline">
+                <mat-label>Tahun</mat-label>
+                <mat-select 
+                    placeholder="Pilih Tahun"
+                    type="text"
+                    name="year"
+                    [(ngModel)]="form.year"                          
+                    >
+                    <mat-option *ngFor="let item of Tahun" [value]="item">
+                        {{item}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field fxFlex="1 1 auto" appearance="outline">
+                <mat-label>Bulan</mat-label>
+                <mat-select 
+                    placeholder="Pilih Bulan" 
+                    name="month"
+                    type="text"
+                    [(ngModel)]="form.month"
+                    >
+                    <mat-option *ngFor="let item of Bulan" [value]="item.nilai">
+                        {{item.bulan}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <!-- <mat-form-field
+                appearance="outline"
+                class="small"
+                fxFlex="1 1 auto"
+            >
+                <mat-label>Year</mat-label>
+                <input
+                    matInput
+                    type="number"
+                    placeholder="Year"
+                    name="year"
+                    [min]="0"
+                    [(ngModel)]="form.year"
+                    [readonly]="form.is_detail"
+                />
+            </mat-form-field>
+
+            <mat-form-field
+                appearance="outline"
+                class="small"
+                fxFlex="1 1 auto"
+            >
+                <mat-label>Month</mat-label>
+                <input
+                    matInput
+                    type="number"
+                    placeholder="Month"
+                    name="month"
+                    [min]="0"
+                    [(ngModel)]="form.month"
+                    [readonly]="form.is_detail"
+                />
+            </mat-form-field> -->
+        </div>
+        <!-- / After Company -->
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTION -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end">
+        <div fxFlex="1 1 auto">
+            <button
+                *ngIf="!form.is_detail"
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="
+                    Busy || 
+                    !form.company ||
+                    !form.year ||
+                    !form.month
+                "
+            >
+                {{ Busy ? 'Please Wait...' : 'Process' }}
+            </button>
+        </div>
+
+        <div>
+            <button mat-button type="button" mat-dialog-close *ngIf="!Busy">
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+</form>

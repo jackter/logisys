@@ -1,0 +1,61 @@
+<div class="page-layout simple" fusePerfectScrollbar>
+
+    <!-- CONTENT HEADER -->
+    <div class="header dx-header primary-bg primary p-12" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *fuseIfOnDom>
+
+        <div fxFlex="1 1 auto" fxLayout="row" fxLayoutGap="10px">
+            <div class="logo" fxLayout="row" fxLayoutAlign="start center" style="position: relative;">
+                <mat-icon *ngIf="Com.icon_type != 'fa'" class="logo-icon mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    {{ Com.icon }}
+                </mat-icon>
+                <span *ngIf="Com.icon_type == 'fa'" class="mr-16" [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+                    <i [class]="Com.icon"></i>
+                </span>
+                <span class="logo-text h3" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+                    {{ Com.title }}
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- CONTENT HEADER -->
+
+
+    <!-- CONTENT -->
+    <div class="content" style="height: 100%;">
+
+        <ag-grid-angular
+            style="width: 100%; height: 100%"
+            class="ag-theme-balham"
+            
+            [defaultColDef]="gridOptions.defaultColDef"
+            [columnDefs]="TableCol"
+            [context]="gridOptions.context"
+            [enableFilter]="gridOptions.enableFilter"
+            [floatingFilter]="gridOptions.floatingFilter"
+            [animateRows]="gridOptions.animateRows"
+            [enableColResize]="gridOptions.enableColResize"
+            [allowContextMenuWithControlKey]="gridOptions.allowContextMenuWithControlKey"
+            [getContextMenuItems]="getContextMenuItems"
+
+            [rowModelType]="gridOptions.rowModelType"
+            [rowBuffer]="gridOptions.rowBuffer"
+            [debug]="gridOptions.debug"
+            [rowSelection]="gridOptions.rowSelection"
+            [rowDeselection]="gridOptions.rowDeselection"
+            [cacheOverflowSize]="gridOptions.cacheOverflowSize"
+            [maxConcurrentDatasourceRequests]="gridOptions.maxConcurrentDatasourceRequests"
+            [infiniteInitialRowCount]="gridOptions.infiniteInitialRowCount"
+            [cacheBlockSize]="gridOptions.cacheBlockSize"
+            [maxBlocksInCache]="gridOptions.maxBlocksInCache"
+
+            (gridReady)="onGridReady($event)"
+            (filterChanged)="FilterChanged($event)"
+            (cellDoubleClicked)="onDoubleClick($event)"
+        ></ag-grid-angular>
+
+    </div>
+    <!-- / CONTENT -->
+
+</div>

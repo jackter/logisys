@@ -1,0 +1,95 @@
+<div ngNativeValidate class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                History Goods Issued
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="column" fxFlex="1 0 auto" class="m-0 p-24">
+
+        <div *ngIf="form.gi">
+            <hr class="mt-0 mb-0">
+            <!-- <table class="table table-responsive table-input table-small table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th width="10">
+                            No.
+                        </th>
+                        <th>
+                            Item
+                        </th>
+                        <th width="50">
+                            UOM
+                        </th>
+                        <th width="75">
+                            Qty. MR
+                        </th>
+                        <th width="75">
+                            Goods Issued
+                        </th>
+                        <th>
+                            Location
+                        </th>
+                        <th width="75">
+                            Outstanding
+                        </th>
+                    </tr>
+                </thead>
+            </table> -->
+            <table class="table table-responsive table-input table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th width="10">
+                            No.
+                        </th>
+                        <th>
+                            Issued Date
+                        </th>
+                        <th>
+                            Code
+                        </th>
+                        <th>
+                            View
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr padding5 *ngFor="let item of form.gi.list; let i = index;" (click)="ShowDetail(item)">
+                        <td class="text-center">
+                            {{ i+1 }}
+                        </td>
+                        <td>
+                            {{ item.tanggal_format }}
+                        </td>
+                        <td>
+                            {{ item.kode }}
+                        </td>
+                        <td>
+                            <a href="javascript:void(0)" (click)="ShowDetail(item)" class="primary-fg">
+                                View & Print
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </mat-dialog-content>
+    <!-- / END : CONTENT -->
+
+</div>

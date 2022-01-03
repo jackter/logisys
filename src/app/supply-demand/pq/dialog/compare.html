@@ -1,0 +1,1384 @@
+<form ngNativeValidate (ngSubmit)="Simpan()" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off" aria-autocomplete="none" style="min-width: 500px;">
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Price Comparisons
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <!-- PRINT -->
+    <div class="print-area-compare">
+
+        <div class="printable-height" fxLayout="column">
+
+            <!-- LOOP RowSupplier -->
+            <ng-container *ngFor="let x of RowSupplier;">
+
+                <!-- HEADER -->
+                <table class="table table-bordered table-input table-input-border">
+                    <thead class="no-bg" padding5>
+                        <tr>
+                            <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important;">
+                                <!-- <div *ngIf="form.show_logo == 1"> -->
+                                    <img src="/assets/logo/{{ form.company_abbr }}.png">
+                                <!-- </div>
+                                <div *ngIf="form.show_logo != 1">
+                                    <img src="/assets/logo/CBI.png">
+                                </div> -->
+                            </td>
+                            <td class="text-center">
+                                <div class="h5">
+                                    {{ form.business_unit | uppercase }}
+                                </div>
+                            </td>
+                            <td colspan="2">
+                                <div class="h5 text-center text-bold">
+                                    {{ form.company_nama | uppercase }}
+                                </div>
+                            </td>
+                            <td width="100" class="text-center" rowspan="4" style="vertical-align: middle!important; padding: 2px!important;">
+                                <qr-code 
+                                    style="
+                                        margin: 0px!important;
+                                    "
+                                    [value]="Data.pq.kode" 
+                                    [size]="150"
+                                ></qr-code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3" class="text-center" style="vertical-align: middle!important;">
+                                <div class="h2 text-bold">
+                                    PRICE COMPARISON
+                                </div>
+                                <div>
+                                    Page {{ x+1 }} of {{ MaxRowSupplier }}
+                                </div>
+                            </td>
+                            <td width="30">
+                                NO
+                            </td>
+                            <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                                <!-- FIP-SCM/WHS-01-01 -->
+                                FIP-FA-02-02
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                REVISION
+                            </td>
+                            <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                                00
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                EFFECTIVE
+                            </td>
+                            <td style="min-width: 75px; max-width: 150px; width: 150px;">
+                                <!-- 01-06-2018 -->
+                                01-06-2018
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+                <!-- / END : HEADER -->
+
+                <!-- IDENTITY -->
+                <table class="table table-noborder table-input table-input-noborder" style="margin-bottom: 20px;">
+                    <tr>
+                        <td>
+
+                            <table>
+                                <tr>
+                                    <td width="100">
+                                        Ref. No. PR
+                                    </td>
+                                    <td width="10">:</td>
+                                    <td>
+                                        {{ Data.pq.pr_kode }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Date
+                                    </td>
+                                    <td>:</td>
+                                    <td>
+                                        {{ Data.pq.pr_tanggal }}
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                        </td>
+                        <td>
+
+                            <table>
+                                <tr>
+                                    <td width="100">
+                                        Doc. Number
+                                    </td>
+                                    <td width="10">:</td>
+                                    <td>
+                                        {{ Data.pq.kode }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Date
+                                    </td>
+                                    <td>:</td>
+                                    <td>
+                                        {{ Data.pq.tanggal }}
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                        </td>
+                        <td>
+
+                            <table>
+                                <tr>
+                                    <td width="100">
+                                        Page
+                                    </td>
+                                    <td width="10">:</td>
+                                    <td>
+                                        {{ x+1 }} of {{ MaxRowSupplier }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Create By
+                                    </td>
+                                    <td>:</td>
+                                    <td>
+                                        {{ Data.pq.create_by_name }}
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                        </td>
+                    </tr>
+                </table>
+                <!-- / END : IDENTITY -->
+
+                <div fxLayout="row" fxFlex="0 1 auto">
+
+                    <!-- LIST PR -->
+                    <div>
+                        <table class="table table-input table-small table-bordered table-noborder-right" style="background: white!important">
+                            <thead>
+                                <tr>
+                                    <th colspan="15">
+                                        <strong>
+                                            PURCHASE LIST
+                                        </strong>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        No.
+                                    </th>
+                                    <th class="item_name_width" style="white-space: nowrap; min-width: 150px;">
+                                        Item Name
+                                    </th>
+                                    <th>
+                                        Unit
+                                    </th>
+                                    <th style="white-space: nowrap; min-width: 100px;">
+                                        Qty. PR
+                                    </th>
+                                    <th style="min-width: 100px;">
+                                        Outsd.
+                                    </th>
+                                    <th style="min-width: 100px;">
+                                        Date
+                                    </th>
+                                    <th style="white-space: nowrap; min-width: 150px;">
+                                        Supplier
+                                    </th>
+                                    <th style="white-space: nowrap; min-width: 100px;">
+                                        Last Price
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody padding2>
+                                <tr *ngFor="let item of Data.pr; let i = index;">
+                                    <td class="text-center">{{ i+1 }}</td>
+                                    <td class="same_height same_height_{{ i }}" [attr.index]="i">
+                                        {{ item.nama }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ item.satuan }}
+                                    </td>
+                                    <td class="text-right">
+                                        {{ rupiah(item.qty_purchase) }}
+                                    </td>
+                                    <td class="text-right">
+                                        {{ rupiah(item.qty_outstanding) }}
+                                    </td>
+
+                                    <td class="text-center">
+                                        {{ item.tanggal }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ item.supplier_nama }}
+                                    </td>
+                                    <td class="text-right" *ngIf="item.last_price">
+                                        {{ rupiah(item.last_price) }}
+                                    </td>
+                                    <td class="text-right" *ngIf="!item.last_price">
+                                        
+                                    </td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="8" class="text-right" style="padding-top: 35px;" >Currency</td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="8" class="text-right">
+                                        Subtotal
+                                    </td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="8" class="text-right">Discount</td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="8" class="text-right">Tax Base</td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="8" class="text-right">PPN</td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="8" class="text-right">PPh</td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="8" class="text-right">Other Cost</td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="8" class="text-right">PPBKB</td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="8" class="text-right">TOTAL</td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="8" class="text-right">
+                                        <strong>
+                                            GRAND TOTAL
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- / LIST PR -->
+
+                    <!-- LIST SUPPLIER -->
+                    <div fxFlex="0 1 auto" *ngFor="let supplier of Data.supplier; let i = index;" class="supplier_table" [attr.index]="i">
+                        <table *ngIf="
+                            supplier.detail && 
+                            supplier.reply && 
+                            x == 0 ? 
+                            (i + (x * MaxListSupplier)) < ((x+1) * MaxListSupplier) :
+                            (
+                                i >= (x * MaxListSupplier) && 
+                                i < ((x+1) * MaxListSupplier)
+                            )
+                        "
+                        class="table table-input table-small table-bordered table-noborder-left">
+                            <thead>
+                                <tr>
+                                    <th colspan="15">
+                                        <strong>{{ supplier.nama | uppercase }}</strong>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Qty.
+                                    </th>
+                                    <th class="origin_width">
+                                        Origin
+                                    </th>
+                                    <th >
+                                        <span>Cash</span>
+                                    </th>
+                                    <th >
+                                        <span>Credit</span>
+                                    </th>
+                                    <th *ngIf="
+                                        perm.draft_po && 
+                                        supplier.cc
+                                    ">
+                                        <span class="printable">
+                                            Order
+                                        </span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngIf="supplier.detail">
+        
+                                    <tr padding2 *ngFor="let detail of supplier.detail; let j = index;">
+                                        <td class="text-right">
+                                            {{ rupiah(detail.qty_supplier) }}
+                                        </td>
+                                        <td class="same_height2 same_height_{{ j }}" [attr.index]="j">
+                                            {{ detail.origin }}
+                                        </td>
+                                        <td class="text-right">
+                                            {{ rupiah(detail.prc_cash) }}
+                                        </td>
+                                        <td class="text-right">
+                                            {{ rupiah(detail.prc_credit) }}
+                                        </td>
+                                        <td class="text-right">
+                                            {{ detail.selected ? rupiah(detail.qty_po) : '-' }}
+                                        </td>
+                                    </tr>
+        
+                                </ng-container>
+                                <tr padding5>
+                                    <td colspan="5" class="text-right" style="height: 25px;">
+                                        {{supplier.reply.currency}}
+                                    </td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="5" class="text-right">
+                                        {{ rupiah(supplier.subtotal) }}
+                                    </td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="4" class="text-right">
+                                        <div *ngIf="!supplier.cc || !supplier.reply" style="height: 20px;">
+                                            &nbsp;
+                                        </div>
+                                        <div *ngIf="supplier.cc == 'cash' && supplier.reply">
+                                            {{ rupiah(supplier.reply.disc_cash )}}
+                                        </div>
+                                        <div *ngIf="supplier.cc == 'credit' && supplier.reply">
+                                            {{ rupiah(supplier.reply.disc_credit )}}
+                                        </div>
+                                        <!--Discount-->
+                                    </td>
+                                    <td class="text-right">
+                                        {{ supplier.subtotal ? rupiah(supplier.discount) : '-' }}
+                                    </td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="5" class="text-right">
+                                        {{ rupiah(supplier.taxbase) }}
+                                    </td>
+                                </tr>
+                                <tr padding5>
+                                    <td nopadding colspan="4" class="text-right">
+                                        <div *ngIf="!supplier.reply" style="height: 20px;">
+                                            &nbsp;
+                                        </div>
+                                        PPN ({{supplier.reply.ppn | number:'1.0-0' }}%) <span *ngIf="supplier.reply.inclusive_ppn == 1">Inclusive Tax</span> &nbsp;
+                                    </td>
+                                    <td class="text-right">
+                                        {{ supplier.subtotal ? rupiah(supplier.ppn) : '-' }}
+                                    </td>
+                                </tr>
+                                <tr padding5>
+                                    <td nopadding colspan="4" class="text-right">
+                                        <div *ngIf="!supplier.reply" style="height: 20px;">
+                                            &nbsp;
+                                        </div> 
+                                        <input 
+                                            *ngIf="supplier.reply" 
+                                            type="text" 
+                                            name="pph_code-{{i}}"
+                                            tabindex="-1"
+                                            [ngModel]="supplier.reply.pph_code"
+                                            readonly
+                                            class="size10 text-right"
+                                        >
+                                    </td>
+                                    <td class="text-right">
+                                        {{ supplier.subtotal ? rupiah(supplier.pph) : '-' }}
+                                    </td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="5" class="text-right">
+                                        {{ rupiah(supplier.other_cost) }}
+                                    </td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="5" class="text-right">
+                                        {{ rupiah(supplier.ppbkb) }}
+                                    </td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="5" nopadding>
+                                        <input 
+                                            type="text" 
+                                            currencyMask
+                                            name="total-{{i}}"
+                                            tabindex="-1"
+                                            [(ngModel)]="supplier.total"
+                                            [options]="{
+                                                prefix: '',
+                                                allowNegative: false,
+                                                thousands: '.',
+                                                decimal: ',',
+                                                precision: 2
+                                            }"
+                                            readonly
+                                            class="size10"
+                                            style="font-weight: bold;"
+                                        >
+                                    </td>
+                                </tr>
+                                <tr padding5>
+                                    <td colspan="5" nopadding>
+                                        <input 
+                                            type="text" 
+                                            currencyMask
+                                            name="grand_total-{{i}}"
+                                            tabindex="-1"
+                                            [(ngModel)]="supplier.grand_total"
+                                            [options]="{
+                                                prefix: '',
+                                                allowNegative: false,
+                                                thousands: '.',
+                                                decimal: ',',
+                                                precision: 2
+                                            }"
+                                            readonly
+                                            class="size10"
+                                            style="font-weight: bold;"
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+        
+                    </div>
+                    <!-- / END : LIST SUPPLIER -->
+
+                </div>
+
+                <!-- FOOTER / TTD -->
+                <div *ngIf="x+1 == MaxRowSupplier">
+
+                    <table class="table table-noborder table-input table-input-noborder" style="margin-top: 50px;">
+                        <tr>
+                            <td width="25%" class="text-center text-bold uppercase">
+                                Head of Purchasing
+                            </td>
+                            <td width="25%" class="text-center text-bold uppercase">
+                                Head of Supply Chain Management
+                            </td>
+                            <td width="25%" class="text-center text-bold uppercase">
+                                Dir. Commercial
+                            </td>
+                            <td class="text-center text-bold uppercase">
+                                CEO
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+                <!-- / END : FOOTER / TTD -->
+
+                <div class="print-break">&nbsp;</div>
+
+            </ng-container>
+            <!-- LOOP RowSupplier -->
+
+        </div>
+
+    </div>
+    <!-- / END : PRINT -->
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="column" fxFlex="1 1 auto" class="p-24 m-0">
+
+        <div class="h2 text-center">
+            PRICE COMPARISONS
+        </div>
+        <div class="h3 text-center mb-32">
+            {{ Data.pq.kode }}
+        </div>
+
+        <div fxLayout="row">
+
+            <!-- LEFT -->
+            <div fxFlex="0 1 auto" style="z-index: 1000;">
+
+                <table class="table table-input table-small table-bordered table-striped" style="background: white!important">
+                    <thead>
+                        <tr>
+                            <th colspan="15">
+                                <strong>
+                                    PURCHASE LIST
+                                </strong>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                No.
+                            </th>
+                            <th style="white-space: nowrap;">
+                                Item Name
+                            </th>
+                            <th>
+                                Unit
+                            </th>
+                            <th style="white-space: nowrap; min-width: 100px;">
+                                Qty. PR
+                            </th>
+                            <th style="min-width: 100px;">
+                                Outsd.
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody padding5>
+                        <tr *ngFor="let item of Data.pr; let i = index;">
+                            <td class="text-center">{{ i+1 }}</td>
+                            <td style="white-space: nowrap;">
+                                {{ item.nama }}
+                            </td>
+                            <td class="text-center">
+                                {{ item.satuan }}
+                            </td>
+                            <td nopadding>
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="qty_purchased-{{i}}"
+                                    tabindex="-1"
+                                    [ngModel]="item.qty_purchase"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                >
+                            </td>
+                            <td nopadding>
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="qty_outstanding-{{i}}"
+                                    tabindex="-1"
+                                    [class]="
+                                        item.qty_outstanding > 0 ? 
+                                        'yellow' : 
+                                        ''
+                                    "
+                                    [ngModel]="item.qty_outstanding"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                    readonly
+                                >
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot padding2 class="table-input-noborderx">
+                        <tr>
+                            <td colspan="5" class="text-right" style="height: 25px;">Currency</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-right" style="height: 25px;">
+                                Subtotal
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-right" style="height: 25px;">Discount</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-right" style="height: 25px;">Tax Base</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-right" style="height: 25px;">PPN</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-right" style="height: 25px;">PPh</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-right" style="height: 25px;">Other Cost</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-right" style="height: 25px;">PPBKB</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-right" style="height: 25px;">TOTAL</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-right" style="height: 25px;">
+                                <strong>
+                                    GRAND TOTAL
+                                </strong>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+    
+            </div>
+            <!-- / LEFT -->
+            <!-- [fxLayout]="OnPrint ? 'row wrap' : 'row'"
+                class="visible" -->
+            <!-- RIGHT -->
+            <!-- <mat-dialog-content
+            > -->
+
+            <!-- TABLE CANCEL -->
+            <div fxLayout="column">
+                <table class="table table-input table-small table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th colspan="15">
+                                <div class="red-fg">
+                                    CANCEL
+                                </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="min-width: 150px; max-width: 150px;">
+                                <span class="red-fg">
+                                    QTY Cancel
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of Data.pr; let i = index;">
+                            <td>
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="qty_cancel-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="item.qty_cancel"
+                                    (ngModelChange)="Calculate(0, i)"
+                                    class="red-fg text-bold"
+                                    [options]="
+                                    item.in_decimal == 1 ? {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    } : {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 0
+                                    }
+                                    "
+                                >
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot padding2>
+                        <tr>
+                            <td style="height: 25px;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 25px;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 25px;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 25px;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 25px;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 25px;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 25px;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 25px;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 25px;">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 25px;">&nbsp;</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <!-- / END : TABLE CANCEL -->
+
+            <div fxFlex="0 1 auto" *ngFor="let supplier of Data.supplier; let i = index;">
+
+                <table *ngIf="supplier.detail && supplier.reply" class="table table-input table-small table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th colspan="15">
+                                <strong>{{ supplier.nama | uppercase }}</strong>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="min-width: 100px;">
+                                Qty.
+                            </th>
+                            <th style="min-width: 100px;">
+                                Origin
+                            </th>
+                            <th  style="min-width: 100px;">
+                                <mat-radio-group class="hide-print" *ngIf="supplier.detail && form.verified != 1" name="tipe-{{i}}" [(ngModel)]="supplier.cc" (ngModelChange)="Calculate()">
+                                    <mat-radio-button color="primary" value="cash">Cash</mat-radio-button>
+                                </mat-radio-group>
+                                <span *ngIf="!supplier.detail || form.verified == 1">Cash</span>
+                            </th>
+                            <th  style="min-width: 100px;">
+                                <mat-radio-group class="hide-print" *ngIf="supplier.detail && form.verified != 1" name="tipe-{{i}}" [(ngModel)]="supplier.cc" (ngModelChange)="Calculate()">
+                                    <mat-radio-button value="credit" color="warn">Credit</mat-radio-button>
+                                </mat-radio-group>
+                                <span *ngIf="!supplier.detail || form.verified == 1">Credit</span>
+                            </th>
+                            <th width="10" colspan="2" *ngIf="
+                                perm.draft_po && 
+                                supplier.cc
+                            ">
+                                <i class="fa fa-check-square" style="
+                                    width: 12px;
+                                    height: 12px;
+                                    min-width: 12px;
+                                    min-height: 12px;
+                                "></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngIf="supplier.detail">
+
+                            <tr *ngFor="let detail of supplier.detail; let j = index;">
+                                <td nopadding>
+                                    <input 
+                                        type="text" 
+                                        currencyMask
+                                        name="qty_supplier-{{i}}-{{j}}"
+                                        tabindex="-1"
+                                        [ngModel]="detail.qty_supplier"
+                                        [options]="
+                                        detail.in_decimal == 1 ? {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        } : {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 0
+                                        }
+                                        "
+                                        readonly
+                                    >
+                                </td>
+                                <td nopadding>
+                                    <input 
+                                        type="text" 
+                                        name="origin-{{i}}-{{j}}"
+                                        tabindex="-1"
+                                        [ngModel]="detail.origin"
+                                        readonly
+                                    >
+                                </td>
+                                <td nopadding>
+                                    <input 
+                                        type="text" 
+                                        currencyMask
+                                        name="prc_cash-{{i}}-{{j}}"
+                                        tabindex="-1"
+                                        [ngModel]="detail.prc_cash"
+                                        [options]="{
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        }
+                                        "
+                                        readonly
+                                    >
+                                </td>
+                                <td nopadding>
+                                    <input 
+                                        type="text" 
+                                        currencyMask
+                                        name="prc_credit-{{i}}-{{j}}"
+                                        tabindex="-1"
+                                        [ngModel]="detail.prc_credit"
+                                        [options]="{
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        }
+                                        "
+                                        readonly
+                                    >
+                                </td>
+                                <td nopadding class="text-center" *ngIf="
+                                    detail.qty_supplier > 0 && 
+                                    supplier.cc
+                                ">
+                                    <div *ngIf="detail.qty_supplier > 0 && perm.draft_po" class="no-print">
+                                        <mat-checkbox 
+                                            [(ngModel)]="detail.selected"
+                                            [checked]="detail.selected == 1"
+                                            (ngModelChange)="FocusQPO(i, j, detail)"
+                                            [disabled]="
+                                                detail.qty_supplier <= 0 || 
+                                                form.verified == 1
+                                            "
+                                            name="selected-{{i}}-{{j}}"
+                                            color="primary"
+                                        >
+                                        </mat-checkbox>
+                                    </div>
+                                </td>
+                                <td nopadding *ngIf="detail.selected" style="min-width: 100px;">
+                                    <input 
+                                        type="text" 
+                                        currencyMask
+                                        name="qty_po-{{i}}-{{j}}"
+                                        id="qty_po-{{i}}-{{j}}"
+                                        placeholder="Qty. Order"
+                                        tabindex="-1"
+                                        [(ngModel)]="detail.qty_po"
+                                        (ngModelChange)="Calculate(i, j)"
+                                        [options]="
+                                        detail.in_decimal == 1 ? {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 2
+                                        } : {
+                                            prefix: '',
+                                            allowNegative: false,
+                                            thousands: '.',
+                                            decimal: ',',
+                                            precision: 0
+                                        }
+                                        "
+                                        [readonly]="form.verified == 1"
+                                    >
+                                </td>
+                            </tr>
+
+                        </ng-container>
+                        <ng-container *ngIf="!supplier.detail">
+                            <tr>
+                                <td padding5 colspan="10">
+                                    <div style="height: 20px;"></div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                    <tfoot padding5>
+                        <tr>
+                            <td colspan="6" class="text-right" style="height: 25px;">
+                                {{supplier.reply.currency}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" nopadding style="height: 25px;">
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="subtotal-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="supplier.subtotal"
+                                    [options]="
+                                    {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }
+                                    "
+                                    readonly
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td nopadding colspan="5" class="text-right" style="height: 25px;">
+                                <div *ngIf="!supplier.cc || !supplier.reply" style="height: 20px;">
+                                    &nbsp;
+                                </div> 
+                                <input 
+                                    *ngIf="supplier.cc == 'cash' && supplier.reply"
+                                    type="text" 
+                                    currencyMask
+                                    name="disc_cash-{{i}}"
+                                    tabindex="-1"
+                                    [ngModel]="supplier.reply.disc_cash"
+                                    [options]="
+                                    {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 8
+                                    }
+                                    "
+                                    readonly
+                                    class="size10"
+                                >
+                                <input 
+                                    *ngIf="supplier.cc == 'credit'"
+                                    type="text" 
+                                    currencyMask
+                                    name="disc_credit-{{i}}"
+                                    tabindex="-1"
+                                    [ngModel]="supplier.reply.disc_credit"
+                                    [options]="
+                                    {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 8
+                                    }
+                                    "
+                                    readonly
+                                    class="size10"
+                                >
+                            </td>
+                            <td nopadding *ngIf="supplier.subtotal" style="height: 25px;">
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="discount-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="supplier.discount"
+                                    [options]="
+                                    {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }
+                                    "
+                                    readonly
+                                    class="size10"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" nopadding style="height: 25px;">
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="taxbase-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="supplier.taxbase"
+                                    [options]="
+                                    {
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }
+                                    "
+                                    readonly
+                                    class="size10"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td nopadding colspan="5" class="text-right" style="font-weight: normal!important; font-size: 8pt; color: black; height: 25px;">
+                                PPN ({{supplier.reply.ppn | number:'1.0-0' }}%) <span *ngIf="supplier.reply.inclusive_ppn == 1">Inclusive Tax</span> &nbsp;
+                            </td>
+                            <td nopadding *ngIf="supplier.subtotal" style="height: 25px;">
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="ppn-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="supplier.ppn"
+                                    [options]="{
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }"
+                                    readonly
+                                    class="size10"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td nopadding colspan="5" class="text-right" style="height: 25px;">
+                                <div *ngIf="!supplier.reply" style="height: 20px;">
+                                    &nbsp;
+                                </div> 
+                                <input 
+                                    *ngIf="supplier.reply" 
+                                    type="text" 
+                                    name="pph_code-{{i}}"
+                                    tabindex="-1"
+                                    [ngModel]="supplier.reply.pph_code"
+                                    readonly
+                                    class="size10 text-right"
+                                >
+                            </td>
+                            <td nopadding *ngIf="supplier.subtotal" style="height: 25px;">
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="pph-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="supplier.pph"
+                                    [options]="{
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }"
+                                    readonly
+                                    class="size10"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" nopadding style="height: 25px;">
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="other_cost-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="supplier.other_cost"
+                                    [options]="{
+                                        prefix: '',
+                                        allowNegative: true,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }"
+                                    readonly
+                                    class="size10"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" nopadding style="height: 25px;">
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="ppbkb-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="supplier.ppbkb"
+                                    [options]="{
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }"
+                                    readonly
+                                    class="size10"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" nopadding style="height: 25px;">
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="total-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="supplier.total"
+                                    [options]="{
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }"
+                                    readonly
+                                    class="size10"
+                                    style="font-weight: bold;"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" nopadding style="height: 25px;">
+                                <input 
+                                    type="text" 
+                                    currencyMask
+                                    name="grand_total-{{i}}"
+                                    tabindex="-1"
+                                    [(ngModel)]="supplier.grand_total"
+                                    [options]="{
+                                        prefix: '',
+                                        allowNegative: false,
+                                        thousands: '.',
+                                        decimal: ',',
+                                        precision: 2
+                                    }"
+                                    readonly
+                                    class="size10"
+                                    style="font-weight: bold;"
+                                >
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+    
+            <!-- </mat-dialog-content> -->
+            <!-- / RIGHT -->
+
+        </div>
+
+    </mat-dialog-content>
+    <!-- / CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto">
+
+            <button
+                fxFlex="0 1 auto"
+                type="button"
+                mat-button
+                color="default"
+                [disabled]="
+                    WaitPrint
+                "
+                (click)="Print()"
+            >
+                <mat-icon>print</mat-icon>
+                {{ Busy ? 'Please Wait...' : 'Print Price Comparisons' }}
+            </button>
+
+            <div fxFlex="1 1 auto" *ngIf="Data.pq.verified != 1">
+
+                <button
+                    type="submit"
+                    mat-button
+                    color="primary"
+                    [disabled]="
+                        Busy
+                    "
+                >
+                    <mat-icon>save</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Save Price Comparisons' }}
+                </button>
+    
+                <button
+                    *ngIf="OutstandingClear"
+                    type="button"
+                    mat-button
+                    color="warn"
+                    [disabled]="
+                        Busy
+                    "
+                    (click)="Simpan(true)"
+                >
+                    <mat-icon>check</mat-icon>
+                    {{ Busy ? 'Please Wait...' : 'Verify' }}
+                </button>
+
+            </div>
+
+            <!-- APPROVED -->
+            <div *ngIf="
+                form.verified == 1 &&
+                form.finish != 1 && 
+                (
+                    perm.approve ||
+                    perm.approve2 || 
+                    perm.approve3
+                )
+            ">
+
+                <div 
+                    *ngIf="
+                        form.is_detail && 
+                        form.from_pq && 
+                        perm.approve && 
+                        form.verified == 1 && 
+                        form.approved != 1 &&
+                        form.apvd >= 1
+                    "
+                >
+                    
+                    <button
+                        type="button"
+                        mat-button
+                        class="green-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="Approve(1)"
+                    >
+                        <mat-icon>check</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Approve' }}
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-button
+                        class="red-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="ShowRejectDialog()"
+                    >
+                        <mat-icon>close</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Reject' }}
+                    </button>
+
+                </div>
+
+                <div 
+                    *ngIf="
+                        form.is_detail && 
+                        form.from_pq && 
+                        perm.approve2 && 
+                        form.approved == 1 && 
+                        form.approved2 != 1 &&
+                        form.apvd >= 2
+                    "
+                >
+                    
+                    <button
+                        type="button"
+                        mat-button
+                        class="green-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="Approve(2)"
+                    >
+                        <mat-icon>check</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Approve' }}
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-button
+                        class="red-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="ShowRejectDialog()"
+                    >
+                        <mat-icon>close</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Reject' }}
+                    </button>
+
+                </div>
+
+                <div 
+                    *ngIf="
+                        form.is_detail && 
+                        form.from_pq && 
+                        perm.approve3 && 
+                        form.approved2 == 1 && 
+                        form.approved3 != 1 &&
+                        form.apvd >= 3
+                    "
+                >
+                    
+                    <button
+                        type="button"
+                        mat-button
+                        class="green-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="Approve(3)"
+                    >
+                        <mat-icon>check</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Approve' }}
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-button
+                        class="red-fg"
+                        [disabled]="
+                            Busy
+                        "
+                        (click)="ShowRejectDialog()"
+                    >
+                        <mat-icon>close</mat-icon>
+                        {{ Busy ? 'Please Wait...' : 'Reject' }}
+                    </button>
+
+                </div>
+
+            </div>
+            <!-- / APPROVED -->
+
+        </div>
+        
+        <div>
+            <button
+                mat-button
+                type="button"
+                mat-dialog-close
+                *ngIf="!Busy"
+            >
+                Close
+            </button>
+        </div>
+
+    </mat-dialog-actions>
+    <!-- / ACTION -->
+
+</form>

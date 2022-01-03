@@ -1,0 +1,313 @@
+<form
+    ngNativeValidate
+    fxLayout="column"
+    class="dialog-content-wrapper"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    autocomplete="off"
+    (ngSubmit)="Simpan()"
+>
+    <!-- TOOLBAR -->
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Create Return Goods Receipt
+            </span>
+            <button
+                mat-button
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+    <!-- END : TOOLBAR -->
+
+    <!-- CONTENT -->
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" class="m-0 p-24">
+        <!-- RETURN GR -->
+        <mat-dialog-content fxFlex="1 1 auto" fxLayout="column">
+            <!-- GRCode -->
+            <mat-form-field appearance="outline" class="small">
+                <mat-label>GR Code</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Please Define GR Code to Continue"
+                    name="gr_kode"
+                    id="gr_kode"
+                    [(ngModel)]="form.gr_kode"
+                    required
+                    [matAutocomplete]="acGRCode"
+                    (ngModelChange)="GRCodeFilter(form.gr_kode)"
+                    (focus)="GRCodeFilter(form.gr_kode)"
+                    (click)="GRCodeFilter(form.gr_kode)"
+                    [readonly]="form.is_detail || form.gr"
+                    [tabindex]="form.id != 'add' ? '-1' : ''"
+                />
+                <button
+                    type="button"
+                    mat-button
+                    *ngIf="form.gr"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="GRCodeRemove();"
+                    tabindex="-1"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+                <mat-autocomplete
+                    autoActiveFirstOption
+                    #acGRCode="matAutocomplete"
+                    class="force-wrap ac-small"
+                >
+                    <mat-option
+                        *ngFor="let item of GRCode"
+                        [value]="item.kode"
+                        (onSelectionChange)="GRCodeSelect($event, item)"
+                    >
+                        {{ item.kode }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <!-- / GRCode -->
+
+            <mat-form-field *ngIf="form.gr" appearance="outline" class="small">
+                <mat-label>Return Date</mat-label>
+                <input
+                    matInput
+                    name="tanggal"
+                    placeholder="Please set Return date"
+                    [(ngModel)]="form.tanggal"
+                    [min]="minDate"
+                    [max]="maxDate"
+                    required
+                    [matDatepicker]="tanggal"
+                    (focus)="tanggal.open()"
+                    (click)="tanggal.open()"
+                    readonly
+                    style="
+                        font-size: 14px !important;
+                        color: #000 !important;
+                        padding: 0px !important;
+                    "
+                />
+                <mat-datepicker #tanggal></mat-datepicker>
+            </mat-form-field>
+        </mat-dialog-content>
+        <!-- END : RETURN GR -->
+
+        <!-- LIST ITEM -->
+        <mat-dialog-content
+            class="p-0 m-0 ml-24 mt-8"
+            fxLayout="column"
+            *ngIf="form.gr && form.list?.length > 0 && form?.tanggal"
+        >
+            <div
+                fxLayout="row"
+                fxFlex="0 1 auto"
+                fxLayoutGap="10px"
+                class="mb-24"
+            >
+                <div fxLayout="column" fxFlex="1 1 auto">
+                    <div class="h3">
+                        SUPPLIER: {{ form.supplier_nama | uppercase }}
+                    </div>
+                    <div class="h4">
+                        No. {{ form.po_kode }}
+                    </div>
+                    <div>
+                        GR Code : {{ form.gr_kode }}
+                    </div>
+                    <div>
+                        GR Date : {{ form.gr_date }}
+                    </div>
+                </div>
+            </div>
+            <table
+                class="table table-border-top table-list table-responsive table-input table-small"
+            >
+                <thead>
+                    <tr>
+                        <th>
+                            No.
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th width="100">
+                            Qty. Receipt
+                        </th>
+                        <th width="100">
+                            Qty. Max Return
+                        </th>
+                        <th width="100">
+                            Qty. Return
+                        </th>
+                        <th width="50">
+                            Unit
+                        </th>
+                        <th>
+                            Remarks
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of form.list; let i = index;">
+                        <td padding5 align="center">
+                            {{ i + 1 }}
+                        </td>
+                        <td padding5>
+                            {{ item.nama }}
+                        </td>
+                        <!-- <td padding5 class="text-right">
+                            {{ item.qty_receipt }}
+                        </td>
+                        <td padding5 class="text-right">
+                            {{ item.qty_max_return }}
+                        </td> -->
+                        <td nopadding>
+                            <input
+                                type="text"
+                                autocomplete="off"
+                                name="item-qty_receipt-{{i}}"
+                                id="item-qty_receipt-{{i}}"
+                                [(ngModel)]="item.qty_receipt"
+                                maxlength="20"
+                                readonly
+                                tabindex="-1"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? 
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }
+                                "
+                            />
+                        </td>
+                        <td nopadding>
+                            <input
+                                type="text"
+                                autocomplete="off"
+                                name="item-qty_max_return-{{i}}"
+                                id="item-qty_max_return-{{i}}"
+                                [ngModel]="item.qty_max_return"
+                                maxlength="20"
+                                readonly
+                                tabindex="-1"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? 
+                                {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }
+                                "
+                                [class]="item.qty_max_return > 0 ? 
+                                'mat-red-bg' : 'primary-bg'"
+                            />
+                        </td>
+                        <td nopadding>
+                            <input
+                                placeholder="Qty"
+                                type="text"
+                                autocomplete="off"
+                                name="item-qty_return-{{i}}"
+                                id="item-qty_return-{{i}}"
+                                [(ngModel)]="item.qty_return"
+                                (ngModelChange)="Calculate(item)"
+                                maxlength="20"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                            />
+                        </td>
+                        <td padding5 class="text-center">
+                            {{ item.satuan }}
+                        </td>
+                        <td>
+                            <input
+                                placeholder="Remarks"
+                                type="text"
+                                autocomplete="off"
+                                name="item-note-{{i}}"
+                                id="item-note-{{i}}"
+                                [(ngModel)]="item.remarks"
+                                maxlength="150"
+                            />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </mat-dialog-content>
+        <!-- END : LIST ITEM -->
+    </mat-dialog-content>
+    <!-- END : CONTENT -->
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions
+        class="p-16 m-0"
+        fxLayout="row"
+        fxLayoutAlign="end"
+        fxLayoutGap="10px"
+    >
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button
+                type="submit"
+                mat-button
+                color="primary"
+                [disabled]="
+                    !form?.tanggal || 
+                    !form?.gr ||
+                    Busy ||
+                    ReadySave == 0
+                "
+            >
+                <mat-icon>save</mat-icon>
+                Create & Verify Return Goods Receipt
+            </button>
+        </div>
+
+        <div>
+            <button *ngIf="!Busy" type="button" mat-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+    </mat-dialog-actions>
+    <!-- END : ACTIONS -->
+</form>

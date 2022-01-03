@@ -1,0 +1,259 @@
+<form ngNativeValidate fxLayout="column" class="dialog-content-wrapper" cdkDrag cdkDragRootElement=".cdk-overlay-pane" autocomplete="off" (ngSubmit)="Simpan()" style="min-width: 500px"> 
+
+    <mat-toolbar cdkDragHandle matDialogTitle class="mat-primary m-0">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">
+                Cancel Purchase Order
+            </span>
+            <button 
+                mat-button 
+                type="button"
+                class="mat-icon-button ml-24"
+                mat-dialog-close
+                aria-label="Close dialog"
+                tabindex="-1"
+                *ngIf="!Busy"
+            >
+                <mat-icon class="white-fg">close</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar>
+
+    <mat-dialog-content fxLayout="row" fxLayout.sm="column" class="m-0 p-24">
+
+        <!-- PARTIAL PO -->
+        <mat-dialog-content fxFlex="1 1 auto" fxLayout="column">
+
+            <!-- PRCode -->
+            <mat-form-field appearance="outline" fxFlex="1 1 auto" class="small">
+                <mat-label>PO Code</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Please Define PR Code to Continue" 
+                    name="kode"
+                    [(ngModel)]="form.kode"
+                    readonly
+                >
+            </mat-form-field>
+            <!-- / PRCode -->
+
+            <!-- PRCode -->
+            <mat-form-field appearance="outline" fxFlex="1 1 auto" class="small">
+                <mat-label>PR Code</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Please Define PR Code to Continue" 
+                    name="pr_kode" 
+                    [(ngModel)]="form.pr_kode"
+                    readonly
+                >
+            </mat-form-field>
+            <!-- / PRCode -->
+
+            <!-- SUPPLIER -->
+            <mat-form-field appearance="outline" fxFlex="1 1 auto" class="small">
+                <mat-label>Supplier</mat-label>
+                <input matInput 
+                    type="text" 
+                    placeholder="Please Select Supplier" 
+                    name="supplier_nama" 
+                    [(ngModel)]="form.supplier_nama"
+                    readonly
+                >
+            </mat-form-field>
+            <!-- / END : SUPPLIER -->
+
+            <mat-form-field appearance="outline" fxFlex="1 1 auto"class="small">
+                <mat-label>PO Date</mat-label>
+                <input matInput
+                    name="tanggal" 
+                    placeholder="Please set PO Date"
+                    [(ngModel)]="form.tanggal_show" 
+                    readonly
+                    style="font-size: 14px!important; color: #000!important; padding: 0px!important;"
+                >
+            </mat-form-field>
+
+        </mat-dialog-content>
+        <!-- END : // PARTIAL PO -->
+
+        <!-- LIST ITEM -->
+        <mat-dialog-content class="p-0 m-0 ml-24 mt-8" fxLayout="column" *ngIf="form.detail?.length > 0">
+
+            <div>
+                <table class="table table-border-top table-list table-responsive table-input table-small">
+                    <thead>
+                        <tr>
+                            <th width="10" rowspan="2">
+                                No.
+                            </th>
+                            <th rowspan="2">
+                                Name
+                            </th>
+                            <th width="100">
+                                Qty. PO
+                            </th>
+                            <th width="100">
+                                Outstanding
+                            </th>
+                            <th width="100">
+                                Canceled
+                            </th>
+                            <th width="100">
+                                Qty. Cancel
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of form.detail; let i = index;">
+                            <td align="center" nopadding>
+                                {{ i + 1 }}
+                            </td>
+                            <td padding5>
+                                {{ item.nama }}
+                            </td>
+                            <td nopadding>
+                                <input 
+                                placeholder="Qty PO"
+                                type="text" 
+                                autocomplete="off"
+                                name="item-qty_po-{{i}}" 
+                                id="item-qty_po-{{i}}" 
+                                [(ngModel)]="item.qty_po"
+                                maxlength="20"
+                                currencyMask
+                                readonly
+                                [options]="item.in_decimal == 1 ? {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                                >
+                            </td>
+                            <td nopadding>
+                                <input 
+                                placeholder="Outstanding"
+                                type="text" 
+                                autocomplete="off"
+                                name="item-outstanding-{{i}}" 
+                                id="item-outstanding-{{i}}" 
+                                [(ngModel)]="item.outstanding"
+                                maxlength="20"
+                                currencyMask
+                                readonly
+                                [options]="item.in_decimal == 1 ? {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                                >
+                            </td>
+                            <td nopadding>
+                                <input 
+                                placeholder="Qty Cancel"
+                                type="text" 
+                                autocomplete="off"
+                                name="item-qty_canceled-{{i}}" 
+                                id="item-qty_canceled-{{i}}" 
+                                [(ngModel)]="item.qty_canceled"
+                                maxlength="20"
+                                currencyMask
+                                readonly
+                                [options]="item.in_decimal == 1 ? {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                                >
+                            </td>
+                            <td nopadding>
+                                <input 
+                                placeholder="Qty Cancel"
+                                type="text" 
+                                autocomplete="off"
+                                name="item-qty_cancel-{{i}}" 
+                                id="item-qty_cancel-{{i}}" 
+                                [(ngModel)]="item.qty_cancel"
+                                (ngModelChange)="Calculate(item)"
+                                maxlength="20"
+                                currencyMask
+                                [options]="item.in_decimal == 1 ? {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 2
+                                } : {
+                                    prefix: '',
+                                    allowNegative: false,
+                                    thousands: '.',
+                                    decimal: ',',
+                                    precision: 0
+                                }"
+                                >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </mat-dialog-content>
+        <!-- / END : LIST ITEM -->
+
+    </mat-dialog-content>
+
+    <!-- ACTIONS -->
+    <mat-dialog-actions class="p-16 m-0" fxLayout="row" fxLayoutAlign="end" fxLayoutGap="10px">
+
+        <div fxFlex="1 1 auto" fxLayout="row">
+            <button 
+                type="submit" 
+                mat-button 
+                color="primary" 
+                [disabled]="Busy" 
+            >
+                <mat-icon>save</mat-icon>
+                Save
+            </button> 
+        </div>
+
+        <div>
+            <button 
+                *ngIf="!Busy"
+                type="button" 
+                mat-button 
+                mat-dialog-close
+            >
+                <mat-icon>close</mat-icon>
+                Close
+            </button>
+        </div>
+
+    </mat-dialog-actions>
+    <!-- / END : ACTION -->
+
+</form>
