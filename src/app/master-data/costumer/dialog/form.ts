@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Core } from 'providers/core';
 import { MatDialogRef } from '@angular/material';
-import { Logger } from '../../../../../_ag-grid-hack/ag-grid-community/dist/lib/ts/main';
 
 @Component({
     selector: 'dialog-form-supplier',
