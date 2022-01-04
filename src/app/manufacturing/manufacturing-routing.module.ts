@@ -4,22 +4,13 @@ import { AuthGuard } from './../auth.guard';
 
 import { BomComponent } from './bom/bom.component';
 import { BomFormDialogComponent } from './bom/dialog/form';
-import { JOComponent } from './jo/jo.component';
-import { JOFormDialogComponent } from './jo/dialog/form';
-import { ActualProductionComponent } from './actual-production/actual-production.component';
-import { ActualProductionDetailComponent } from './actual-production/detail/detail';
-import { APDetailFormDialogComponent } from './actual-production/detail/dialog/form';
 import { TransferRequestComponent } from './transfer-request/transfer-request.component';
 import { TransferRequestFormDialogComponent } from './transfer-request/dialog/form';
 import { TransferDeliveryRequestComponent } from './transfer-request/deliver/list';
 import { DeliverRequestFormDialogComponent } from './transfer-request/deliver/dialog/form';
 import { FinishGoodsComponent } from './finish-goods/finish-goods.component';
-import { FinishGoodsFormDialogComponent } from './fg/dialog/form';
-import { FGDetailComponent } from './fg/receive/list';
-import { ReceiveFGFormDialogComponent } from './fg/receive/dialog/form';
 import { ProduksiParamsComponent } from './produksi-params/produksi-params.component';
 import { PPFormDialogComponent } from './produksi-params/dialog/form';
-import { FgComponent } from './fg/fg.component';
 import { FinishGoodsFormDialogComponent2 } from './finish-goods/dialog/form';
 import { OipComponent } from './oip/oip.component';
 import { OipFormDialogComponent } from './oip/dialog/form';
@@ -38,7 +29,6 @@ import { AP2DetailFormDialogComponent } from './actual-production2/detail/dialog
 import { ActualProduction2DetailComponent } from './actual-production2/detail/detail';
 import { MaterialReturnReceiveComponent } from './material-return-receive/material-return-receive.component';
 import { MaterialReturnReceiveFormDialogComponent } from './material-return-receive/dialog/form';
-import { JOPrintDialogComponent } from './jo/dialog/print';
 
 import { JO2Component } from './jo2/jo2.component';
 import { JO2FormDialogComponent } from './jo2/dialog/form';
@@ -74,37 +64,11 @@ const routes: Routes = [{
         },
         {
             data: {
-                id: 60
-            },
-            canActivate: [AuthGuard],
-            path: 'jo',
-            component: JOComponent
-
-        },
-        {
-            data: {
                 id: 193
             },
             canActivate: [AuthGuard],
             path: 'jo2',
             component: JO2Component
-        },
-        {
-            data: {
-                id: 61
-            },
-            canActivate: [AuthGuard],
-            path: 'actual_production',
-            children: [
-                {
-                    path: '',
-                    component: ActualProductionComponent,
-                },
-                {
-                    path: 'detail/:id',
-                    component: ActualProductionDetailComponent
-                }
-            ]
         },
         {
             data: {
@@ -175,24 +139,6 @@ const routes: Routes = [{
         //     ]
 
         // },
-        {
-            data: {
-                id: 65
-            },
-            canActivate: [AuthGuard],
-            path: 'transfer_finish_goods',
-            children: [
-                {
-                    path: '',
-                    component: FgComponent
-                },
-                {
-                    path: 'receive/:id',
-                    component: FGDetailComponent
-                }
-            ]
-
-        },
         {
             data: {
                 id: 201
@@ -308,15 +254,10 @@ export class ManufacturingRoutingModule { }
 
 export const RoutableManufacturing = [
     BomComponent,
-    JOComponent,
-    ActualProductionComponent,
-    ActualProductionDetailComponent,
     TransferRequestComponent,
     TransferDeliveryRequestComponent,
     FinishGoodsComponent,
-    FGDetailComponent,
     ProduksiParamsComponent,
-    FgComponent,
     Fg2Component,
     FinishGoods2DetailComponent,
     OipComponent,
@@ -337,13 +278,8 @@ export const RoutableManufacturing = [
 
 export const EntryManufacturing = [
     BomFormDialogComponent,
-    JOFormDialogComponent,
-    JOPrintDialogComponent,
-    APDetailFormDialogComponent,
     TransferRequestFormDialogComponent,
     DeliverRequestFormDialogComponent,
-    FinishGoodsFormDialogComponent,
-    ReceiveFGFormDialogComponent,
     PPFormDialogComponent,
     FinishGoodsFormDialogComponent2,
     OipFormDialogComponent,
