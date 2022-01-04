@@ -4,17 +4,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { TransactionComponent } from './transaction/transaction.component';
 import { ContractComponent } from './contract/contract.component';
-import { Contract2Component } from './contract2/contract2.component';
 import { TransporterComponent } from './transporter/transporter.component';
-import { VehicleComponent } from './vehicle/vehicle.component';
 import { ContractFormDialogComponent } from './contract/dialog/form';
-import { Contract2FormDialogComponent } from './contract2/dialog/form';
-import { VehicleFormDialogComponent } from './vehicle/dialog/form';
 import { TransporterFormDialogComponent } from './transporter/dialog/form';
 import { TrxFormDialogComponent } from './transaction/dialog/form';
 import { AuthGuard } from '../auth.guard';
 import { DetailContractFormDialogComponent } from './contract/dialog/detail';
-import { DetailContract2FormDialogComponent } from './contract2/dialog/detail';
 import { ContractProgressComponent } from './report/contract-progress/contract-progress.component';
 import { TransporterProgressComponent } from './report/transporter-progress/transporter-progress.component';
 import { TransactionPrintDialogComponent } from './transaction/dialog/print';
@@ -33,14 +28,6 @@ const routes: Routes = [{
         },
         {
             data:{
-                id: 188
-            },
-            canActivate: [AuthGuard],
-            path: 'contract2',
-            component: Contract2Component
-        },
-        {
-            data:{
                 id: 77
             },
             canActivate: [AuthGuard],
@@ -54,14 +41,6 @@ const routes: Routes = [{
             canActivate: [AuthGuard],
             path: 'transporter',
             component: TransporterComponent
-        },
-        {
-            data:{
-                id: 79
-            },
-            canActivate: [AuthGuard],
-            path: 'vehicle',
-            component: VehicleComponent
         },
         {
             path: 'report',
@@ -111,10 +90,8 @@ export class WBRoutingModule { }
 
 export const RoutableWB = [
     ContractComponent,
-    Contract2Component,
     TransactionComponent,
     TransporterComponent,
-    VehicleComponent,
     TransactionsComponent,
     ContractProgressComponent,
     TransporterProgressComponent
@@ -122,11 +99,8 @@ export const RoutableWB = [
 
 export const EntryWB = [
     ContractFormDialogComponent,
-    Contract2FormDialogComponent,
     TransporterFormDialogComponent,
-    VehicleFormDialogComponent,
     TrxFormDialogComponent,
     DetailContractFormDialogComponent,
-    DetailContract2FormDialogComponent,
     TransactionPrintDialogComponent
 ];
