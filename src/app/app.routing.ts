@@ -35,20 +35,12 @@ export const AppRoutes: Routes = [
         loadChildren    : './supply-demand/supply-demand.module#SupplyDemandModule'
     },
     {
-        path            : 'wb',
-        loadChildren    : './wb/wb.module#WBModule'
-    },
-    {
         path            : 'qc',
         loadChildren    : './quality-control/quality-control.module#QualityControlModule'
     },
     {
         path            : 'acc',
         loadChildren    : './accounting/accounting.module#AccountingModule'
-    },
-    {
-        path            : 'manufacturing',
-        loadChildren    : './manufacturing/manufacturing.module#ManufacturingModule'
     },
     {
         path            : 'so',
